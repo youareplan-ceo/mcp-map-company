@@ -955,20 +955,20 @@
 
     <!-- 하단 네비게이션 -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home', this)" role="button" tabindex="0" aria-label="홈 탭">
+        <div class="nav-item active" onclick="switchTab(\'home\', this)" role="button" tabindex="0" aria-label="홈 탭">
             <span class="nav-icon">🏠</span>
             <span class="nav-label">홈</span>
         </div>
-        <div class="nav-item" onclick="switchTab('trade', this)" role="button" tabindex="0" aria-label="거래내역 탭">
+        <div class="nav-item" onclick="switchTab(\'trade\', this)" role="button" tabindex="0" aria-label="거래내역 탭">
             <span class="nav-icon">💹</span>
             <span class="nav-label">거래내역</span>
         </div>
-        <div class="nav-item" onclick="switchTab('recommend', this)" role="button" tabindex="0" aria-label="분석 탭">
+        <div class="nav-item" onclick="switchTab(\'recommend\', this)" role="button" tabindex="0" aria-label="분석 탭">
             <span class="nav-icon">🎯</span>
             <span class="nav-label">분석</span>
             <div class="notification-badge" id="recommendBadge">!</div>
         </div>
-        <div class="nav-item" onclick="switchTab('settings', this)" role="button" tabindex="0" aria-label="설정 탭">
+        <div class="nav-item" onclick="switchTab(\'settings\', this)" role="button" tabindex="0" aria-label="설정 탭">
             <span class="nav-icon">⚙️</span>
             <span class="nav-label">설정</span>
         </div>
@@ -1311,7 +1311,7 @@
             document.getElementById(targetTab).classList.add('active');
 
             // 선택된 네비게이션 항목 활성화
-            triggerEl.classList.add('active');
+            triggerEl.closest('.nav-item').classList.add('active');
 
             console.log(`${tabName} 탭으로 전환`);
         }
