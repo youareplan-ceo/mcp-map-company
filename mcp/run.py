@@ -136,3 +136,53 @@ def main(argv: List[str] | None = None) -> None:
 if __name__ == "__main__":
     main()
 
+
+# -----------------------------
+# StockPilot demo API (stub)
+# -----------------------------
+from fastapi.middleware.cors import CORSMiddleware
+
+# Vercel 프론트/로컬 테스트 도메인만 허용
+try:
+    origins = [
+        "https://mcp-map.vercel.app",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+    ]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=False,   # 프론트 fetch에 credentials 옵션 쓰지 않는 전제
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+except Exception:
+    # 중복 add 방지용 (이미 추가돼 있으면 통과)
+    pass
+
+@app.get("/api/v1/ai/signals")
+def signals():
+    # 가짜 데이터 (UI 연결 확인용)
+    return {
+        "portfolio": {
+            "totalValue": 120000000,
+            "profit": 24000000,
+            "profitPercentage": 25.0,
+            "stockCount": 12,
+            "cashRatio": 15,
+            "monthlyReturn": 8.5,
+            "riskLevel": "중간",
+        },
+        "signals": [
+            {"symbol": "AAPL", "action": "buy",  "message": "추세 개선",   "quantity": 3, "price": 180.5},
+            {"symbol": "MSFT", "action": "sell", "message": "차익 실현",   "quantity": 2, "price": 410.2},
+        ],
+        "recommendations": [
+            {"type": "hold", "symbol": "AAPL", "reason": "모멘텀 양호",
+             "currentPrice": 180.5, "targetPrice": 200.0, "action": "보유 지속"}
+        ],
+        "history": [
+            {"date": "2025-09-10", "symbol": "NVDA", "action": "buy",  "price": 120.0, "qty": 2},
+            {"date": "2025-09-12", "symbol": "AMZN", "action": "sell", "price": 135.0, "qty": 1},
+        ]
+    }
