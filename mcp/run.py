@@ -1,45 +1,107 @@
 # mcp/run.py
-"""Thin MCP Flow Runner + FastAPI health (Render entrypoint)
-- .flow(YAML) 파일을 읽고 steps를 순서대로 실행하는 매우 단순한 러너
-- FastAPI `app` 을 함께 노출하여 Render(uvicorn)가 찾을 수 있게 함
+"""
+Thin MCP Flow Runner + FastAPI entrypoint (Render/Local compatible)
+
+- FastAPI 앱: /health, /api/v1/ai/signals (더미 데이터) 제공
+- CORS 허용: Vercel(프론트)에서 Render(백엔드) 호출 가능
+- 로컬 실행: uvicorn으로 바로 구동
+- (옵션) 간단한 flow 실행 스텁 run_flow() 포함
 """
 from __future__ import annotations
-import argparse
-import importlib
-import pathlib
-from typing import Any, Dict, List
-import yaml
+
+import os
+import json
+import logging
+from typing import Any, Dict, List, Optional
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-# -----------------------------
+# ---------------------------------
+# Logging
+# ---------------------------------
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+log = logging.getLogger("mcp.run")
+
+# ---------------------------------
 # FastAPI (Render entrypoint)
-# -----------------------------
-app = FastAPI(title="mcp-map-company", version="0.1.0")
+# ---------------------------------
+app = FastAPI(title="mcp-map-company", version="0.2.0")
 
-# CORS (Vercel 도메인으로 교체)
-origins = [
-    "https://mcp-map.vercel.app",     # 실제 Vercel 프론트 주소
-    "http://localhost:5500",          # 로컬 file-server 테스트 시
-]
+# CORS (Vercel 등 프론트에서 호출 허용)
+# 필요 시 allow_origins=["https://mcp-map.vercel.app"] 처럼 도메인 제한 가능
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=False,  # 프론트에서 credentials: 'include'를 끄면 False 유지
+    allow_origins=["*"],  # 초기 개발 단계는 * 허용. 운영 전 도메인 고정 권장.
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ---------------------------------
+# Schemas
+# ---------------------------------
+class Signal(BaseModel):
+    symbol: str
+    action: str  # "buy" | "sell" | "hold" 등
+    message: Optional[str] = None
+    quantity: Optional[float] = None
+    price: Optional[float] = None
+
+class Recommendation(BaseModel):
+    type: str
+    symbol: str
+    reason: Optional[str] = None
+    currentPrice: Optional[float] = None
+    targetPrice: Optional[float] = None
+    action: Optional[str] = None
+
+class Portfolio(BaseModel):
+    totalValue: float
+    profit: float
+    profitPercentage: float
+    stockCount: int
+    cashRatio: float
+    monthlyReturn: float
+    riskLevel: str
+
+class SignalsResponse(BaseModel):
+    portfolio: Portfolio
+    signals: List[Signal]
+    recommendations: List[Recommendation]
+
+# ---------------------------------
+# Health & Meta
+# ---------------------------------
 @app.get("/health")
-def health() -> Dict[str, bool]:
+def health() -> Dict[str, Any]:
     return {"ok": True}
 
-@app.get("/api/v1/ai/signals")
-def signals():
+@app.get("/")
+def root() -> Dict[str, Any]:
     return {
+        "service": "mcp-map-company",
+        "version": app.version,
+        "endpoints": ["/health", "/api/v1/ai/signals"],
+    }
+
+# ---------------------------------
+# Signals (stub data for UI)
+# ---------------------------------
+@app.get("/api/v1/ai/signals", response_model=SignalsResponse)
+def get_signals() -> Dict[str, Any]:
+    """
+    프론트(UI) 연결 확인용 더미 시그널 응답.
+    실제 연동 시 여기에 실시간 계산/MCP 호출/DB 조회 등을 붙이면 됩니다.
+    """
+    data = {
         "portfolio": {
-            "totalValue": 120000000,
-            "profit": 24000000,
+            "totalValue": 120_000_000,
+            "profit": 24_000_000,
             "profitPercentage": 25.0,
             "stockCount": 12,
             "cashRatio": 15,
@@ -47,142 +109,56 @@ def signals():
             "riskLevel": "중간",
         },
         "signals": [
-            {"symbol": "AAPL", "action": "buy", "message": "분석 필요", "quantity": 3, "price": 180.5},
+            {"symbol": "AAPL", "action": "buy",  "message": "추세 개선",     "quantity": 3, "price": 180.5},
             {"symbol": "MSFT", "action": "sell", "message": "차익 실현 검토", "quantity": 2, "price": 410.2},
         ],
         "recommendations": [
-            {"type": "hold", "symbol": "AAPL", "reason": "모멘텀 양호", "currentPrice": 180.5, "targetPrice": 200.0, "action": "보유 지속"}
+            {
+                "type": "hold",
+                "symbol": "AAPL",
+                "reason": "모멘텀 양호",
+                "currentPrice": 180.5,
+                "targetPrice": 200.0,
+                "action": "보유 지속",
+            }
         ],
     }
+    return data
 
-# -----------------------------
-# Flow runner (very thin)
-# -----------------------------
-ROOT = pathlib.Path(__file__).resolve().parents[1]   # 프로젝트 루트: ~/Desktop/mcp-map-company
-FLOWS_DIR = ROOT / "mcp" / "flows"                   # 플로우 디렉터리
-AGENTS_PKG = "mcp.agents"                            # 에이전트 모듈 패키지 prefix
+# ---------------------------------
+# (옵션) 매우 단순한 Flow Runner 스텁
+# ---------------------------------
+def run_flow(flow_path: str) -> None:
+    """
+    .flow YAML을 읽어 steps 나열 정도만 수행(실행은 추후 확장)
+    운영용이 아니라, 구조 확인/확장 포인트만 남겨둠.
+    """
+    try:
+        import yaml  # lazy import
+    except Exception:
+        log.warning("PyYAML 미설치. `pip install pyyaml` 하면 flow 파싱 가능.")
+        return
 
-def load_flow(flow_name: str) -> Dict[str, Any]:
-    """
-    mcp/flows/<flow_name>.flow YAML을 로드
-    """
-    path = FLOWS_DIR / f"{flow_name}.flow"
-    if not path.exists():
-        raise FileNotFoundError(f"Flow not found: {path}")
-    with path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    from pathlib import Path
+    p = Path(flow_path)
+    if not p.exists():
+        log.error("flow 파일이 없음: %s", p)
+        return
 
-def _run_agent_step(step: Dict[str, Any]) -> None:
-    """
-    step 예시:
-      - agent: stockpilot
-        task: research
-        args: { symbols: ["AAPL","TSLA"] }
-    """
-    agent_name = step.get("agent")
-    task_name  = step.get("task")
-    args       = step.get("args", {}) or {}
-    if not agent_name or not task_name:
-        raise ValueError(f"Invalid agent step: {step}")
-    module_name = f"{AGENTS_PKG}.{agent_name}"
-    mod = importlib.import_module(module_name)
-    if not hasattr(mod, task_name):
-        raise AttributeError(f"{module_name}.{task_name}() not found")
-    fn = getattr(mod, task_name)
-    result = fn(**args) if args else fn()
-    print(f"[agent:{agent_name}.{task_name}] -> {result}")
+    with p.open("r", encoding="utf-8") as f:
+        spec = yaml.safe_load(f) or {}
 
-def _run_gate_step(step: Dict[str, Any]) -> None:
-    """
-    step 예시:
-      - gate: manual_approval
-    (여기서는 데모로 통과만)
-    """
-    name = step.get("gate")
-    print(f"[gate:{name}] pass (demo)")
+    name = spec.get("name", p.stem)
+    steps = spec.get("steps", [])
+    log.info("Flow: %s (총 %d steps)", name, len(steps))
+    for i, step in enumerate(steps, 1):
+        log.info("  %d) %s", i, json.dumps(step, ensure_ascii=False))
 
-def _run_flow_step(step: Dict[str, Any], depth: int, max_depth: int) -> None:
-    """
-    step 예시:
-      - flow: sub_flow_name
-    """
-    name = step.get("flow")
-    if depth >= max_depth:
-        raise RecursionError(f"Max flow depth exceeded: {name}")
-    print(f"[flow:{name}] enter depth={depth+1}")
-    run_flow(name, depth=depth+1, max_depth=max_depth)
-
-def run_flow(flow_name: str, *, depth: int = 0, max_depth: int = 3) -> None:
-    spec = load_flow(flow_name)
-    steps: List[Dict[str, Any]] = spec.get("steps", [])
-    print(f"[flow:{flow_name}] steps={len(steps)}")
-    for step in steps:
-        if "agent" in step:
-            _run_agent_step(step)
-        elif "gate" in step:
-            _run_gate_step(step)
-        elif "flow" in step:
-            _run_flow_step(step, depth, max_depth)
-        else:
-            raise ValueError(f"Unknown step type: {step}")
-
-def main(argv: List[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Thin MCP Flow Runner")
-    parser.add_argument("flow", help="flow name (without .flow)")
-    parser.add_argument("--max-depth", type=int, default=3, help="sub-flow recursion limit")
-    args = parser.parse_args(argv)
-    run_flow(args.flow, max_depth=args.max_depth)
-
+# ---------------------------------
+# Local run
+# ---------------------------------
 if __name__ == "__main__":
-    main()
-
-
-# -----------------------------
-# StockPilot demo API (stub)
-# -----------------------------
-from fastapi.middleware.cors import CORSMiddleware
-
-# Vercel 프론트/로컬 테스트 도메인만 허용
-try:
-    origins = [
-        "https://mcp-map.vercel.app",
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
-    ]
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=False,   # 프론트 fetch에 credentials 옵션 쓰지 않는 전제
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-except Exception:
-    # 중복 add 방지용 (이미 추가돼 있으면 통과)
-    pass
-
-@app.get("/api/v1/ai/signals")
-def signals():
-    # 가짜 데이터 (UI 연결 확인용)
-    return {
-        "portfolio": {
-            "totalValue": 120000000,
-            "profit": 24000000,
-            "profitPercentage": 25.0,
-            "stockCount": 12,
-            "cashRatio": 15,
-            "monthlyReturn": 8.5,
-            "riskLevel": "중간",
-        },
-        "signals": [
-            {"symbol": "AAPL", "action": "buy",  "message": "추세 개선",   "quantity": 3, "price": 180.5},
-            {"symbol": "MSFT", "action": "sell", "message": "차익 실현",   "quantity": 2, "price": 410.2},
-        ],
-        "recommendations": [
-            {"type": "hold", "symbol": "AAPL", "reason": "모멘텀 양호",
-             "currentPrice": 180.5, "targetPrice": 200.0, "action": "보유 지속"}
-        ],
-        "history": [
-            {"date": "2025-09-10", "symbol": "NVDA", "action": "buy",  "price": 120.0, "qty": 2},
-            {"date": "2025-09-12", "symbol": "AMZN", "action": "sell", "price": 135.0, "qty": 1},
-        ]
-    }
+    # 로컬 실행 시: uvicorn으로 서버 구동
+    import uvicorn
+    port = int(os.getenv("PORT", "8088"))  # Render는 PORT를 주입, 로컬은 8088 기본
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
