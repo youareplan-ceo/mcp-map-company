@@ -25,7 +25,7 @@
             max-width: 400px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: 100px; /* 하단 메뉴 공간 확보 */
+            padding-bottom: 120px; /* 하단 메뉴 공간 확보 */
         }
 
         /* 헤더 */
@@ -322,6 +322,7 @@
         }
 
         .execute-btn {
+            margin-bottom: 20px;
             width: 100%;
             padding: 18px;
             border: none;
@@ -781,7 +782,7 @@
             <div class="asset-card">
                 <div class="total-asset">
                     <div class="asset-label">총 자산</div>
-                    <div class="asset-value" id="totalAsset">1.2억원</div>
+                    <div class="asset-value" id="totalAsset" data-id="totalValue">1.2억원</div>
                 </div>
                 <div class="profit-info">
                     <span class="profit-amount profit-positive" id="profitAmount">+2,400만원</span>
@@ -1742,5 +1743,67 @@
         setInterval(updateNextCheckTime, 1000);
         // 키보드 네비게이션 지원
     </script>
+
+    <!-- API 연동 스크립트 -->
+    <script>
+    const API_BASE = 'https://mcp-map-company.onrender.com';
+    
+    function formatKRW(n){
+      try {
+        return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }).format(n||0);
+      } catch {
+        return `₩${(n||0).toLocaleString('ko-KR')}`;
+      }
+    }
+    
+    async function loadSignals(){
+      try{
+        const res = await fetch(`${API_BASE}/api/v1/ai/signals`, {
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-store'
+        });
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        
+        // 1) 총자산 채우기
+        const totalAssetEl = document.querySelector('[data-id="totalValue"]');
+        if(totalAssetEl) {
+          totalAssetEl.replaceChildren(
+            document.createTextNode(formatKRW(data?.portfolio?.totalValue))
+          );
+        }
+        
+        // 2) 첫 번째 시그널 카드 채우기 (있을 때만)
+        const s0 = (data?.signals || [])[0];
+        if(s0){
+          const title = `${s0.symbol} ${s0.action === 'buy' ? '매수' : (s0.action === 'sell' ? '매도' : s0.action)} 시그널`;
+          const body  = `${s0.message || ''} · 수량 ${s0.quantity ?? '-'} · ${s0.price ?? '-'}`;
+          
+          const titleEl = document.querySelector('[data-id="signal0-title"]');
+          if(titleEl) {
+            titleEl.replaceChildren(document.createTextNode(title));
+          }
+          
+          const bodyEl = document.querySelector('[data-id="signal0-body"]');
+          if(bodyEl) {
+            bodyEl.replaceChildren(document.createTextNode(body));
+          }
+        }
+        console.log('✅ API 연결 성공:', data);
+      }catch(err){
+        console.error('❌ API 연결 실패:', err);
+        const warn = document.querySelector('[data-id="api-warning"]');
+        if(warn) warn.textContent = 'API 연결에 문제가 있습니다. 잠시 후 새로고침 해주세요.';
+      }
+    }
+    
+    // 페이지 로드 시 실행
+    if(document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadSignals);
+    } else {
+      loadSignals();
+    }
+    </script>
+
 </body>
 </html>
