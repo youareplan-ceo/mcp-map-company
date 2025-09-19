@@ -37,7 +37,7 @@ app = FastAPI(title="mcp-map-company", version="0.2.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # 초기 개발 단계는 * 허용. 운영 전 도메인 고정 권장.
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
