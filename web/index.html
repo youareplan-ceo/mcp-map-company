@@ -622,6 +622,38 @@
             }
         }
 
+        /* 접근성 - 포커스 스타일 */
+        button:focus, 
+        .nav-item:focus,
+        .toggle-switch:focus,
+        .form-input:focus,
+        .form-select:focus {
+            outline: 2px solid #4a9eff;
+            outline-offset: 2px;
+        }
+
+        /* 키보드 네비게이션 개선 */
+        .nav-item:focus {
+            background: rgba(74, 158, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        /* 스킵 네비게이션 */
+        .skip-nav {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #4a9eff;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-nav:focus {
+            top: 0;
+        }
+
         /* 숨김 상태 */
         .hidden {
             display: none;
@@ -669,6 +701,42 @@
         @keyframes blink {
             0%, 50% { opacity: 0.7; }
             51%, 100% { opacity: 0.2; }
+        }
+
+        /* 반응형 디자인 추가 */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 720px;
+            }
+
+            .portfolio-summary {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .action-cards {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .bottom-nav {
+                max-width: 720px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 960px;
+                padding: 30px;
+            }
+
+            .trade-section {
+                padding: 35px;
+            }
+
+            .asset-card {
+                padding: 40px 30px;
+            }
         }
 
         /* 스크롤바 스타일 */
@@ -767,8 +835,8 @@
 
                 <!-- 분석/상세 토글 -->
                 <div class="trade-toggle">
-                    <button class="toggle-btn buy active" onclick="setTradeType('buy')">분석 보기</button>
-                    <button class="toggle-btn sell" onclick="setTradeType('sell')">상세 정보</button>
+                    <button class="toggle-btn buy active" onclick="setTradeType('buy')" aria-label="분석 보기 선택" tabindex="0">분석 보기</button>
+                    <button class="toggle-btn sell" onclick="setTradeType('sell')" aria-label="상세 정보 선택" tabindex="0">상세 정보</button>
                 </div>
 
                 <!-- 종목 선택 -->
@@ -852,7 +920,7 @@
                         <div class="setting-label">푸시 알림</div>
                         <div class="setting-description">중요 신호 발생시 알림</div>
                     </div>
-                    <div class="toggle-switch" onclick="toggleSetting('pushNotification')">
+                    <div class="toggle-switch" onclick="toggleSetting('pushNotification')" role="switch" aria-checked="false" tabindex="0" aria-label="푸시 알림 토글">
                         <div class="toggle-slider"></div>
                     </div>
                 </div>
@@ -887,25 +955,46 @@
 
     <!-- 하단 네비게이션 -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home')">
+        <div class="nav-item active" onclick="switchTab(\'home\', this)" role="button" tabindex="0" aria-label="홈 탭">
             <span class="nav-icon">🏠</span>
             <span class="nav-label">홈</span>
         </div>
-        <div class="nav-item" onclick="switchTab('trade')">
+        <div class="nav-item" onclick="switchTab(\'trade\', this)" role="button" tabindex="0" aria-label="거래내역 탭">
             <span class="nav-icon">💹</span>
             <span class="nav-label">거래내역</span>
         </div>
-        <div class="nav-item" onclick="switchTab('recommend')">
+        <div class="nav-item" onclick="switchTab(\'recommend\', this)" role="button" tabindex="0" aria-label="분석 탭">
             <span class="nav-icon">🎯</span>
             <span class="nav-label">분석</span>
             <div class="notification-badge" id="recommendBadge">!</div>
         </div>
-        <div class="nav-item" onclick="switchTab('settings')">
+        <div class="nav-item" onclick="switchTab(\'settings\', this)" role="button" tabindex="0" aria-label="설정 탭">
             <span class="nav-icon">⚙️</span>
             <span class="nav-label">설정</span>
         </div>
     </div>
 
+    <script>
+        // 환경 설정 - 배포 시 API_BASE만 변경
+        window.__CONFIG__ = {
+            API_BASE: (location.hostname === 'localhost' || location.protocol === 'file:')
+                ? 'http://localhost:8000'
+                : 'https://mcp-map-company.onrender.com'
+        };
+        // 키보드 네비게이션 지원
+        document.addEventListener('keydown', function(e) {
+            // Enter 키로 네비게이션 항목 클릭
+            if (e.key === 'Enter' && e.target.classList.contains('nav-item')) {
+                e.target.click();
+            }
+            
+            // Space 키로 토글 스위치 작동
+            if (e.key === ' ' && e.target.classList.contains('toggle-switch')) {
+                e.preventDefault();
+                e.target.click();
+            }
+        });
+    </script>
     <script>
         // 전역 변수 선언
         let currentSignals = [];
@@ -1015,11 +1104,13 @@
                 showLoading(true);
                 updateConnectionStatus(true);
 
-                const response = await fetch('http://localhost:8000/api/v1/ai/signals', {
+                const response = await fetch(`${window.__CONFIG__.API_BASE}/api/v1/ai/signals`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                    }
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors',
                 });
 
                 if (!response.ok) {
@@ -1031,6 +1122,7 @@
 
                 processSignalData(data); // 신호 데이터 처리
                 saveData({ signals: data }); // 데이터 저장
+                localStorage.setItem('stockpilot-last-success', new Date().toISOString());
 
             } catch (error) {
                 console.error('신호 체크 오류:', error);
@@ -1043,11 +1135,23 @@
             }
         }
 
-        // 신호 데이터 처리
+        // 신호 데이터 처리 - API 응답 우선, 없으면 샘플 데이터 표시
         function processSignalData(data) {
-            // 자산 정보 업데이트
+            // 자산 정보 업데이트 (API 데이터 우선)
             if (data.portfolio) {
                 updateAssetInfo(data.portfolio);
+            } else if (!elements.totalAsset.dataset.loaded) {
+                // API 데이터가 없을 때만 샘플 데이터 표시
+                updateAssetInfo({
+                    totalValue: 120000000,
+                    profit: 24000000,
+                    profitPercentage: 25,
+                    stockCount: 12,
+                    cashRatio: 15,
+                    monthlyReturn: 8.5,
+                    riskLevel: '중간'
+                });
+                elements.totalAsset.dataset.loaded = 'sample';
             }
 
             // 액션 신호가 있으면 홈 탭에 표시
@@ -1069,9 +1173,34 @@
             }
         }
 
-        // 오프라인 모드 처리
+        // 오프라인 모드 처리 개선
         function handleOfflineMode() {
-            updateStatus('연결 확인 중...', 'offline');
+            updateStatus('연결 끊김', 'offline');
+            
+            // 마지막 성공 시각 표시
+            const lastSuccess = localStorage.getItem('stockpilot-last-success');
+            if (lastSuccess) {
+                const date = new Date(lastSuccess);
+                const timeStr = date.toLocaleTimeString('ko-KR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                elements.nextCheck.textContent = `마지막 업데이트: ${timeStr}`;
+            }
+            
+            // 재시도 버튼 추가
+            if (!document.getElementById('retryButton')) {
+                const retryBtn = document.createElement('button');
+                retryBtn.id = 'retryButton';
+                retryBtn.className = 'execute-btn';
+                retryBtn.style.marginTop = '20px';
+                retryBtn.innerHTML = '🔄 다시 연결';
+                retryBtn.onclick = () => {
+                    document.getElementById('retryButton').remove();
+                    checkSignals();
+                };
+                elements.statusText.parentElement.appendChild(retryBtn);
+            }
         }
 
         // 자산 정보 업데이트
@@ -1166,7 +1295,7 @@
         }
 
         // 탭 전환 함수
-        function switchTab(tabName) {
+        function switchTab(tabName, triggerEl) {
             // 모든 탭 콘텐츠 숨기기
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -1182,7 +1311,7 @@
             document.getElementById(targetTab).classList.add('active');
 
             // 선택된 네비게이션 항목 활성화
-            event.target.closest('.nav-item').classList.add('active');
+            triggerEl.closest('.nav-item').classList.add('active');
 
             console.log(`${tabName} 탭으로 전환`);
         }
@@ -1611,6 +1740,7 @@
 
         // 1초마다 다음 체크 시간 업데이트
         setInterval(updateNextCheckTime, 1000);
+        // 키보드 네비게이션 지원
     </script>
 </body>
 </html>

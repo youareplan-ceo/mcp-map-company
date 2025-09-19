@@ -1,28 +1,59 @@
 # mcp/run.py
-"""
-Thin MCP Flow Runner + FastAPI health (Render entrypoint)
-
+"""Thin MCP Flow Runner + FastAPI health (Render entrypoint)
 - .flow(YAML) 파일을 읽고 steps를 순서대로 실행하는 매우 단순한 러너
 - FastAPI `app` 을 함께 노출하여 Render(uvicorn)가 찾을 수 있게 함
 """
-
 from __future__ import annotations
 import argparse
 import importlib
 import pathlib
 from typing import Any, Dict, List
-
 import yaml
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # -----------------------------
 # FastAPI (Render entrypoint)
 # -----------------------------
 app = FastAPI(title="mcp-map-company", version="0.1.0")
 
+# CORS (Vercel 도메인으로 교체)
+origins = [
+    "https://mcp-map.vercel.app",     # 실제 Vercel 프론트 주소
+    "http://localhost:5500",          # 로컬 file-server 테스트 시
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=False,  # 프론트에서 credentials: 'include'를 끄면 False 유지
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/health")
 def health() -> Dict[str, bool]:
     return {"ok": True}
+
+@app.get("/api/v1/ai/signals")
+def signals():
+    return {
+        "portfolio": {
+            "totalValue": 120000000,
+            "profit": 24000000,
+            "profitPercentage": 25.0,
+            "stockCount": 12,
+            "cashRatio": 15,
+            "monthlyReturn": 8.5,
+            "riskLevel": "중간",
+        },
+        "signals": [
+            {"symbol": "AAPL", "action": "buy", "message": "분석 필요", "quantity": 3, "price": 180.5},
+            {"symbol": "MSFT", "action": "sell", "message": "차익 실현 검토", "quantity": 2, "price": 410.2},
+        ],
+        "recommendations": [
+            {"type": "hold", "symbol": "AAPL", "reason": "모멘텀 양호", "currentPrice": 180.5, "targetPrice": 200.0, "action": "보유 지속"}
+        ],
+    }
 
 # -----------------------------
 # Flow runner (very thin)
@@ -51,15 +82,12 @@ def _run_agent_step(step: Dict[str, Any]) -> None:
     agent_name = step.get("agent")
     task_name  = step.get("task")
     args       = step.get("args", {}) or {}
-
     if not agent_name or not task_name:
         raise ValueError(f"Invalid agent step: {step}")
-
     module_name = f"{AGENTS_PKG}.{agent_name}"
     mod = importlib.import_module(module_name)
     if not hasattr(mod, task_name):
         raise AttributeError(f"{module_name}.{task_name}() not found")
-
     fn = getattr(mod, task_name)
     result = fn(**args) if args else fn()
     print(f"[agent:{agent_name}.{task_name}] -> {result}")
@@ -88,7 +116,6 @@ def run_flow(flow_name: str, *, depth: int = 0, max_depth: int = 3) -> None:
     spec = load_flow(flow_name)
     steps: List[Dict[str, Any]] = spec.get("steps", [])
     print(f"[flow:{flow_name}] steps={len(steps)}")
-
     for step in steps:
         if "agent" in step:
             _run_agent_step(step)
@@ -104,8 +131,8 @@ def main(argv: List[str] | None = None) -> None:
     parser.add_argument("flow", help="flow name (without .flow)")
     parser.add_argument("--max-depth", type=int, default=3, help="sub-flow recursion limit")
     args = parser.parse_args(argv)
-
     run_flow(args.flow, max_depth=args.max_depth)
 
 if __name__ == "__main__":
     main()
+
