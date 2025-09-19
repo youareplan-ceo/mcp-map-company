@@ -1,0 +1,15 @@
+name: query_url
+steps:
+  - tool: embedder
+    action: encode
+    args:
+      text: "example domain"
+  - tool: qdrant
+    action: query
+    args:
+      collection: "mcp_docs"
+      vector: "{{ embedder.vector | tojson }}"
+      limit: 3
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack

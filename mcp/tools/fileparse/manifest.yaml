@@ -1,0 +1,16 @@
+tool:
+  id: "fileparse"
+  name: "File Parser"
+  description: "로컬/업로드 PDF, HWP, DOCX, TXT 파일에서 텍스트 추출"
+  actions:
+    - name: parse
+      input_schema:
+        type: object
+        required: [path]
+        properties:
+          path: { type: string, description: "파일 경로" }
+          max_chars: { type: integer, default: 5000 }
+      output_schema:
+        type: object
+        properties:
+          text: { type: string }

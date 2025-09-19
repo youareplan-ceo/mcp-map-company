@@ -1,0 +1,1235 @@
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'webfetch': {'title': 'Example Domain', 'snippet': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information...', 'status': 200}, 'stockpilot': {'agent': 'stockpilot', 'task': 'research', 'ctx_keys': ['title', 'snippet', 'status']}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['agent', 'task', 'ctx_keys']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'webfetch': {'title': 'Example Domain', 'snippet': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information...', 'status': 200}, 'memvector': {'hits': [{'doc_id': 'ex1', 'score': 0.7225927710533142, 'preview': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information.'}]}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['hits']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'webfetch': {'title': 'Example Domain', 'snippet': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information...', 'status': 200}, 'qvector': {'hits': [{'doc_id': 'ex1', 'score': 0.7225927, 'preview': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information.'}]}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['hits']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'browser': {'content': '<div><body id="readabilityBody"><div>\n    <h1>Example Domain</h1>\n    <p>This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission.</p>\n    <p><a href="https://www.iana.org/domains/example">More information...</a></p>\n</div>\n\n\n</body></div>'}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['content']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'browser': {'ok': True}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['path']}}
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.fileparse.runner   import run as fileparse_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/fileparse/runner.py", line 3, in <module>
+    from pdfminer.high_level import extract_text
+ModuleNotFoundError: No module named 'pdfminer'
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.fileparse.runner   import run as fileparse_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/fileparse/runner.py", line 3, in <module>
+    from pdfminer.high_level import extract_text
+ModuleNotFoundError: No module named 'pdfminer'
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'fileparse': {'text': '[PDF parse error] No /Root object! - Is this really a PDF?'}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['text']}}
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection.py", line 101, in handle_request
+    raise exc
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_backends/sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 134, in send_inner
+    response = self._client.send(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 70, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 11, in run
+    client.recreate_collection(coll, vectors_config=VectorParams(size=len(pts[0]["vector"]), distance="Cosine"))
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 2479, in recreate_collection
+    return self._client.recreate_collection(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<14 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 2843, in recreate_collection
+    self.delete_collection(collection_name, timeout=timeout)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 2697, in delete_collection
+    result: Optional[bool] = self.http.collections_api.delete_collection(
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name, timeout=timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ).result
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api/collections_api.py", line 308, in delete_collection
+    return self._build_for_delete_collection(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        timeout=timeout,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api/collections_api.py", line 123, in _build_for_delete_collection
+    return self.api_client.request(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        type_=m.InlineResponse200,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        params=query_params,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 95, in request
+    return self.send(request, type_)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 112, in send
+    response = self.middleware(request, self.send_inner)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 250, in __call__
+    return call_next(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 136, in send_inner
+    raise ResponseHandlingException(e)
+qdrant_client.http.exceptions.ResponseHandlingException: [Errno 61] Connection refused
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection.py", line 101, in handle_request
+    raise exc
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_sync/connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_backends/sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 134, in send_inner
+    response = self._client.send(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 70, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 11, in run
+    client.recreate_collection(coll, vectors_config=VectorParams(size=len(pts[0]["vector"]), distance="Cosine"))
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 2479, in recreate_collection
+    return self._client.recreate_collection(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<14 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 2843, in recreate_collection
+    self.delete_collection(collection_name, timeout=timeout)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 2697, in delete_collection
+    result: Optional[bool] = self.http.collections_api.delete_collection(
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name, timeout=timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ).result
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api/collections_api.py", line 308, in delete_collection
+    return self._build_for_delete_collection(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        timeout=timeout,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api/collections_api.py", line 123, in _build_for_delete_collection
+    return self.api_client.request(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        type_=m.InlineResponse200,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        params=query_params,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 95, in request
+    return self.send(request, type_)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 112, in send
+    response = self.middleware(request, self.send_inner)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 250, in __call__
+    return call_next(request)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 136, in send_inner
+    raise ResponseHandlingException(e)
+qdrant_client.http.exceptions.ResponseHandlingException: [Errno 61] Connection refused
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 70, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 18, in run
+    hits = client.search(coll, vector=vector, limit=limit)
+TypeError: QdrantClient.search() missing 1 required positional argument: 'query_vector'
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 70, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 18, in run
+    hits = client.search(coll, vector=vector, limit=limit)
+TypeError: QdrantClient.search() missing 1 required positional argument: 'query_vector'
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 70, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 18, in run
+    hits = client.search(coll, vector=vector, limit=limit)
+TypeError: QdrantClient.search() missing 1 required positional argument: 'query_vector'
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 70, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 18, in run
+    hits = client.search(coll, vector=vector, limit=limit)
+TypeError: QdrantClient.search() missing 1 required positional argument: 'query_vector'
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 70, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 18, in run
+    hits = client.search(coll, vector=vector, limit=limit)
+TypeError: QdrantClient.search() missing 1 required positional argument: 'query_vector'
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'qdrant': {'hits': [{'id': '803e5b54-d9e0-40df-baeb-3fcd55cce08c', 'score': 0.9960237, 'payload': {'doc': '테스트 문서1'}}, {'id': 'aff4c6f4-1ae7-4bb9-99aa-1acfd893b56e', 'score': 0.9960237, 'payload': {'doc': '테스트 문서1'}}]}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['hits']}}
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    raise RuntimeError(f"unknown tool: {tool}")
+RuntimeError: unknown tool: embedder
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    raise RuntimeError(f"unknown tool: {tool}")
+RuntimeError: unknown tool: embedder
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    raise RuntimeError(f"unknown tool: {tool}")
+RuntimeError: unknown tool: embedder
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 60, in run_flow
+    raise RuntimeError(f"unknown tool: {tool}")
+RuntimeError: unknown tool: embedder
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 29, in run
+    qm.PointStruct(
+    ~~~~~~~~~~~~~~^
+        id=str(uuid.uuid4()),
+        ^^^^^^^^^^^^^^^^^^^^^
+        vector=p["vector"],
+        ^^^^^^^^^^^^^^^^^^^
+        payload=p.get("payload", {})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 6 validation errors for PointStruct
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.list[list[float]]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.dict[str,union[list[float],SparseVector,list[list[float]],Document,Image,InferenceObject]]
+  Input should be a valid dictionary [type=dict_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+vector.Document
+  Input should be a valid dictionary or instance of Document [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.Image
+  Input should be a valid dictionary or instance of Image [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.InferenceObject
+  Input should be a valid dictionary or instance of InferenceObject [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 45, in run
+    hits = client.search(
+        collection_name=coll,
+    ...<2 lines>...
+        with_payload=True
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 376, in search
+    return self._client.search(
+           ~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 527, in search
+    search_request=models.SearchRequest(
+                   ~~~~~~~~~~~~~~~~~~~~^
+        vector=query_vector,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        shard_key=shard_key_selector,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for SearchRequest
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.NamedVector
+  Input should be a valid dictionary or instance of NamedVector [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.NamedSparseVector
+  Input should be a valid dictionary or instance of NamedSparseVector [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 42, in run_flow
+    data = yaml.safe_load(Path(path).read_text())
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
+    return self.construct_document(node)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
+    for dummy in generator:
+                 ^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
+    value = self.construct_mapping(node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
+    return super().construct_mapping(node, deep=deep)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 143, in construct_mapping
+    value = self.construct_object(value_node, deep=deep)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 100, in construct_object
+    data = constructor(self, node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 427, in construct_undefined
+    raise ConstructorError(None, None,
+            "could not determine a constructor for the tag %r" % node.tag,
+            node.start_mark)
+yaml.constructor.ConstructorError: could not determine a constructor for the tag '!expr'
+  in "<unicode string>", line 16, column 19:
+            - vector: !expr embedder.vector
+                      ^
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 42, in run_flow
+    data = yaml.safe_load(Path(path).read_text())
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
+    return self.construct_document(node)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
+    for dummy in generator:
+                 ^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
+    value = self.construct_mapping(node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
+    return super().construct_mapping(node, deep=deep)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 143, in construct_mapping
+    value = self.construct_object(value_node, deep=deep)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 100, in construct_object
+    data = constructor(self, node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 427, in construct_undefined
+    raise ConstructorError(None, None,
+            "could not determine a constructor for the tag %r" % node.tag,
+            node.start_mark)
+yaml.constructor.ConstructorError: could not determine a constructor for the tag '!expr'
+  in "<unicode string>", line 11, column 15:
+          vector: !expr embedder.vector
+                  ^
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 42, in run_flow
+    data = yaml.safe_load(Path(path).read_text())
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
+    return self.construct_document(node)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
+    for dummy in generator:
+                 ^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
+    value = self.construct_mapping(node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
+    return super().construct_mapping(node, deep=deep)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 143, in construct_mapping
+    value = self.construct_object(value_node, deep=deep)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 100, in construct_object
+    data = constructor(self, node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 427, in construct_undefined
+    raise ConstructorError(None, None,
+            "could not determine a constructor for the tag %r" % node.tag,
+            node.start_mark)
+yaml.constructor.ConstructorError: could not determine a constructor for the tag '!expr'
+  in "<unicode string>", line 16, column 19:
+            - vector: !expr embedder.vector
+                      ^
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 42, in run_flow
+    data = yaml.safe_load(Path(path).read_text())
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
+    return self.construct_document(node)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
+    for dummy in generator:
+                 ^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
+    value = self.construct_mapping(node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
+    return super().construct_mapping(node, deep=deep)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 143, in construct_mapping
+    value = self.construct_object(value_node, deep=deep)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 100, in construct_object
+    data = constructor(self, node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 427, in construct_undefined
+    raise ConstructorError(None, None,
+            "could not determine a constructor for the tag %r" % node.tag,
+            node.start_mark)
+yaml.constructor.ConstructorError: could not determine a constructor for the tag '!expr'
+  in "<unicode string>", line 11, column 15:
+          vector: !expr embedder.vector
+                  ^
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 42, in run_flow
+    data = yaml.safe_load(Path(path).read_text())
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
+    return self.construct_document(node)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
+    for dummy in generator:
+                 ^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
+    value = self.construct_mapping(node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
+    return super().construct_mapping(node, deep=deep)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 141, in construct_mapping
+    raise ConstructorError("while constructing a mapping", node.start_mark,
+            "found unhashable key", key_node.start_mark)
+yaml.constructor.ConstructorError: while constructing a mapping
+  in "<unicode string>", line 16, column 19:
+            - vector: {{ embedder.vector | tojson }}
+                      ^
+found unhashable key
+  in "<unicode string>", line 16, column 20:
+            - vector: {{ embedder.vector | tojson }}
+                       ^
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 42, in run_flow
+    data = yaml.safe_load(Path(path).read_text())
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
+    return self.construct_document(node)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
+    for dummy in generator:
+                 ^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
+    value = self.construct_mapping(node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
+    return super().construct_mapping(node, deep=deep)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 141, in construct_mapping
+    raise ConstructorError("while constructing a mapping", node.start_mark,
+            "found unhashable key", key_node.start_mark)
+yaml.constructor.ConstructorError: while constructing a mapping
+  in "<unicode string>", line 11, column 15:
+          vector: {{ embedder.vector | tojson }}
+                  ^
+found unhashable key
+  in "<unicode string>", line 11, column 16:
+          vector: {{ embedder.vector | tojson }}
+                   ^
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 29, in run
+    qm.PointStruct(
+    ~~~~~~~~~~~~~~^
+        id=str(uuid.uuid4()),
+        ^^^^^^^^^^^^^^^^^^^^^
+        vector=p["vector"],
+        ^^^^^^^^^^^^^^^^^^^
+        payload=p.get("payload", {})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 6 validation errors for PointStruct
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.list[list[float]]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.dict[str,union[list[float],SparseVector,list[list[float]],Document,Image,InferenceObject]]
+  Input should be a valid dictionary [type=dict_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+vector.Document
+  Input should be a valid dictionary or instance of Document [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.Image
+  Input should be a valid dictionary or instance of Image [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.InferenceObject
+  Input should be a valid dictionary or instance of InferenceObject [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 45, in run
+    hits = client.search(
+        collection_name=coll,
+    ...<2 lines>...
+        with_payload=True
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 376, in search
+    return self._client.search(
+           ~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 527, in search
+    search_request=models.SearchRequest(
+                   ~~~~~~~~~~~~~~~~~~~~^
+        vector=query_vector,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        shard_key=shard_key_selector,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for SearchRequest
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.NamedVector
+  Input should be a valid dictionary or instance of NamedVector [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.NamedSparseVector
+  Input should be a valid dictionary or instance of NamedSparseVector [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 40, in run
+    qm.PointStruct(
+    ~~~~~~~~~~~~~~^
+        id=str(uuid.uuid4()),
+        ^^^^^^^^^^^^^^^^^^^^^
+        vector=p["vector"],
+        ^^^^^^^^^^^^^^^^^^^
+        payload=p.get("payload", {})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 6 validation errors for PointStruct
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.list[list[float]]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.dict[str,union[list[float],SparseVector,list[list[float]],Document,Image,InferenceObject]]
+  Input should be a valid dictionary [type=dict_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+vector.Document
+  Input should be a valid dictionary or instance of Document [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.Image
+  Input should be a valid dictionary or instance of Image [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.InferenceObject
+  Input should be a valid dictionary or instance of InferenceObject [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 56, in run
+    hits = client.search(
+        collection_name=coll,
+    ...<2 lines>...
+        with_payload=True
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 376, in search
+    return self._client.search(
+           ~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 527, in search
+    search_request=models.SearchRequest(
+                   ~~~~~~~~~~~~~~~~~~~~^
+        vector=query_vector,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        shard_key=shard_key_selector,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for SearchRequest
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.NamedVector
+  Input should be a valid dictionary or instance of NamedVector [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.NamedSparseVector
+  Input should be a valid dictionary or instance of NamedSparseVector [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 40, in run
+    qm.PointStruct(
+    ~~~~~~~~~~~~~~^
+        id=str(uuid.uuid4()),
+        ^^^^^^^^^^^^^^^^^^^^^
+        vector=_coerce_vector(p["vector"]),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        payload=p.get("payload", {})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 6 validation errors for PointStruct
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.list[list[float]]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.dict[str,union[list[float],SparseVector,list[list[float]],Document,Image,InferenceObject]]
+  Input should be a valid dictionary [type=dict_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+vector.Document
+  Input should be a valid dictionary or instance of Document [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.Image
+  Input should be a valid dictionary or instance of Image [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.InferenceObject
+  Input should be a valid dictionary or instance of InferenceObject [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 56, in run
+    hits = client.search(
+        collection_name=coll,
+    ...<2 lines>...
+        with_payload=True
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 376, in search
+    return self._client.search(
+           ~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 527, in search
+    search_request=models.SearchRequest(
+                   ~~~~~~~~~~~~~~~~~~~~^
+        vector=query_vector,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        shard_key=shard_key_selector,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for SearchRequest
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.NamedVector
+  Input should be a valid dictionary or instance of NamedVector [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.NamedSparseVector
+  Input should be a valid dictionary or instance of NamedSparseVector [type=model_type, input_value='{{ embedder.vector | tojson }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 42, in run_flow
+    data = yaml.safe_load(Path(path).read_text())
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
+    return self.construct_document(node)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
+    for dummy in generator:
+                 ^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
+    value = self.construct_mapping(node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
+    return super().construct_mapping(node, deep=deep)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 141, in construct_mapping
+    raise ConstructorError("while constructing a mapping", node.start_mark,
+            "found unhashable key", key_node.start_mark)
+yaml.constructor.ConstructorError: while constructing a mapping
+  in "<unicode string>", line 16, column 19:
+            - vector: {{ embedder.vector }}
+                      ^
+found unhashable key
+  in "<unicode string>", line 16, column 20:
+            - vector: {{ embedder.vector }}
+                       ^
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 42, in run_flow
+    data = yaml.safe_load(Path(path).read_text())
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
+    return self.construct_document(node)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
+    for dummy in generator:
+                 ^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
+    value = self.construct_mapping(node)
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
+    return super().construct_mapping(node, deep=deep)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/yaml/constructor.py", line 141, in construct_mapping
+    raise ConstructorError("while constructing a mapping", node.start_mark,
+            "found unhashable key", key_node.start_mark)
+yaml.constructor.ConstructorError: while constructing a mapping
+  in "<unicode string>", line 11, column 15:
+          vector: {{ embedder.vector }}
+                  ^
+found unhashable key
+  in "<unicode string>", line 11, column 16:
+          vector: {{ embedder.vector }}
+                   ^
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 40, in run
+    qm.PointStruct(
+    ~~~~~~~~~~~~~~^
+        id=str(uuid.uuid4()),
+        ^^^^^^^^^^^^^^^^^^^^^
+        vector=_coerce_vector(p["vector"]),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        payload=p.get("payload", {})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 6 validation errors for PointStruct
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.list[list[float]]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.dict[str,union[list[float],SparseVector,list[list[float]],Document,Image,InferenceObject]]
+  Input should be a valid dictionary [type=dict_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+vector.Document
+  Input should be a valid dictionary or instance of Document [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.Image
+  Input should be a valid dictionary or instance of Image [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.InferenceObject
+  Input should be a valid dictionary or instance of InferenceObject [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 56, in run
+    hits = client.search(
+        collection_name=coll,
+    ...<2 lines>...
+        with_payload=True
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 376, in search
+    return self._client.search(
+           ~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 527, in search
+    search_request=models.SearchRequest(
+                   ~~~~~~~~~~~~~~~~~~~~^
+        vector=query_vector,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        shard_key=shard_key_selector,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for SearchRequest
+vector.list[float]
+  Input should be a valid list [type=list_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+vector.NamedVector
+  Input should be a valid dictionary or instance of NamedVector [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+vector.NamedSparseVector
+  Input should be a valid dictionary or instance of NamedSparseVector [type=model_type, input_value='{{ embedder.vector }}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 12
+    if isinstance(v, str) and v.strip().startswith('{{'):
+SyntaxError: expected 'except' or 'finally' block
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 12
+    if isinstance(v, str) and v.strip().startswith('{{'):
+SyntaxError: expected 'except' or 'finally' block
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 55, in run
+    client.upsert(collection_name=coll, points=qpoints)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 1633, in upsert
+    return self._client.upsert(
+           ~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 1911, in upsert
+    http_result = self.openapi_client.points_api.upsert_points(
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        ordering=ordering,
+        ^^^^^^^^^^^^^^^^^^
+    ).result
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api/points_api.py", line 987, in upsert_points
+    return self._build_for_upsert_points(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        point_insert_operations=point_insert_operations,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api/points_api.py", line 512, in _build_for_upsert_points
+    return self.api_client.request(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        type_=m.InlineResponse2006,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+        content=body,
+        ^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 95, in request
+    return self.send(request, type_)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 130, in send
+    raise UnexpectedResponse.for_response(response)
+qdrant_client.http.exceptions.UnexpectedResponse: Unexpected Response: 400 (Bad Request)
+Raw response content:
+b'{"status":{"error":"Wrong input: Vector dimension error: expected dim: 384, got 1"},"time":0.004758042}'
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 61, in run_flow
+    result = trun(action, args)
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 62, in run
+    hits = client.search(
+        collection_name=coll,
+    ...<2 lines>...
+        with_payload=True
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_client.py", line 376, in search
+    return self._client.search(
+           ~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/qdrant_remote.py", line 523, in search
+    search_result = self.http.search_api.search_points(
+        collection_name=collection_name,
+    ...<12 lines>...
+        ),
+    )
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api/search_api.py", line 936, in search_points
+    return self._build_for_search_points(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        collection_name=collection_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        search_request=search_request,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api/search_api.py", line 487, in _build_for_search_points
+    return self.api_client.request(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        type_=m.InlineResponse20017,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+        content=body,
+        ^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 95, in request
+    return self.send(request, type_)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/.venv/lib/python3.13/site-packages/qdrant_client/http/api_client.py", line 130, in send
+    raise UnexpectedResponse.for_response(response)
+qdrant_client.http.exceptions.UnexpectedResponse: Unexpected Response: 400 (Bad Request)
+Raw response content:
+b'{"status":{"error":"Wrong input: Vector dimension error: expected dim: 384, got 1"},"time":0.001317166}'
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'webfetch': {'error': 'unknown action'}, 'embedder': {'vector': [0.02192387543618679, 0.07237657904624939, -0.02293275110423565, 0.05813533812761307, 0.02797142043709755, -0.0841645672917366, -0.030600907281041145, -0.015977032482624054, -0.03059038147330284, 0.05353962630033493, -0.015506090596318245, 0.042117562144994736, -0.05568118393421173, -0.03331669047474861, -0.03749002516269684, 0.008925747126340866, -0.04622682183980942, 0.009055659174919128, 0.021219205111265182, -0.1367737054824829, 0.07464729249477386, 0.014685624279081821, 0.027260247617959976, 0.011531153693795204, -0.030162816867232323, 0.006412950344383717, -0.053984981030225754, -0.048592571169137955, 0.027876000851392746, -0.0911034643650055, 0.020950766280293465, -0.022543886676430702, -0.033920347690582275, 0.01177622377872467, 0.0034789033234119415, 0.03465493023395538, -0.023365391418337822, -0.06551436334848404, 0.1009780690073967, 0.0016714325174689293, 0.0713646188378334, 0.024345025420188904, -0.05464549362659454, -0.003168015042319894, -0.050958603620529175, -0.010848049074411392, -0.08474085479974747, -0.00501592131331563, -0.008892575278878212, -0.0203868318349123, -0.01928369328379631, 0.05871985852718353, -0.014103495515882969, 0.05113662779331207, 0.02287769876420498, -0.0492892749607563, -0.01413817424327135, -0.016537806019186974, 0.0032406041864305735, 0.07756884396076202, 0.01968006044626236, -0.06107557564973831, 0.055665936321020126, -0.005617266986519098, 0.08335501700639725, 0.0061294385232031345, 0.025618424639105797, 0.024351418018341064, -0.03029053844511509, 0.11679306626319885, -0.043430767953395844, 0.02471724897623062, -0.05317370221018791, 0.056549232453107834, 0.023885060101747513, -0.0027869215700775385, 0.007765955291688442, 0.014527874067425728, -0.016253171488642693, 0.10147489607334137, -0.06344467401504517, -0.10030470788478851, 0.06456755846738815, -0.0324193611741066, -0.03151315450668335, 0.05107793211936951, -0.06391052901744843, -0.03212079778313637, 0.0075272079557180405, -0.02513219229876995, -0.02340340055525303, -0.05796310678124428, 0.0741925910115242, 0.08282312750816345, -0.1095193549990654, 0.08223488926887512, -0.04056195914745331, 0.003177037462592125, -0.025402039289474487, 0.033033646643161774, 0.035802826285362244, -0.05668027698993683, 0.02337927184998989, 0.04671826586127281, 0.014499770477414131, -0.06247008964419365, 0.056532327085733414, 0.0936470478773117, 0.006467994302511215, 0.04175678268074989, 0.02978323958814144, 0.07424253970384598, 0.003985800314694643, -0.018123894929885864, -0.06381691247224808, -0.007496418431401253, 0.04851602017879486, 0.027234382927417755, 0.0608065240085125, 0.07277499884366989, 0.12886446714401245, 0.04466140270233154, -0.10742469877004623, -0.009203264489769936, -0.00746424263343215, -0.026029352098703384, 0.10656974464654922, -7.564543083121508e-34, 0.0541517473757267, 0.0018274118192493916, -0.04849345237016678, -0.0355706624686718, 0.04912503436207771, 0.039905596524477005, 0.04868413135409355, 0.08239100873470306, -0.0793827623128891, 0.035039272159338, 0.009855731390416622, 0.02004738710820675, 0.026310738176107407, -0.061955757439136505, -0.06426306813955307, -0.0708506777882576, 0.04157732427120209, 0.08833711594343185, 0.08729137480258942, -0.055192574858665466, 0.002382307779043913, 0.02295205369591713, 0.0009866643231362104, -0.0014650215161964297, -0.006584617309272289, -0.006153387948870659, -0.02832574024796486, 0.009324922226369381, -0.129812091588974, 0.004018846899271011, 0.009408378973603249, 0.0050652651116251945, -0.01633860357105732, -0.03185319900512695, 0.04290500283241272, -0.069268599152565, 0.021498220041394234, 0.032331760972738266, -0.0949980765581131, -0.05380379408597946, 0.02024473436176777, -0.00014572199143003672, -0.07259426265954971, 0.001478451071307063, -0.10499093681573868, -0.03395098075270653, 0.04623405262827873, -0.04370908439159393, -0.011382968164980412, 0.0022293501533567905, -0.0031698348466306925, 0.025146426633000374, 0.0172350462526083, -0.01318531297147274, 0.037450160831213, -0.035893600434064865, 0.008458010852336884, -0.061243537813425064, 0.04647393524646759, 0.018955349922180176, 0.01888883300125599, 0.00012431005598045886, 0.029495175927877426, -0.01898225024342537, 0.010917020961642265, 0.02092861756682396, 0.08047132194042206, 0.08995745331048965, -0.029849180951714516, 0.0013161641545593739, -0.02358703315258026, 0.010117181576788425, 0.04778658226132393, 0.012792623601853848, -0.12049192935228348, -0.10189365595579147, -0.033094607293605804, -0.06930438429117203, -0.013708122074604034, 0.009662049822509289, 0.15305379033088684, -0.052813079208135605, -0.028617532923817635, -0.03443729877471924, -0.028989294543862343, 0.014634169638156891, 0.003267554333433509, -0.011792370118200779, 0.03945409134030342, -0.0029129507020115852, -0.07782081514596939, -0.024947797879576683, 0.029596513137221336, -0.06980118155479431, -0.03378618136048317, 9.600471748096862e-34, 0.06346481293439865, -0.0014702125918120146, -0.06612829864025116, 0.06445594131946564, -0.07088480144739151, -0.004720206372439861, 0.13435770571231842, 0.09636777639389038, -0.037594929337501526, -0.015830148011446, 0.08484259247779846, 0.0032892252784222364, 0.0322265550494194, -0.02720443531870842, -0.07413938641548157, 0.11390897631645203, -0.05541256070137024, -0.10606874525547028, 0.0038301688618957996, -0.05111775919795036, -0.042251959443092346, -0.05568525195121765, -0.01027669757604599, 0.11102628707885742, 0.02183583378791809, -0.00999118946492672, 0.05104171112179756, 0.01706075109541416, -0.027691081166267395, -0.028638197109103203, 0.039284441620111465, -0.011549495160579681, -0.014018186368048191, -0.01490683015435934, -0.00410241074860096, -0.028679370880126953, -0.006022217217832804, 0.17552050948143005, 0.08606162667274475, 0.042274925857782364, 0.031344976276159286, 0.025126637890934944, -0.03488007187843323, 0.020238270983099937, 0.0016336932312697172, -0.022953854873776436, -0.05443320795893669, 0.008271872065961361, 0.012297403998672962, 0.003993309568613768, -0.01406155340373516, -0.012773330323398113, 0.021631553769111633, -0.02511846087872982, -0.00040707402513362467, -0.031188057735562325, -0.04489079490303993, 0.016939355060458183, -0.05373029783368111, -0.024123959243297577, 0.03454197570681572, -0.008200651034712791, -0.06784135103225708, 0.006514312699437141, 0.09718120843172073, -0.025312256067991257, -0.08827214688062668, 0.06561870872974396, -0.016795294359326363, -0.03303896635770798, 0.029489468783140182, 0.05053829774260521, 0.03969379886984825, -0.013460444286465645, 0.005963588133454323, -0.0075821890495717525, 0.051584549248218536, -0.021946627646684647, 0.025710059329867363, 0.07745060324668884, 0.007651357911527157, 0.029928838834166527, 0.00903606042265892, -0.06505810469388962, 0.017271006479859352, -0.01237897016108036, -0.08542686700820923, 0.08547798544168472, -0.029084069654345512, 0.07484893500804901, -0.037640299648046494, -0.005559033248573542, -0.03362848237156868, -0.055002611130476, 0.0014445477863773704, -2.1073168099405848e-08, -0.05849170312285423, 0.00866260752081871, 0.007563389837741852, 0.07381752878427505, 0.05611037090420723, 0.05416147783398628, 0.005728195887058973, 0.045462220907211304, -0.02563687413930893, -0.0017991123022511601, 0.0032595940865576267, 0.046306584030389786, -0.05138853192329407, 0.0493362657725811, 0.005553177557885647, -0.023540379479527473, -0.06873651593923569, 0.007382540963590145, 0.03893706202507019, 0.008821474388241768, -0.021888624876737595, -0.028594987466931343, -0.011730838567018509, -0.04154594987630844, 0.07421591132879257, 0.022381741553544998, 0.0039111352525651455, 0.06887509673833847, -0.009798558428883553, -0.007500737439841032, -0.07520405948162079, -0.05139125883579254, -0.04793418198823929, -0.06402165442705154, 0.03203784301877022, 0.06831855326890945, -0.07106602936983109, -0.06007847934961319, -0.0889318659901619, 0.06458556652069092, 0.00809707585722208, 0.028814177960157394, -0.0018163126660510898, -0.001510894508101046, -0.12071193754673004, 0.00046048781950958073, -0.05893035978078842, 0.08451461046934128, 0.09815621376037598, -0.007400008384138346, 0.10141237825155258, -0.05427791550755501, -0.03863092139363289, 0.06683791428804398, -0.061573226004838943, -0.0457521453499794, 0.11382652074098587, -0.02070632576942444, -0.11176354438066483, 0.0724359080195427, 0.06997442990541458, 0.03091125190258026, 0.03349575772881508, -0.02609946019947529]}, 'qdrant': {'status': 'ok'}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['status']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'embedder': {'vector': [0.02950308471918106, -0.08654282987117767, -0.0398680716753006, -0.09151291847229004, -0.06279917061328888, -0.09215281158685684, -0.026108434423804283, -0.022184103727340698, 0.01767398975789547, -0.039501119405031204, -0.0010628597810864449, -0.04598716273903847, 0.07078889012336731, 0.0453067384660244, 0.07092065364122391, -0.019079308956861496, -0.0021080123260617256, -0.01860942132771015, -0.019456276670098305, -0.04082368686795235, 0.11678996682167053, 0.05418529361486435, -0.01938353106379509, 0.002487064804881811, -0.0637192577123642, -0.033193834125995636, 0.054184041917324066, 0.09381945431232452, 0.07998467981815338, -0.0738452896475792, -0.04017407447099686, -0.013725098222494125, -0.017900045961141586, 0.015396852046251297, 0.0428382009267807, 0.07841522991657257, -0.03281038999557495, 0.05895690619945526, -0.0455593466758728, -0.037135615944862366, -0.020240068435668945, -0.08450381457805634, 0.08231119811534882, -0.038590505719184875, -0.04928118735551834, 0.05272254720330238, -0.01072610542178154, -0.005457358900457621, 0.05634412169456482, -0.10413366556167603, 0.04869413003325462, -0.002821370493620634, -0.04004235193133354, 0.06035417318344116, -0.028656641021370888, 0.059828683733940125, -0.019642969593405724, 0.0796678364276886, 0.00014877157809678465, -0.06760305911302567, -0.03516451641917229, -0.010135235264897346, -0.03339780494570732, -0.021171096712350845, 0.02330455556511879, -0.054502133280038834, -0.06887534260749817, 0.07620362192392349, -0.02417774870991707, -0.05475842207670212, 0.0056146071292459965, -0.020586702972650528, -0.07347878813743591, 0.04690873250365257, 0.056429002434015274, 0.060693155974149704, -0.004600117914378643, 0.06459033489227295, 0.06831086426973343, -0.08768947422504425, 0.031712524592876434, -0.041670139878988266, 0.04701937362551689, 0.045559655874967575, 0.009656812064349651, 0.03180075064301491, -0.020323818549513817, -0.056869987398386, 0.008051037788391113, 0.010273816995322704, 0.011732521466910839, -0.08824977278709412, 0.07700997591018677, -0.001268641441129148, -0.018569471314549446, -0.04490188881754875, 0.05848262459039688, -0.058187104761600494, -0.048183828592300415, 0.13306695222854614, -0.032905519008636475, 0.060591164976358414, 0.047896984964609146, -0.030405940487980843, -0.020411614328622818, -0.03645786643028259, 0.031856149435043335, 0.07426390796899796, 0.06006702035665512, -0.06159624084830284, -0.060902584344148636, -0.020290734246373177, 0.0006855279789306223, -0.08245154470205307, 0.03872321918606758, -0.1714136153459549, -0.06629480421543121, -0.0400550439953804, -0.024488896131515503, -0.08611263334751129, -0.023415924981236458, 0.0036139909643679857, -0.06407308578491211, -0.054469361901283264, 0.012924517504870892, -0.03787080571055412, 0.045935072004795074, -2.0304345145822066e-33, 0.04781429469585419, 0.029866276308894157, -0.004347146954387426, -0.0420895591378212, 0.014872947707772255, -0.0012633942533284426, -0.04506222531199455, 0.02833551913499832, -0.03409230709075928, 0.10490694642066956, 0.03900903835892677, 0.048940420150756836, 0.014717494137585163, 0.012704510241746902, 0.07419553399085999, 0.030760373920202255, 0.04003971815109253, 0.056238386780023575, 0.05806791037321091, 0.02556832879781723, -0.07891757041215897, 0.10073382407426834, -0.023151079192757607, 0.07457555830478668, 0.038867730647325516, 0.025247320532798767, 0.012642525136470795, 0.008564524352550507, 0.037250272929668427, 0.023127496242523193, 0.014379066415131092, -0.021933866664767265, -0.06517457216978073, 0.03568253666162491, 0.13992878794670105, 0.10602491348981857, 0.12823446094989777, -0.008124008774757385, -0.0050890506245195866, -0.031631652265787125, 0.02319507487118244, -0.06164270266890526, -0.020639488473534584, 0.06505998969078064, 0.06330578774213791, 0.008076881058514118, 0.04442388564348221, 0.038829587399959564, 0.06532809138298035, 0.08584830909967422, 0.05946756526827812, -0.000515880121383816, -0.06095588207244873, 0.0458485409617424, 0.04034916311502457, 0.020164091140031815, -0.04100431129336357, 0.05643998458981514, -0.011885273270308971, 0.008502556011080742, -0.038110654801130295, 0.04637841507792473, -0.08042885363101959, 0.05681956559419632, -0.09303739666938782, -0.04641430824995041, -0.0279240719974041, -0.13675187528133392, 0.024583090096712112, 0.015677832067012787, 0.003969139419496059, 0.07994680106639862, -0.04338712990283966, 0.049629803746938705, -0.04435734078288078, 0.03578538820147514, -0.07127999514341354, -0.007170241326093674, -0.06533098965883255, 0.020948050543665886, -0.04477585852146149, -0.07563681155443192, -0.060813724994659424, 0.06210339441895485, 0.023917999118566513, 0.011787096969783306, 0.07599350810050964, -0.030570024624466896, -0.007152460515499115, -0.10196730494499207, -0.08884003013372421, 0.013147334568202496, 0.025708509609103203, 0.10943393409252167, 0.008771520107984543, 1.116540554063665e-33, -0.04472339153289795, 0.005956701934337616, -0.11760705709457397, 0.058066438883543015, -0.0008250193204730749, 0.055740948766469955, 0.12303275614976883, -0.03381785377860069, -0.04559645429253578, -0.023162834346294403, 0.034610453993082047, 0.008211707696318626, -0.017066780477762222, 0.016771627590060234, 0.0054692295379936695, -0.01355095487087965, 0.023316524922847748, -0.04947705194354057, -0.04808271676301956, 0.03361012041568756, -0.09626631438732147, 0.0005037078517489135, -0.08973889797925949, 0.04041369631886482, 0.0023744588252156973, 0.08657412230968475, -0.08830595761537552, 0.009883654303848743, -0.025849316269159317, -0.02838914655148983, -0.0044632358476519585, 0.0011320913909003139, -0.009687181562185287, 0.05335718020796776, -0.07880587130784988, 0.040601350367069244, 0.06682509183883667, -0.008252881467342377, 0.01301281712949276, -0.03566548228263855, 0.04711361974477768, -0.008663973771035671, -0.014277239330112934, 0.12272636592388153, -0.014409498311579227, -0.007775138132274151, -0.016437307000160217, 0.03692316263914108, 0.08706116676330566, 0.041066382080316544, -0.10552778095006943, -0.037249792367219925, 0.01029747724533081, -0.09198276698589325, 0.03075772523880005, -0.045648183673620224, 0.04623584449291229, 0.007947918958961964, 0.023827889934182167, 0.03815267235040665, 0.005184610839933157, 0.04259847104549408, -0.023342659696936607, 0.11360350251197815, 0.01580630987882614, -0.018444323912262917, -0.010891441255807877, 0.026376597583293915, -0.03307924047112465, -0.032033178955316544, 0.004982283338904381, 0.02171136625111103, -0.06831664592027664, -0.08573336154222488, -0.04694826528429985, -0.014588910154998302, 0.05642421543598175, 0.018634894862771034, 0.003980814013630152, 0.03628275915980339, 0.09361878037452698, 0.0260300412774086, 0.008972236886620522, -0.0513177365064621, -0.0032458712812513113, 0.027441682294011116, 0.023984482511878014, -0.03114267811179161, -0.04519246891140938, -0.023089200258255005, 0.033055469393730164, 0.053922027349472046, -0.02877473644912243, -0.0033554548863321543, -0.020584722980856895, -1.1772720576175288e-08, -0.031029973179101944, 0.025783414021134377, 0.09109792858362198, -0.04470043629407883, -0.0128372423350811, -0.039072487503290176, 0.022055109962821007, 0.0008349287090823054, 0.029111603274941444, 0.03821485489606857, -0.03171170875430107, -0.0013215338112786412, -0.06377554684877396, 0.03050347976386547, 0.04396559298038483, -0.060551952570676804, 0.04458678886294365, 0.06541050970554352, -0.04064244404435158, -0.018002528697252274, -0.05139811336994171, 0.01125245075672865, -0.015720926225185394, -0.08776962757110596, -0.0014874485787004232, -0.045448463410139084, -0.021269120275974274, -0.04010619968175888, 0.011037325486540794, -0.01881318725645542, 0.029218902811408043, 0.11175502836704254, -0.004307486116886139, -0.030772067606449127, 0.04465903341770172, -0.0075291902758181095, -0.012404347769916058, 0.04492590203881264, -0.013957606628537178, -0.048341572284698486, -0.04116593301296234, -0.008688297122716904, -0.011173251084983349, -0.059417691081762314, 0.05760643631219864, 0.034535326063632965, 0.08879083395004272, -0.04015596583485603, 0.013861789368093014, -0.04430224373936653, -0.10894261300563812, 0.05071225017309189, 0.005929469596594572, 0.014386232011020184, -0.020408088341355324, 0.03798237442970276, 0.006048325914889574, -0.04291046783328056, -0.05134374648332596, 0.016610799357295036, 0.00951790064573288, 0.04964981600642204, -0.006018162705004215, 0.0487695075571537]}, 'qdrant': {'hits': [{'id': '496139fe-7bc4-454f-ab93-ffb48254b699', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}]}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['hits']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'webfetch': {'error': 'unknown action'}, 'embedder': {'vector': [0.02192387543618679, 0.07237657904624939, -0.02293275110423565, 0.05813533812761307, 0.02797142043709755, -0.0841645672917366, -0.030600907281041145, -0.015977032482624054, -0.03059038147330284, 0.05353962630033493, -0.015506090596318245, 0.042117562144994736, -0.05568118393421173, -0.03331669047474861, -0.03749002516269684, 0.008925747126340866, -0.04622682183980942, 0.009055659174919128, 0.021219205111265182, -0.1367737054824829, 0.07464729249477386, 0.014685624279081821, 0.027260247617959976, 0.011531153693795204, -0.030162816867232323, 0.006412950344383717, -0.053984981030225754, -0.048592571169137955, 0.027876000851392746, -0.0911034643650055, 0.020950766280293465, -0.022543886676430702, -0.033920347690582275, 0.01177622377872467, 0.0034789033234119415, 0.03465493023395538, -0.023365391418337822, -0.06551436334848404, 0.1009780690073967, 0.0016714325174689293, 0.0713646188378334, 0.024345025420188904, -0.05464549362659454, -0.003168015042319894, -0.050958603620529175, -0.010848049074411392, -0.08474085479974747, -0.00501592131331563, -0.008892575278878212, -0.0203868318349123, -0.01928369328379631, 0.05871985852718353, -0.014103495515882969, 0.05113662779331207, 0.02287769876420498, -0.0492892749607563, -0.01413817424327135, -0.016537806019186974, 0.0032406041864305735, 0.07756884396076202, 0.01968006044626236, -0.06107557564973831, 0.055665936321020126, -0.005617266986519098, 0.08335501700639725, 0.0061294385232031345, 0.025618424639105797, 0.024351418018341064, -0.03029053844511509, 0.11679306626319885, -0.043430767953395844, 0.02471724897623062, -0.05317370221018791, 0.056549232453107834, 0.023885060101747513, -0.0027869215700775385, 0.007765955291688442, 0.014527874067425728, -0.016253171488642693, 0.10147489607334137, -0.06344467401504517, -0.10030470788478851, 0.06456755846738815, -0.0324193611741066, -0.03151315450668335, 0.05107793211936951, -0.06391052901744843, -0.03212079778313637, 0.0075272079557180405, -0.02513219229876995, -0.02340340055525303, -0.05796310678124428, 0.0741925910115242, 0.08282312750816345, -0.1095193549990654, 0.08223488926887512, -0.04056195914745331, 0.003177037462592125, -0.025402039289474487, 0.033033646643161774, 0.035802826285362244, -0.05668027698993683, 0.02337927184998989, 0.04671826586127281, 0.014499770477414131, -0.06247008964419365, 0.056532327085733414, 0.0936470478773117, 0.006467994302511215, 0.04175678268074989, 0.02978323958814144, 0.07424253970384598, 0.003985800314694643, -0.018123894929885864, -0.06381691247224808, -0.007496418431401253, 0.04851602017879486, 0.027234382927417755, 0.0608065240085125, 0.07277499884366989, 0.12886446714401245, 0.04466140270233154, -0.10742469877004623, -0.009203264489769936, -0.00746424263343215, -0.026029352098703384, 0.10656974464654922, -7.564543083121508e-34, 0.0541517473757267, 0.0018274118192493916, -0.04849345237016678, -0.0355706624686718, 0.04912503436207771, 0.039905596524477005, 0.04868413135409355, 0.08239100873470306, -0.0793827623128891, 0.035039272159338, 0.009855731390416622, 0.02004738710820675, 0.026310738176107407, -0.061955757439136505, -0.06426306813955307, -0.0708506777882576, 0.04157732427120209, 0.08833711594343185, 0.08729137480258942, -0.055192574858665466, 0.002382307779043913, 0.02295205369591713, 0.0009866643231362104, -0.0014650215161964297, -0.006584617309272289, -0.006153387948870659, -0.02832574024796486, 0.009324922226369381, -0.129812091588974, 0.004018846899271011, 0.009408378973603249, 0.0050652651116251945, -0.01633860357105732, -0.03185319900512695, 0.04290500283241272, -0.069268599152565, 0.021498220041394234, 0.032331760972738266, -0.0949980765581131, -0.05380379408597946, 0.02024473436176777, -0.00014572199143003672, -0.07259426265954971, 0.001478451071307063, -0.10499093681573868, -0.03395098075270653, 0.04623405262827873, -0.04370908439159393, -0.011382968164980412, 0.0022293501533567905, -0.0031698348466306925, 0.025146426633000374, 0.0172350462526083, -0.01318531297147274, 0.037450160831213, -0.035893600434064865, 0.008458010852336884, -0.061243537813425064, 0.04647393524646759, 0.018955349922180176, 0.01888883300125599, 0.00012431005598045886, 0.029495175927877426, -0.01898225024342537, 0.010917020961642265, 0.02092861756682396, 0.08047132194042206, 0.08995745331048965, -0.029849180951714516, 0.0013161641545593739, -0.02358703315258026, 0.010117181576788425, 0.04778658226132393, 0.012792623601853848, -0.12049192935228348, -0.10189365595579147, -0.033094607293605804, -0.06930438429117203, -0.013708122074604034, 0.009662049822509289, 0.15305379033088684, -0.052813079208135605, -0.028617532923817635, -0.03443729877471924, -0.028989294543862343, 0.014634169638156891, 0.003267554333433509, -0.011792370118200779, 0.03945409134030342, -0.0029129507020115852, -0.07782081514596939, -0.024947797879576683, 0.029596513137221336, -0.06980118155479431, -0.03378618136048317, 9.600471748096862e-34, 0.06346481293439865, -0.0014702125918120146, -0.06612829864025116, 0.06445594131946564, -0.07088480144739151, -0.004720206372439861, 0.13435770571231842, 0.09636777639389038, -0.037594929337501526, -0.015830148011446, 0.08484259247779846, 0.0032892252784222364, 0.0322265550494194, -0.02720443531870842, -0.07413938641548157, 0.11390897631645203, -0.05541256070137024, -0.10606874525547028, 0.0038301688618957996, -0.05111775919795036, -0.042251959443092346, -0.05568525195121765, -0.01027669757604599, 0.11102628707885742, 0.02183583378791809, -0.00999118946492672, 0.05104171112179756, 0.01706075109541416, -0.027691081166267395, -0.028638197109103203, 0.039284441620111465, -0.011549495160579681, -0.014018186368048191, -0.01490683015435934, -0.00410241074860096, -0.028679370880126953, -0.006022217217832804, 0.17552050948143005, 0.08606162667274475, 0.042274925857782364, 0.031344976276159286, 0.025126637890934944, -0.03488007187843323, 0.020238270983099937, 0.0016336932312697172, -0.022953854873776436, -0.05443320795893669, 0.008271872065961361, 0.012297403998672962, 0.003993309568613768, -0.01406155340373516, -0.012773330323398113, 0.021631553769111633, -0.02511846087872982, -0.00040707402513362467, -0.031188057735562325, -0.04489079490303993, 0.016939355060458183, -0.05373029783368111, -0.024123959243297577, 0.03454197570681572, -0.008200651034712791, -0.06784135103225708, 0.006514312699437141, 0.09718120843172073, -0.025312256067991257, -0.08827214688062668, 0.06561870872974396, -0.016795294359326363, -0.03303896635770798, 0.029489468783140182, 0.05053829774260521, 0.03969379886984825, -0.013460444286465645, 0.005963588133454323, -0.0075821890495717525, 0.051584549248218536, -0.021946627646684647, 0.025710059329867363, 0.07745060324668884, 0.007651357911527157, 0.029928838834166527, 0.00903606042265892, -0.06505810469388962, 0.017271006479859352, -0.01237897016108036, -0.08542686700820923, 0.08547798544168472, -0.029084069654345512, 0.07484893500804901, -0.037640299648046494, -0.005559033248573542, -0.03362848237156868, -0.055002611130476, 0.0014445477863773704, -2.1073168099405848e-08, -0.05849170312285423, 0.00866260752081871, 0.007563389837741852, 0.07381752878427505, 0.05611037090420723, 0.05416147783398628, 0.005728195887058973, 0.045462220907211304, -0.02563687413930893, -0.0017991123022511601, 0.0032595940865576267, 0.046306584030389786, -0.05138853192329407, 0.0493362657725811, 0.005553177557885647, -0.023540379479527473, -0.06873651593923569, 0.007382540963590145, 0.03893706202507019, 0.008821474388241768, -0.021888624876737595, -0.028594987466931343, -0.011730838567018509, -0.04154594987630844, 0.07421591132879257, 0.022381741553544998, 0.0039111352525651455, 0.06887509673833847, -0.009798558428883553, -0.007500737439841032, -0.07520405948162079, -0.05139125883579254, -0.04793418198823929, -0.06402165442705154, 0.03203784301877022, 0.06831855326890945, -0.07106602936983109, -0.06007847934961319, -0.0889318659901619, 0.06458556652069092, 0.00809707585722208, 0.028814177960157394, -0.0018163126660510898, -0.001510894508101046, -0.12071193754673004, 0.00046048781950958073, -0.05893035978078842, 0.08451461046934128, 0.09815621376037598, -0.007400008384138346, 0.10141237825155258, -0.05427791550755501, -0.03863092139363289, 0.06683791428804398, -0.061573226004838943, -0.0457521453499794, 0.11382652074098587, -0.02070632576942444, -0.11176354438066483, 0.0724359080195427, 0.06997442990541458, 0.03091125190258026, 0.03349575772881508, -0.02609946019947529]}, 'qdrant': {'status': 'ok'}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['status']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'embedder': {'vector': [0.02950308471918106, -0.08654282987117767, -0.0398680716753006, -0.09151291847229004, -0.06279917061328888, -0.09215281158685684, -0.026108434423804283, -0.022184103727340698, 0.01767398975789547, -0.039501119405031204, -0.0010628597810864449, -0.04598716273903847, 0.07078889012336731, 0.0453067384660244, 0.07092065364122391, -0.019079308956861496, -0.0021080123260617256, -0.01860942132771015, -0.019456276670098305, -0.04082368686795235, 0.11678996682167053, 0.05418529361486435, -0.01938353106379509, 0.002487064804881811, -0.0637192577123642, -0.033193834125995636, 0.054184041917324066, 0.09381945431232452, 0.07998467981815338, -0.0738452896475792, -0.04017407447099686, -0.013725098222494125, -0.017900045961141586, 0.015396852046251297, 0.0428382009267807, 0.07841522991657257, -0.03281038999557495, 0.05895690619945526, -0.0455593466758728, -0.037135615944862366, -0.020240068435668945, -0.08450381457805634, 0.08231119811534882, -0.038590505719184875, -0.04928118735551834, 0.05272254720330238, -0.01072610542178154, -0.005457358900457621, 0.05634412169456482, -0.10413366556167603, 0.04869413003325462, -0.002821370493620634, -0.04004235193133354, 0.06035417318344116, -0.028656641021370888, 0.059828683733940125, -0.019642969593405724, 0.0796678364276886, 0.00014877157809678465, -0.06760305911302567, -0.03516451641917229, -0.010135235264897346, -0.03339780494570732, -0.021171096712350845, 0.02330455556511879, -0.054502133280038834, -0.06887534260749817, 0.07620362192392349, -0.02417774870991707, -0.05475842207670212, 0.0056146071292459965, -0.020586702972650528, -0.07347878813743591, 0.04690873250365257, 0.056429002434015274, 0.060693155974149704, -0.004600117914378643, 0.06459033489227295, 0.06831086426973343, -0.08768947422504425, 0.031712524592876434, -0.041670139878988266, 0.04701937362551689, 0.045559655874967575, 0.009656812064349651, 0.03180075064301491, -0.020323818549513817, -0.056869987398386, 0.008051037788391113, 0.010273816995322704, 0.011732521466910839, -0.08824977278709412, 0.07700997591018677, -0.001268641441129148, -0.018569471314549446, -0.04490188881754875, 0.05848262459039688, -0.058187104761600494, -0.048183828592300415, 0.13306695222854614, -0.032905519008636475, 0.060591164976358414, 0.047896984964609146, -0.030405940487980843, -0.020411614328622818, -0.03645786643028259, 0.031856149435043335, 0.07426390796899796, 0.06006702035665512, -0.06159624084830284, -0.060902584344148636, -0.020290734246373177, 0.0006855279789306223, -0.08245154470205307, 0.03872321918606758, -0.1714136153459549, -0.06629480421543121, -0.0400550439953804, -0.024488896131515503, -0.08611263334751129, -0.023415924981236458, 0.0036139909643679857, -0.06407308578491211, -0.054469361901283264, 0.012924517504870892, -0.03787080571055412, 0.045935072004795074, -2.0304345145822066e-33, 0.04781429469585419, 0.029866276308894157, -0.004347146954387426, -0.0420895591378212, 0.014872947707772255, -0.0012633942533284426, -0.04506222531199455, 0.02833551913499832, -0.03409230709075928, 0.10490694642066956, 0.03900903835892677, 0.048940420150756836, 0.014717494137585163, 0.012704510241746902, 0.07419553399085999, 0.030760373920202255, 0.04003971815109253, 0.056238386780023575, 0.05806791037321091, 0.02556832879781723, -0.07891757041215897, 0.10073382407426834, -0.023151079192757607, 0.07457555830478668, 0.038867730647325516, 0.025247320532798767, 0.012642525136470795, 0.008564524352550507, 0.037250272929668427, 0.023127496242523193, 0.014379066415131092, -0.021933866664767265, -0.06517457216978073, 0.03568253666162491, 0.13992878794670105, 0.10602491348981857, 0.12823446094989777, -0.008124008774757385, -0.0050890506245195866, -0.031631652265787125, 0.02319507487118244, -0.06164270266890526, -0.020639488473534584, 0.06505998969078064, 0.06330578774213791, 0.008076881058514118, 0.04442388564348221, 0.038829587399959564, 0.06532809138298035, 0.08584830909967422, 0.05946756526827812, -0.000515880121383816, -0.06095588207244873, 0.0458485409617424, 0.04034916311502457, 0.020164091140031815, -0.04100431129336357, 0.05643998458981514, -0.011885273270308971, 0.008502556011080742, -0.038110654801130295, 0.04637841507792473, -0.08042885363101959, 0.05681956559419632, -0.09303739666938782, -0.04641430824995041, -0.0279240719974041, -0.13675187528133392, 0.024583090096712112, 0.015677832067012787, 0.003969139419496059, 0.07994680106639862, -0.04338712990283966, 0.049629803746938705, -0.04435734078288078, 0.03578538820147514, -0.07127999514341354, -0.007170241326093674, -0.06533098965883255, 0.020948050543665886, -0.04477585852146149, -0.07563681155443192, -0.060813724994659424, 0.06210339441895485, 0.023917999118566513, 0.011787096969783306, 0.07599350810050964, -0.030570024624466896, -0.007152460515499115, -0.10196730494499207, -0.08884003013372421, 0.013147334568202496, 0.025708509609103203, 0.10943393409252167, 0.008771520107984543, 1.116540554063665e-33, -0.04472339153289795, 0.005956701934337616, -0.11760705709457397, 0.058066438883543015, -0.0008250193204730749, 0.055740948766469955, 0.12303275614976883, -0.03381785377860069, -0.04559645429253578, -0.023162834346294403, 0.034610453993082047, 0.008211707696318626, -0.017066780477762222, 0.016771627590060234, 0.0054692295379936695, -0.01355095487087965, 0.023316524922847748, -0.04947705194354057, -0.04808271676301956, 0.03361012041568756, -0.09626631438732147, 0.0005037078517489135, -0.08973889797925949, 0.04041369631886482, 0.0023744588252156973, 0.08657412230968475, -0.08830595761537552, 0.009883654303848743, -0.025849316269159317, -0.02838914655148983, -0.0044632358476519585, 0.0011320913909003139, -0.009687181562185287, 0.05335718020796776, -0.07880587130784988, 0.040601350367069244, 0.06682509183883667, -0.008252881467342377, 0.01301281712949276, -0.03566548228263855, 0.04711361974477768, -0.008663973771035671, -0.014277239330112934, 0.12272636592388153, -0.014409498311579227, -0.007775138132274151, -0.016437307000160217, 0.03692316263914108, 0.08706116676330566, 0.041066382080316544, -0.10552778095006943, -0.037249792367219925, 0.01029747724533081, -0.09198276698589325, 0.03075772523880005, -0.045648183673620224, 0.04623584449291229, 0.007947918958961964, 0.023827889934182167, 0.03815267235040665, 0.005184610839933157, 0.04259847104549408, -0.023342659696936607, 0.11360350251197815, 0.01580630987882614, -0.018444323912262917, -0.010891441255807877, 0.026376597583293915, -0.03307924047112465, -0.032033178955316544, 0.004982283338904381, 0.02171136625111103, -0.06831664592027664, -0.08573336154222488, -0.04694826528429985, -0.014588910154998302, 0.05642421543598175, 0.018634894862771034, 0.003980814013630152, 0.03628275915980339, 0.09361878037452698, 0.0260300412774086, 0.008972236886620522, -0.0513177365064621, -0.0032458712812513113, 0.027441682294011116, 0.023984482511878014, -0.03114267811179161, -0.04519246891140938, -0.023089200258255005, 0.033055469393730164, 0.053922027349472046, -0.02877473644912243, -0.0033554548863321543, -0.020584722980856895, -1.1772720576175288e-08, -0.031029973179101944, 0.025783414021134377, 0.09109792858362198, -0.04470043629407883, -0.0128372423350811, -0.039072487503290176, 0.022055109962821007, 0.0008349287090823054, 0.029111603274941444, 0.03821485489606857, -0.03171170875430107, -0.0013215338112786412, -0.06377554684877396, 0.03050347976386547, 0.04396559298038483, -0.060551952570676804, 0.04458678886294365, 0.06541050970554352, -0.04064244404435158, -0.018002528697252274, -0.05139811336994171, 0.01125245075672865, -0.015720926225185394, -0.08776962757110596, -0.0014874485787004232, -0.045448463410139084, -0.021269120275974274, -0.04010619968175888, 0.011037325486540794, -0.01881318725645542, 0.029218902811408043, 0.11175502836704254, -0.004307486116886139, -0.030772067606449127, 0.04465903341770172, -0.0075291902758181095, -0.012404347769916058, 0.04492590203881264, -0.013957606628537178, -0.048341572284698486, -0.04116593301296234, -0.008688297122716904, -0.011173251084983349, -0.059417691081762314, 0.05760643631219864, 0.034535326063632965, 0.08879083395004272, -0.04015596583485603, 0.013861789368093014, -0.04430224373936653, -0.10894261300563812, 0.05071225017309189, 0.005929469596594572, 0.014386232011020184, -0.020408088341355324, 0.03798237442970276, 0.006048325914889574, -0.04291046783328056, -0.05134374648332596, 0.016610799357295036, 0.00951790064573288, 0.04964981600642204, -0.006018162705004215, 0.0487695075571537]}, 'qdrant': {'hits': [{'id': 'fa3e1da8-780d-421c-9d53-4b114c53c987', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}, {'id': '496139fe-7bc4-454f-ab93-ffb48254b699', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}]}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['hits']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'webfetch': {'url': 'https://example.com', 'title': 'Example Domain', 'snippet': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information...', 'content': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information...'}, 'embedder': {'vector': [0.02192387543618679, 0.07237657904624939, -0.02293275110423565, 0.05813533812761307, 0.02797142043709755, -0.0841645672917366, -0.030600907281041145, -0.015977032482624054, -0.03059038147330284, 0.05353962630033493, -0.015506090596318245, 0.042117562144994736, -0.05568118393421173, -0.03331669047474861, -0.03749002516269684, 0.008925747126340866, -0.04622682183980942, 0.009055659174919128, 0.021219205111265182, -0.1367737054824829, 0.07464729249477386, 0.014685624279081821, 0.027260247617959976, 0.011531153693795204, -0.030162816867232323, 0.006412950344383717, -0.053984981030225754, -0.048592571169137955, 0.027876000851392746, -0.0911034643650055, 0.020950766280293465, -0.022543886676430702, -0.033920347690582275, 0.01177622377872467, 0.0034789033234119415, 0.03465493023395538, -0.023365391418337822, -0.06551436334848404, 0.1009780690073967, 0.0016714325174689293, 0.0713646188378334, 0.024345025420188904, -0.05464549362659454, -0.003168015042319894, -0.050958603620529175, -0.010848049074411392, -0.08474085479974747, -0.00501592131331563, -0.008892575278878212, -0.0203868318349123, -0.01928369328379631, 0.05871985852718353, -0.014103495515882969, 0.05113662779331207, 0.02287769876420498, -0.0492892749607563, -0.01413817424327135, -0.016537806019186974, 0.0032406041864305735, 0.07756884396076202, 0.01968006044626236, -0.06107557564973831, 0.055665936321020126, -0.005617266986519098, 0.08335501700639725, 0.0061294385232031345, 0.025618424639105797, 0.024351418018341064, -0.03029053844511509, 0.11679306626319885, -0.043430767953395844, 0.02471724897623062, -0.05317370221018791, 0.056549232453107834, 0.023885060101747513, -0.0027869215700775385, 0.007765955291688442, 0.014527874067425728, -0.016253171488642693, 0.10147489607334137, -0.06344467401504517, -0.10030470788478851, 0.06456755846738815, -0.0324193611741066, -0.03151315450668335, 0.05107793211936951, -0.06391052901744843, -0.03212079778313637, 0.0075272079557180405, -0.02513219229876995, -0.02340340055525303, -0.05796310678124428, 0.0741925910115242, 0.08282312750816345, -0.1095193549990654, 0.08223488926887512, -0.04056195914745331, 0.003177037462592125, -0.025402039289474487, 0.033033646643161774, 0.035802826285362244, -0.05668027698993683, 0.02337927184998989, 0.04671826586127281, 0.014499770477414131, -0.06247008964419365, 0.056532327085733414, 0.0936470478773117, 0.006467994302511215, 0.04175678268074989, 0.02978323958814144, 0.07424253970384598, 0.003985800314694643, -0.018123894929885864, -0.06381691247224808, -0.007496418431401253, 0.04851602017879486, 0.027234382927417755, 0.0608065240085125, 0.07277499884366989, 0.12886446714401245, 0.04466140270233154, -0.10742469877004623, -0.009203264489769936, -0.00746424263343215, -0.026029352098703384, 0.10656974464654922, -7.564543083121508e-34, 0.0541517473757267, 0.0018274118192493916, -0.04849345237016678, -0.0355706624686718, 0.04912503436207771, 0.039905596524477005, 0.04868413135409355, 0.08239100873470306, -0.0793827623128891, 0.035039272159338, 0.009855731390416622, 0.02004738710820675, 0.026310738176107407, -0.061955757439136505, -0.06426306813955307, -0.0708506777882576, 0.04157732427120209, 0.08833711594343185, 0.08729137480258942, -0.055192574858665466, 0.002382307779043913, 0.02295205369591713, 0.0009866643231362104, -0.0014650215161964297, -0.006584617309272289, -0.006153387948870659, -0.02832574024796486, 0.009324922226369381, -0.129812091588974, 0.004018846899271011, 0.009408378973603249, 0.0050652651116251945, -0.01633860357105732, -0.03185319900512695, 0.04290500283241272, -0.069268599152565, 0.021498220041394234, 0.032331760972738266, -0.0949980765581131, -0.05380379408597946, 0.02024473436176777, -0.00014572199143003672, -0.07259426265954971, 0.001478451071307063, -0.10499093681573868, -0.03395098075270653, 0.04623405262827873, -0.04370908439159393, -0.011382968164980412, 0.0022293501533567905, -0.0031698348466306925, 0.025146426633000374, 0.0172350462526083, -0.01318531297147274, 0.037450160831213, -0.035893600434064865, 0.008458010852336884, -0.061243537813425064, 0.04647393524646759, 0.018955349922180176, 0.01888883300125599, 0.00012431005598045886, 0.029495175927877426, -0.01898225024342537, 0.010917020961642265, 0.02092861756682396, 0.08047132194042206, 0.08995745331048965, -0.029849180951714516, 0.0013161641545593739, -0.02358703315258026, 0.010117181576788425, 0.04778658226132393, 0.012792623601853848, -0.12049192935228348, -0.10189365595579147, -0.033094607293605804, -0.06930438429117203, -0.013708122074604034, 0.009662049822509289, 0.15305379033088684, -0.052813079208135605, -0.028617532923817635, -0.03443729877471924, -0.028989294543862343, 0.014634169638156891, 0.003267554333433509, -0.011792370118200779, 0.03945409134030342, -0.0029129507020115852, -0.07782081514596939, -0.024947797879576683, 0.029596513137221336, -0.06980118155479431, -0.03378618136048317, 9.600471748096862e-34, 0.06346481293439865, -0.0014702125918120146, -0.06612829864025116, 0.06445594131946564, -0.07088480144739151, -0.004720206372439861, 0.13435770571231842, 0.09636777639389038, -0.037594929337501526, -0.015830148011446, 0.08484259247779846, 0.0032892252784222364, 0.0322265550494194, -0.02720443531870842, -0.07413938641548157, 0.11390897631645203, -0.05541256070137024, -0.10606874525547028, 0.0038301688618957996, -0.05111775919795036, -0.042251959443092346, -0.05568525195121765, -0.01027669757604599, 0.11102628707885742, 0.02183583378791809, -0.00999118946492672, 0.05104171112179756, 0.01706075109541416, -0.027691081166267395, -0.028638197109103203, 0.039284441620111465, -0.011549495160579681, -0.014018186368048191, -0.01490683015435934, -0.00410241074860096, -0.028679370880126953, -0.006022217217832804, 0.17552050948143005, 0.08606162667274475, 0.042274925857782364, 0.031344976276159286, 0.025126637890934944, -0.03488007187843323, 0.020238270983099937, 0.0016336932312697172, -0.022953854873776436, -0.05443320795893669, 0.008271872065961361, 0.012297403998672962, 0.003993309568613768, -0.01406155340373516, -0.012773330323398113, 0.021631553769111633, -0.02511846087872982, -0.00040707402513362467, -0.031188057735562325, -0.04489079490303993, 0.016939355060458183, -0.05373029783368111, -0.024123959243297577, 0.03454197570681572, -0.008200651034712791, -0.06784135103225708, 0.006514312699437141, 0.09718120843172073, -0.025312256067991257, -0.08827214688062668, 0.06561870872974396, -0.016795294359326363, -0.03303896635770798, 0.029489468783140182, 0.05053829774260521, 0.03969379886984825, -0.013460444286465645, 0.005963588133454323, -0.0075821890495717525, 0.051584549248218536, -0.021946627646684647, 0.025710059329867363, 0.07745060324668884, 0.007651357911527157, 0.029928838834166527, 0.00903606042265892, -0.06505810469388962, 0.017271006479859352, -0.01237897016108036, -0.08542686700820923, 0.08547798544168472, -0.029084069654345512, 0.07484893500804901, -0.037640299648046494, -0.005559033248573542, -0.03362848237156868, -0.055002611130476, 0.0014445477863773704, -2.1073168099405848e-08, -0.05849170312285423, 0.00866260752081871, 0.007563389837741852, 0.07381752878427505, 0.05611037090420723, 0.05416147783398628, 0.005728195887058973, 0.045462220907211304, -0.02563687413930893, -0.0017991123022511601, 0.0032595940865576267, 0.046306584030389786, -0.05138853192329407, 0.0493362657725811, 0.005553177557885647, -0.023540379479527473, -0.06873651593923569, 0.007382540963590145, 0.03893706202507019, 0.008821474388241768, -0.021888624876737595, -0.028594987466931343, -0.011730838567018509, -0.04154594987630844, 0.07421591132879257, 0.022381741553544998, 0.0039111352525651455, 0.06887509673833847, -0.009798558428883553, -0.007500737439841032, -0.07520405948162079, -0.05139125883579254, -0.04793418198823929, -0.06402165442705154, 0.03203784301877022, 0.06831855326890945, -0.07106602936983109, -0.06007847934961319, -0.0889318659901619, 0.06458556652069092, 0.00809707585722208, 0.028814177960157394, -0.0018163126660510898, -0.001510894508101046, -0.12071193754673004, 0.00046048781950958073, -0.05893035978078842, 0.08451461046934128, 0.09815621376037598, -0.007400008384138346, 0.10141237825155258, -0.05427791550755501, -0.03863092139363289, 0.06683791428804398, -0.061573226004838943, -0.0457521453499794, 0.11382652074098587, -0.02070632576942444, -0.11176354438066483, 0.0724359080195427, 0.06997442990541458, 0.03091125190258026, 0.03349575772881508, -0.02609946019947529]}, 'qdrant': {'status': 'ok'}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['status']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'embedder': {'vector': [0.02950308471918106, -0.08654282987117767, -0.0398680716753006, -0.09151291847229004, -0.06279917061328888, -0.09215281158685684, -0.026108434423804283, -0.022184103727340698, 0.01767398975789547, -0.039501119405031204, -0.0010628597810864449, -0.04598716273903847, 0.07078889012336731, 0.0453067384660244, 0.07092065364122391, -0.019079308956861496, -0.0021080123260617256, -0.01860942132771015, -0.019456276670098305, -0.04082368686795235, 0.11678996682167053, 0.05418529361486435, -0.01938353106379509, 0.002487064804881811, -0.0637192577123642, -0.033193834125995636, 0.054184041917324066, 0.09381945431232452, 0.07998467981815338, -0.0738452896475792, -0.04017407447099686, -0.013725098222494125, -0.017900045961141586, 0.015396852046251297, 0.0428382009267807, 0.07841522991657257, -0.03281038999557495, 0.05895690619945526, -0.0455593466758728, -0.037135615944862366, -0.020240068435668945, -0.08450381457805634, 0.08231119811534882, -0.038590505719184875, -0.04928118735551834, 0.05272254720330238, -0.01072610542178154, -0.005457358900457621, 0.05634412169456482, -0.10413366556167603, 0.04869413003325462, -0.002821370493620634, -0.04004235193133354, 0.06035417318344116, -0.028656641021370888, 0.059828683733940125, -0.019642969593405724, 0.0796678364276886, 0.00014877157809678465, -0.06760305911302567, -0.03516451641917229, -0.010135235264897346, -0.03339780494570732, -0.021171096712350845, 0.02330455556511879, -0.054502133280038834, -0.06887534260749817, 0.07620362192392349, -0.02417774870991707, -0.05475842207670212, 0.0056146071292459965, -0.020586702972650528, -0.07347878813743591, 0.04690873250365257, 0.056429002434015274, 0.060693155974149704, -0.004600117914378643, 0.06459033489227295, 0.06831086426973343, -0.08768947422504425, 0.031712524592876434, -0.041670139878988266, 0.04701937362551689, 0.045559655874967575, 0.009656812064349651, 0.03180075064301491, -0.020323818549513817, -0.056869987398386, 0.008051037788391113, 0.010273816995322704, 0.011732521466910839, -0.08824977278709412, 0.07700997591018677, -0.001268641441129148, -0.018569471314549446, -0.04490188881754875, 0.05848262459039688, -0.058187104761600494, -0.048183828592300415, 0.13306695222854614, -0.032905519008636475, 0.060591164976358414, 0.047896984964609146, -0.030405940487980843, -0.020411614328622818, -0.03645786643028259, 0.031856149435043335, 0.07426390796899796, 0.06006702035665512, -0.06159624084830284, -0.060902584344148636, -0.020290734246373177, 0.0006855279789306223, -0.08245154470205307, 0.03872321918606758, -0.1714136153459549, -0.06629480421543121, -0.0400550439953804, -0.024488896131515503, -0.08611263334751129, -0.023415924981236458, 0.0036139909643679857, -0.06407308578491211, -0.054469361901283264, 0.012924517504870892, -0.03787080571055412, 0.045935072004795074, -2.0304345145822066e-33, 0.04781429469585419, 0.029866276308894157, -0.004347146954387426, -0.0420895591378212, 0.014872947707772255, -0.0012633942533284426, -0.04506222531199455, 0.02833551913499832, -0.03409230709075928, 0.10490694642066956, 0.03900903835892677, 0.048940420150756836, 0.014717494137585163, 0.012704510241746902, 0.07419553399085999, 0.030760373920202255, 0.04003971815109253, 0.056238386780023575, 0.05806791037321091, 0.02556832879781723, -0.07891757041215897, 0.10073382407426834, -0.023151079192757607, 0.07457555830478668, 0.038867730647325516, 0.025247320532798767, 0.012642525136470795, 0.008564524352550507, 0.037250272929668427, 0.023127496242523193, 0.014379066415131092, -0.021933866664767265, -0.06517457216978073, 0.03568253666162491, 0.13992878794670105, 0.10602491348981857, 0.12823446094989777, -0.008124008774757385, -0.0050890506245195866, -0.031631652265787125, 0.02319507487118244, -0.06164270266890526, -0.020639488473534584, 0.06505998969078064, 0.06330578774213791, 0.008076881058514118, 0.04442388564348221, 0.038829587399959564, 0.06532809138298035, 0.08584830909967422, 0.05946756526827812, -0.000515880121383816, -0.06095588207244873, 0.0458485409617424, 0.04034916311502457, 0.020164091140031815, -0.04100431129336357, 0.05643998458981514, -0.011885273270308971, 0.008502556011080742, -0.038110654801130295, 0.04637841507792473, -0.08042885363101959, 0.05681956559419632, -0.09303739666938782, -0.04641430824995041, -0.0279240719974041, -0.13675187528133392, 0.024583090096712112, 0.015677832067012787, 0.003969139419496059, 0.07994680106639862, -0.04338712990283966, 0.049629803746938705, -0.04435734078288078, 0.03578538820147514, -0.07127999514341354, -0.007170241326093674, -0.06533098965883255, 0.020948050543665886, -0.04477585852146149, -0.07563681155443192, -0.060813724994659424, 0.06210339441895485, 0.023917999118566513, 0.011787096969783306, 0.07599350810050964, -0.030570024624466896, -0.007152460515499115, -0.10196730494499207, -0.08884003013372421, 0.013147334568202496, 0.025708509609103203, 0.10943393409252167, 0.008771520107984543, 1.116540554063665e-33, -0.04472339153289795, 0.005956701934337616, -0.11760705709457397, 0.058066438883543015, -0.0008250193204730749, 0.055740948766469955, 0.12303275614976883, -0.03381785377860069, -0.04559645429253578, -0.023162834346294403, 0.034610453993082047, 0.008211707696318626, -0.017066780477762222, 0.016771627590060234, 0.0054692295379936695, -0.01355095487087965, 0.023316524922847748, -0.04947705194354057, -0.04808271676301956, 0.03361012041568756, -0.09626631438732147, 0.0005037078517489135, -0.08973889797925949, 0.04041369631886482, 0.0023744588252156973, 0.08657412230968475, -0.08830595761537552, 0.009883654303848743, -0.025849316269159317, -0.02838914655148983, -0.0044632358476519585, 0.0011320913909003139, -0.009687181562185287, 0.05335718020796776, -0.07880587130784988, 0.040601350367069244, 0.06682509183883667, -0.008252881467342377, 0.01301281712949276, -0.03566548228263855, 0.04711361974477768, -0.008663973771035671, -0.014277239330112934, 0.12272636592388153, -0.014409498311579227, -0.007775138132274151, -0.016437307000160217, 0.03692316263914108, 0.08706116676330566, 0.041066382080316544, -0.10552778095006943, -0.037249792367219925, 0.01029747724533081, -0.09198276698589325, 0.03075772523880005, -0.045648183673620224, 0.04623584449291229, 0.007947918958961964, 0.023827889934182167, 0.03815267235040665, 0.005184610839933157, 0.04259847104549408, -0.023342659696936607, 0.11360350251197815, 0.01580630987882614, -0.018444323912262917, -0.010891441255807877, 0.026376597583293915, -0.03307924047112465, -0.032033178955316544, 0.004982283338904381, 0.02171136625111103, -0.06831664592027664, -0.08573336154222488, -0.04694826528429985, -0.014588910154998302, 0.05642421543598175, 0.018634894862771034, 0.003980814013630152, 0.03628275915980339, 0.09361878037452698, 0.0260300412774086, 0.008972236886620522, -0.0513177365064621, -0.0032458712812513113, 0.027441682294011116, 0.023984482511878014, -0.03114267811179161, -0.04519246891140938, -0.023089200258255005, 0.033055469393730164, 0.053922027349472046, -0.02877473644912243, -0.0033554548863321543, -0.020584722980856895, -1.1772720576175288e-08, -0.031029973179101944, 0.025783414021134377, 0.09109792858362198, -0.04470043629407883, -0.0128372423350811, -0.039072487503290176, 0.022055109962821007, 0.0008349287090823054, 0.029111603274941444, 0.03821485489606857, -0.03171170875430107, -0.0013215338112786412, -0.06377554684877396, 0.03050347976386547, 0.04396559298038483, -0.060551952570676804, 0.04458678886294365, 0.06541050970554352, -0.04064244404435158, -0.018002528697252274, -0.05139811336994171, 0.01125245075672865, -0.015720926225185394, -0.08776962757110596, -0.0014874485787004232, -0.045448463410139084, -0.021269120275974274, -0.04010619968175888, 0.011037325486540794, -0.01881318725645542, 0.029218902811408043, 0.11175502836704254, -0.004307486116886139, -0.030772067606449127, 0.04465903341770172, -0.0075291902758181095, -0.012404347769916058, 0.04492590203881264, -0.013957606628537178, -0.048341572284698486, -0.04116593301296234, -0.008688297122716904, -0.011173251084983349, -0.059417691081762314, 0.05760643631219864, 0.034535326063632965, 0.08879083395004272, -0.04015596583485603, 0.013861789368093014, -0.04430224373936653, -0.10894261300563812, 0.05071225017309189, 0.005929469596594572, 0.014386232011020184, -0.020408088341355324, 0.03798237442970276, 0.006048325914889574, -0.04291046783328056, -0.05134374648332596, 0.016610799357295036, 0.00951790064573288, 0.04964981600642204, -0.006018162705004215, 0.0487695075571537]}, 'qdrant': {'hits': [{'id': 'fa3e1da8-780d-421c-9d53-4b114c53c987', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}, {'id': 'cb54d554-64f0-46d4-a399-48d498599d72', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}, {'id': '496139fe-7bc4-454f-ab93-ffb48254b699', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}]}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['hits']}}
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 50, in run_flow
+    raise RuntimeError(f"unknown agent: {agent}")
+RuntimeError: unknown agent: researcher
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 18, in <module>
+    from mcp.tools.qdrant.runner   import run as qdrantdb_run
+  File "/Users/youareplan/Desktop/mcp-map/mcp/tools/qdrant/runner.py", line 61
+    return {"status": "ok"}from qdrant_client import QdrantClient
+                           ^^^^
+SyntaxError: invalid syntax
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'webfetch': {'url': 'https://example.com', 'title': 'Example Domain', 'snippet': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information...', 'content': 'Example Domain Example Domain This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission. More information...'}, 'embedder': {'vector': [0.02192387543618679, 0.07237657904624939, -0.02293275110423565, 0.05813533812761307, 0.02797142043709755, -0.0841645672917366, -0.030600907281041145, -0.015977032482624054, -0.03059038147330284, 0.05353962630033493, -0.015506090596318245, 0.042117562144994736, -0.05568118393421173, -0.03331669047474861, -0.03749002516269684, 0.008925747126340866, -0.04622682183980942, 0.009055659174919128, 0.021219205111265182, -0.1367737054824829, 0.07464729249477386, 0.014685624279081821, 0.027260247617959976, 0.011531153693795204, -0.030162816867232323, 0.006412950344383717, -0.053984981030225754, -0.048592571169137955, 0.027876000851392746, -0.0911034643650055, 0.020950766280293465, -0.022543886676430702, -0.033920347690582275, 0.01177622377872467, 0.0034789033234119415, 0.03465493023395538, -0.023365391418337822, -0.06551436334848404, 0.1009780690073967, 0.0016714325174689293, 0.0713646188378334, 0.024345025420188904, -0.05464549362659454, -0.003168015042319894, -0.050958603620529175, -0.010848049074411392, -0.08474085479974747, -0.00501592131331563, -0.008892575278878212, -0.0203868318349123, -0.01928369328379631, 0.05871985852718353, -0.014103495515882969, 0.05113662779331207, 0.02287769876420498, -0.0492892749607563, -0.01413817424327135, -0.016537806019186974, 0.0032406041864305735, 0.07756884396076202, 0.01968006044626236, -0.06107557564973831, 0.055665936321020126, -0.005617266986519098, 0.08335501700639725, 0.0061294385232031345, 0.025618424639105797, 0.024351418018341064, -0.03029053844511509, 0.11679306626319885, -0.043430767953395844, 0.02471724897623062, -0.05317370221018791, 0.056549232453107834, 0.023885060101747513, -0.0027869215700775385, 0.007765955291688442, 0.014527874067425728, -0.016253171488642693, 0.10147489607334137, -0.06344467401504517, -0.10030470788478851, 0.06456755846738815, -0.0324193611741066, -0.03151315450668335, 0.05107793211936951, -0.06391052901744843, -0.03212079778313637, 0.0075272079557180405, -0.02513219229876995, -0.02340340055525303, -0.05796310678124428, 0.0741925910115242, 0.08282312750816345, -0.1095193549990654, 0.08223488926887512, -0.04056195914745331, 0.003177037462592125, -0.025402039289474487, 0.033033646643161774, 0.035802826285362244, -0.05668027698993683, 0.02337927184998989, 0.04671826586127281, 0.014499770477414131, -0.06247008964419365, 0.056532327085733414, 0.0936470478773117, 0.006467994302511215, 0.04175678268074989, 0.02978323958814144, 0.07424253970384598, 0.003985800314694643, -0.018123894929885864, -0.06381691247224808, -0.007496418431401253, 0.04851602017879486, 0.027234382927417755, 0.0608065240085125, 0.07277499884366989, 0.12886446714401245, 0.04466140270233154, -0.10742469877004623, -0.009203264489769936, -0.00746424263343215, -0.026029352098703384, 0.10656974464654922, -7.564543083121508e-34, 0.0541517473757267, 0.0018274118192493916, -0.04849345237016678, -0.0355706624686718, 0.04912503436207771, 0.039905596524477005, 0.04868413135409355, 0.08239100873470306, -0.0793827623128891, 0.035039272159338, 0.009855731390416622, 0.02004738710820675, 0.026310738176107407, -0.061955757439136505, -0.06426306813955307, -0.0708506777882576, 0.04157732427120209, 0.08833711594343185, 0.08729137480258942, -0.055192574858665466, 0.002382307779043913, 0.02295205369591713, 0.0009866643231362104, -0.0014650215161964297, -0.006584617309272289, -0.006153387948870659, -0.02832574024796486, 0.009324922226369381, -0.129812091588974, 0.004018846899271011, 0.009408378973603249, 0.0050652651116251945, -0.01633860357105732, -0.03185319900512695, 0.04290500283241272, -0.069268599152565, 0.021498220041394234, 0.032331760972738266, -0.0949980765581131, -0.05380379408597946, 0.02024473436176777, -0.00014572199143003672, -0.07259426265954971, 0.001478451071307063, -0.10499093681573868, -0.03395098075270653, 0.04623405262827873, -0.04370908439159393, -0.011382968164980412, 0.0022293501533567905, -0.0031698348466306925, 0.025146426633000374, 0.0172350462526083, -0.01318531297147274, 0.037450160831213, -0.035893600434064865, 0.008458010852336884, -0.061243537813425064, 0.04647393524646759, 0.018955349922180176, 0.01888883300125599, 0.00012431005598045886, 0.029495175927877426, -0.01898225024342537, 0.010917020961642265, 0.02092861756682396, 0.08047132194042206, 0.08995745331048965, -0.029849180951714516, 0.0013161641545593739, -0.02358703315258026, 0.010117181576788425, 0.04778658226132393, 0.012792623601853848, -0.12049192935228348, -0.10189365595579147, -0.033094607293605804, -0.06930438429117203, -0.013708122074604034, 0.009662049822509289, 0.15305379033088684, -0.052813079208135605, -0.028617532923817635, -0.03443729877471924, -0.028989294543862343, 0.014634169638156891, 0.003267554333433509, -0.011792370118200779, 0.03945409134030342, -0.0029129507020115852, -0.07782081514596939, -0.024947797879576683, 0.029596513137221336, -0.06980118155479431, -0.03378618136048317, 9.600471748096862e-34, 0.06346481293439865, -0.0014702125918120146, -0.06612829864025116, 0.06445594131946564, -0.07088480144739151, -0.004720206372439861, 0.13435770571231842, 0.09636777639389038, -0.037594929337501526, -0.015830148011446, 0.08484259247779846, 0.0032892252784222364, 0.0322265550494194, -0.02720443531870842, -0.07413938641548157, 0.11390897631645203, -0.05541256070137024, -0.10606874525547028, 0.0038301688618957996, -0.05111775919795036, -0.042251959443092346, -0.05568525195121765, -0.01027669757604599, 0.11102628707885742, 0.02183583378791809, -0.00999118946492672, 0.05104171112179756, 0.01706075109541416, -0.027691081166267395, -0.028638197109103203, 0.039284441620111465, -0.011549495160579681, -0.014018186368048191, -0.01490683015435934, -0.00410241074860096, -0.028679370880126953, -0.006022217217832804, 0.17552050948143005, 0.08606162667274475, 0.042274925857782364, 0.031344976276159286, 0.025126637890934944, -0.03488007187843323, 0.020238270983099937, 0.0016336932312697172, -0.022953854873776436, -0.05443320795893669, 0.008271872065961361, 0.012297403998672962, 0.003993309568613768, -0.01406155340373516, -0.012773330323398113, 0.021631553769111633, -0.02511846087872982, -0.00040707402513362467, -0.031188057735562325, -0.04489079490303993, 0.016939355060458183, -0.05373029783368111, -0.024123959243297577, 0.03454197570681572, -0.008200651034712791, -0.06784135103225708, 0.006514312699437141, 0.09718120843172073, -0.025312256067991257, -0.08827214688062668, 0.06561870872974396, -0.016795294359326363, -0.03303896635770798, 0.029489468783140182, 0.05053829774260521, 0.03969379886984825, -0.013460444286465645, 0.005963588133454323, -0.0075821890495717525, 0.051584549248218536, -0.021946627646684647, 0.025710059329867363, 0.07745060324668884, 0.007651357911527157, 0.029928838834166527, 0.00903606042265892, -0.06505810469388962, 0.017271006479859352, -0.01237897016108036, -0.08542686700820923, 0.08547798544168472, -0.029084069654345512, 0.07484893500804901, -0.037640299648046494, -0.005559033248573542, -0.03362848237156868, -0.055002611130476, 0.0014445477863773704, -2.1073168099405848e-08, -0.05849170312285423, 0.00866260752081871, 0.007563389837741852, 0.07381752878427505, 0.05611037090420723, 0.05416147783398628, 0.005728195887058973, 0.045462220907211304, -0.02563687413930893, -0.0017991123022511601, 0.0032595940865576267, 0.046306584030389786, -0.05138853192329407, 0.0493362657725811, 0.005553177557885647, -0.023540379479527473, -0.06873651593923569, 0.007382540963590145, 0.03893706202507019, 0.008821474388241768, -0.021888624876737595, -0.028594987466931343, -0.011730838567018509, -0.04154594987630844, 0.07421591132879257, 0.022381741553544998, 0.0039111352525651455, 0.06887509673833847, -0.009798558428883553, -0.007500737439841032, -0.07520405948162079, -0.05139125883579254, -0.04793418198823929, -0.06402165442705154, 0.03203784301877022, 0.06831855326890945, -0.07106602936983109, -0.06007847934961319, -0.0889318659901619, 0.06458556652069092, 0.00809707585722208, 0.028814177960157394, -0.0018163126660510898, -0.001510894508101046, -0.12071193754673004, 0.00046048781950958073, -0.05893035978078842, 0.08451461046934128, 0.09815621376037598, -0.007400008384138346, 0.10141237825155258, -0.05427791550755501, -0.03863092139363289, 0.06683791428804398, -0.061573226004838943, -0.0457521453499794, 0.11382652074098587, -0.02070632576942444, -0.11176354438066483, 0.0724359080195427, 0.06997442990541458, 0.03091125190258026, 0.03349575772881508, -0.02609946019947529]}, 'qdrant': {'status': 'ok'}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['status']}}
+⏸  승인 게이트(manual_approval) — Enter를 눌러 진행 ▶ ✅ flow done.
+context= {'embedder': {'vector': [0.02950308471918106, -0.08654282987117767, -0.0398680716753006, -0.09151291847229004, -0.06279917061328888, -0.09215281158685684, -0.026108434423804283, -0.022184103727340698, 0.01767398975789547, -0.039501119405031204, -0.0010628597810864449, -0.04598716273903847, 0.07078889012336731, 0.0453067384660244, 0.07092065364122391, -0.019079308956861496, -0.0021080123260617256, -0.01860942132771015, -0.019456276670098305, -0.04082368686795235, 0.11678996682167053, 0.05418529361486435, -0.01938353106379509, 0.002487064804881811, -0.0637192577123642, -0.033193834125995636, 0.054184041917324066, 0.09381945431232452, 0.07998467981815338, -0.0738452896475792, -0.04017407447099686, -0.013725098222494125, -0.017900045961141586, 0.015396852046251297, 0.0428382009267807, 0.07841522991657257, -0.03281038999557495, 0.05895690619945526, -0.0455593466758728, -0.037135615944862366, -0.020240068435668945, -0.08450381457805634, 0.08231119811534882, -0.038590505719184875, -0.04928118735551834, 0.05272254720330238, -0.01072610542178154, -0.005457358900457621, 0.05634412169456482, -0.10413366556167603, 0.04869413003325462, -0.002821370493620634, -0.04004235193133354, 0.06035417318344116, -0.028656641021370888, 0.059828683733940125, -0.019642969593405724, 0.0796678364276886, 0.00014877157809678465, -0.06760305911302567, -0.03516451641917229, -0.010135235264897346, -0.03339780494570732, -0.021171096712350845, 0.02330455556511879, -0.054502133280038834, -0.06887534260749817, 0.07620362192392349, -0.02417774870991707, -0.05475842207670212, 0.0056146071292459965, -0.020586702972650528, -0.07347878813743591, 0.04690873250365257, 0.056429002434015274, 0.060693155974149704, -0.004600117914378643, 0.06459033489227295, 0.06831086426973343, -0.08768947422504425, 0.031712524592876434, -0.041670139878988266, 0.04701937362551689, 0.045559655874967575, 0.009656812064349651, 0.03180075064301491, -0.020323818549513817, -0.056869987398386, 0.008051037788391113, 0.010273816995322704, 0.011732521466910839, -0.08824977278709412, 0.07700997591018677, -0.001268641441129148, -0.018569471314549446, -0.04490188881754875, 0.05848262459039688, -0.058187104761600494, -0.048183828592300415, 0.13306695222854614, -0.032905519008636475, 0.060591164976358414, 0.047896984964609146, -0.030405940487980843, -0.020411614328622818, -0.03645786643028259, 0.031856149435043335, 0.07426390796899796, 0.06006702035665512, -0.06159624084830284, -0.060902584344148636, -0.020290734246373177, 0.0006855279789306223, -0.08245154470205307, 0.03872321918606758, -0.1714136153459549, -0.06629480421543121, -0.0400550439953804, -0.024488896131515503, -0.08611263334751129, -0.023415924981236458, 0.0036139909643679857, -0.06407308578491211, -0.054469361901283264, 0.012924517504870892, -0.03787080571055412, 0.045935072004795074, -2.0304345145822066e-33, 0.04781429469585419, 0.029866276308894157, -0.004347146954387426, -0.0420895591378212, 0.014872947707772255, -0.0012633942533284426, -0.04506222531199455, 0.02833551913499832, -0.03409230709075928, 0.10490694642066956, 0.03900903835892677, 0.048940420150756836, 0.014717494137585163, 0.012704510241746902, 0.07419553399085999, 0.030760373920202255, 0.04003971815109253, 0.056238386780023575, 0.05806791037321091, 0.02556832879781723, -0.07891757041215897, 0.10073382407426834, -0.023151079192757607, 0.07457555830478668, 0.038867730647325516, 0.025247320532798767, 0.012642525136470795, 0.008564524352550507, 0.037250272929668427, 0.023127496242523193, 0.014379066415131092, -0.021933866664767265, -0.06517457216978073, 0.03568253666162491, 0.13992878794670105, 0.10602491348981857, 0.12823446094989777, -0.008124008774757385, -0.0050890506245195866, -0.031631652265787125, 0.02319507487118244, -0.06164270266890526, -0.020639488473534584, 0.06505998969078064, 0.06330578774213791, 0.008076881058514118, 0.04442388564348221, 0.038829587399959564, 0.06532809138298035, 0.08584830909967422, 0.05946756526827812, -0.000515880121383816, -0.06095588207244873, 0.0458485409617424, 0.04034916311502457, 0.020164091140031815, -0.04100431129336357, 0.05643998458981514, -0.011885273270308971, 0.008502556011080742, -0.038110654801130295, 0.04637841507792473, -0.08042885363101959, 0.05681956559419632, -0.09303739666938782, -0.04641430824995041, -0.0279240719974041, -0.13675187528133392, 0.024583090096712112, 0.015677832067012787, 0.003969139419496059, 0.07994680106639862, -0.04338712990283966, 0.049629803746938705, -0.04435734078288078, 0.03578538820147514, -0.07127999514341354, -0.007170241326093674, -0.06533098965883255, 0.020948050543665886, -0.04477585852146149, -0.07563681155443192, -0.060813724994659424, 0.06210339441895485, 0.023917999118566513, 0.011787096969783306, 0.07599350810050964, -0.030570024624466896, -0.007152460515499115, -0.10196730494499207, -0.08884003013372421, 0.013147334568202496, 0.025708509609103203, 0.10943393409252167, 0.008771520107984543, 1.116540554063665e-33, -0.04472339153289795, 0.005956701934337616, -0.11760705709457397, 0.058066438883543015, -0.0008250193204730749, 0.055740948766469955, 0.12303275614976883, -0.03381785377860069, -0.04559645429253578, -0.023162834346294403, 0.034610453993082047, 0.008211707696318626, -0.017066780477762222, 0.016771627590060234, 0.0054692295379936695, -0.01355095487087965, 0.023316524922847748, -0.04947705194354057, -0.04808271676301956, 0.03361012041568756, -0.09626631438732147, 0.0005037078517489135, -0.08973889797925949, 0.04041369631886482, 0.0023744588252156973, 0.08657412230968475, -0.08830595761537552, 0.009883654303848743, -0.025849316269159317, -0.02838914655148983, -0.0044632358476519585, 0.0011320913909003139, -0.009687181562185287, 0.05335718020796776, -0.07880587130784988, 0.040601350367069244, 0.06682509183883667, -0.008252881467342377, 0.01301281712949276, -0.03566548228263855, 0.04711361974477768, -0.008663973771035671, -0.014277239330112934, 0.12272636592388153, -0.014409498311579227, -0.007775138132274151, -0.016437307000160217, 0.03692316263914108, 0.08706116676330566, 0.041066382080316544, -0.10552778095006943, -0.037249792367219925, 0.01029747724533081, -0.09198276698589325, 0.03075772523880005, -0.045648183673620224, 0.04623584449291229, 0.007947918958961964, 0.023827889934182167, 0.03815267235040665, 0.005184610839933157, 0.04259847104549408, -0.023342659696936607, 0.11360350251197815, 0.01580630987882614, -0.018444323912262917, -0.010891441255807877, 0.026376597583293915, -0.03307924047112465, -0.032033178955316544, 0.004982283338904381, 0.02171136625111103, -0.06831664592027664, -0.08573336154222488, -0.04694826528429985, -0.014588910154998302, 0.05642421543598175, 0.018634894862771034, 0.003980814013630152, 0.03628275915980339, 0.09361878037452698, 0.0260300412774086, 0.008972236886620522, -0.0513177365064621, -0.0032458712812513113, 0.027441682294011116, 0.023984482511878014, -0.03114267811179161, -0.04519246891140938, -0.023089200258255005, 0.033055469393730164, 0.053922027349472046, -0.02877473644912243, -0.0033554548863321543, -0.020584722980856895, -1.1772720576175288e-08, -0.031029973179101944, 0.025783414021134377, 0.09109792858362198, -0.04470043629407883, -0.0128372423350811, -0.039072487503290176, 0.022055109962821007, 0.0008349287090823054, 0.029111603274941444, 0.03821485489606857, -0.03171170875430107, -0.0013215338112786412, -0.06377554684877396, 0.03050347976386547, 0.04396559298038483, -0.060551952570676804, 0.04458678886294365, 0.06541050970554352, -0.04064244404435158, -0.018002528697252274, -0.05139811336994171, 0.01125245075672865, -0.015720926225185394, -0.08776962757110596, -0.0014874485787004232, -0.045448463410139084, -0.021269120275974274, -0.04010619968175888, 0.011037325486540794, -0.01881318725645542, 0.029218902811408043, 0.11175502836704254, -0.004307486116886139, -0.030772067606449127, 0.04465903341770172, -0.0075291902758181095, -0.012404347769916058, 0.04492590203881264, -0.013957606628537178, -0.048341572284698486, -0.04116593301296234, -0.008688297122716904, -0.011173251084983349, -0.059417691081762314, 0.05760643631219864, 0.034535326063632965, 0.08879083395004272, -0.04015596583485603, 0.013861789368093014, -0.04430224373936653, -0.10894261300563812, 0.05071225017309189, 0.005929469596594572, 0.014386232011020184, -0.020408088341355324, 0.03798237442970276, 0.006048325914889574, -0.04291046783328056, -0.05134374648332596, 0.016610799357295036, 0.00951790064573288, 0.04964981600642204, -0.006018162705004215, 0.0487695075571537]}, 'qdrant': {'hits': [{'id': 'fa3e1da8-780d-421c-9d53-4b114c53c987', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}, {'id': 'cb54d554-64f0-46d4-a399-48d498599d72', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}, {'id': '496139fe-7bc4-454f-ab93-ffb48254b699', 'score': 0.0, 'payload': {'url': '{{ webfetch.url }}', 'title': "{{ webfetch.title | default('') }}", 'snippet': "{{ webfetch.snippet | default('') }}"}}]}, 'notifier': {'agent': 'notifier', 'task': 'summary_to_slack', 'received': ['hits']}}
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 71, in <module>
+    run_flow(flow)
+    ~~~~~~~~^^^^^^
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 50, in run_flow
+    raise RuntimeError(f"unknown agent: {agent}")
+RuntimeError: unknown agent: researcher
+Traceback (most recent call last):
+  File "/Users/youareplan/Desktop/mcp-map/mcp/run.py", line 5, in <module>
+    from mcp.tools.webfetch.runner    import run as webfetch_run
+ModuleNotFoundError: No module named 'mcp'

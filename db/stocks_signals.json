@@ -1,0 +1,8 @@
+[
+  {
+    "symbol": "005930.KS",
+    "close": 67710.69,
+    "decision": "SELL",
+    "rationale": "SMA5<SMA20 (momentum down) | MACD<0 (bearish confirm)"
+  }
+]

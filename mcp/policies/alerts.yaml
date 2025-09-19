@@ -1,0 +1,15 @@
+gates:
+  - name: signal_alerts
+    steps:
+      - stocks.signal.generate
+      - stocks.store.persist
+      - stocks.notifier.notify
+    rules:
+      # 예시 규칙
+      - if: "signal.action == 'SELL'"
+        then: "ALLOW"
+        else: "DROP"
+
+      - if: "news.score >= 3.0"
+        then: "ALLOW"
+        else: "DROP"

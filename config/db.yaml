@@ -1,0 +1,2 @@
+policy_db_path: duckdb/policies.db
+stocks_db_path: duckdb/stocks.db

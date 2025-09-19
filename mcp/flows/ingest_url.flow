@@ -1,0 +1,23 @@
+name: ingest_url
+steps:
+  - tool: webfetch
+    action: fetch
+    args:
+      url: "https://example.com"
+  - tool: embedder
+    action: encode
+    args:
+      text: "{{ webfetch.content | default('') | truncate(5000) }}"
+  - tool: qdrant
+    action: upsert
+    args:
+      collection: "mcp_docs"
+      points:
+        - vector: "{{ embedder.vector | tojson }}"
+          payload:
+            url: "{{ webfetch.url }}"
+            title: "{{ webfetch.title | default('') }}"
+            snippet: "{{ webfetch.snippet | default('') }}"
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack

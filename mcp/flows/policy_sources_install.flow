@@ -1,0 +1,4 @@
+name: policy_sources_install
+steps:
+  - agent: policy_source_registry
+    task: load_sources

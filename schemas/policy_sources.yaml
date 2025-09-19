@@ -1,0 +1,29 @@
+sources:
+  - id: bizinfo
+    name: 기업마당
+    type: api
+    base_url: https://www.bizinfo.go.kr/api/notice
+    cadence: daily
+    fields:
+      id: noticeId
+      title: noticeNm
+      date: noticeStartDt
+      link: detailUrl
+
+  - id: semas
+    name: 소상공인시장진흥공단
+    type: crawling
+    list_url: https://www.semas.or.kr/web/board/list.do?menuId=123
+    list_selector: "ul.board-list li"
+    detail_selector: "div.board-view"
+    date_format: "%Y-%m-%d"
+    cadence: weekly
+
+  - id: kibo
+    name: 기술보증기금
+    type: crawling
+    list_url: https://www.kibo.or.kr/notice/list.do
+    list_selector: "table.notice-list tr"
+    detail_selector: "div.notice-view"
+    date_format: "%Y-%m-%d"
+    cadence: weekly

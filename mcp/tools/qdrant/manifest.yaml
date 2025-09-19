@@ -1,0 +1,27 @@
+tool:
+  id: "qdrant"
+  name: "Qdrant Vector DB"
+  description: "벡터 기반 메모리 저장/검색"
+  actions:
+    - name: upsert
+      input_schema:
+        type: object
+        required: [collection, points]
+        properties:
+          collection: { type: string }
+          points: { type: array }
+      output_schema:
+        type: object
+        properties: { status: { type: string } }
+    - name: query
+      input_schema:
+        type: object
+        required: [collection, vector, limit]
+        properties:
+          collection: { type: string }
+          vector: { type: array }
+          limit: { type: integer }
+      output_schema:
+        type: object
+        properties:
+          hits: { type: array }

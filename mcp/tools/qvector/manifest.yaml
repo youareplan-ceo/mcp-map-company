@@ -1,0 +1,52 @@
+tool:
+  id: "qvector"
+  name: "Qdrant Vector Memory"
+  description: "Qdrant 기반 외부 벡터 메모리 (로컬 임베딩/오픈AI 둘 다 지원)"
+  actions:
+    - name: upsert
+      input_schema:
+        type: object
+        required: [doc_id, text]
+        properties:
+          doc_id: { type: string }
+          text:   { type: string }
+      output_schema:
+        type: object
+        properties:
+          ok: { type: boolean }
+    - name: query
+      input_schema:
+        type: object
+        required: [text]
+        properties:
+          text:  { type: string }
+          top_k: { type: integer, default: 5 }
+      output_schema:
+        type: object
+        properties:
+          hits:
+            type: array
+            items:
+              type: object
+              properties:
+                doc_id:  { type: string }
+                score:   { type: number }
+                preview: { type: string }
+    - name: delete
+      input_schema:
+        type: object
+        required: [doc_id]
+        properties:
+          doc_id: { type: string }
+      output_schema:
+        type: object
+        properties:
+          ok: { type: boolean }
+    - name: reset
+      input_schema:
+        type: object
+        properties: {}
+      output_schema:
+        type: object
+        properties:
+          ok: { type: boolean }

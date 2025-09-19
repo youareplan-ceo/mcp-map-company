@@ -1,0 +1,24 @@
+# env / secrets
+config/.env
+*.env
+*.key
+*.pem
+
+# db / cache / compiled
+duckdb/*.db
+*.duckdb
+__pycache__/
+*.pyc
+
+# local outputs
+docs/out/*
+!docs/out/.gitkeep
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# secrets
+config/.env
+apps/stockpilot/passwords.txt

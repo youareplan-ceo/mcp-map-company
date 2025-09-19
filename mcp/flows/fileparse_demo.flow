@@ -1,0 +1,10 @@
+name: fileparse_demo
+steps:
+  - tool: fileparse
+    action: parse
+    args:
+      path: "tests/sample.pdf"
+      max_chars: 1000
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack

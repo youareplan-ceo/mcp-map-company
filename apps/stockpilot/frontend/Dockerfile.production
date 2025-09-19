@@ -1,0 +1,75 @@
+# 프로덕션용 React 앱 Dockerfile
+# 멀티스테이지 빌드로 최적화
+
+# Stage 1: 빌드 환경
+FROM node:18-alpine AS builder
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 보안: non-root 사용자 생성
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S react -u 1001
+
+# package.json과 package-lock.json 복사 (캐시 최적화)
+COPY package*.json ./
+
+# 의존성 설치 (프로덕션용)
+RUN npm ci --only=production && \
+    npm cache clean --force
+
+# 소스 코드 복사
+COPY . .
+
+# 환경 변수 설정
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
+
+# React 앱 빌드
+RUN npm run build
+
+# 빌드 결과 최적화
+RUN npm run build:analyze || true
+
+# Stage 2: 프로덕션 환경 (Nginx)
+FROM nginx:alpine AS production
+
+# 보안 강화: 불필요한 패키지 제거 및 업데이트
+RUN apk --no-cache add curl && \
+    apk upgrade && \
+    rm -rf /var/cache/apk/*
+
+# Nginx 설정 파일 복사
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# 빌드된 React 앱 복사
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# 정적 파일 권한 설정
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html
+
+# 헬스체크 스크립트 추가
+COPY healthcheck.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/healthcheck.sh
+
+# 보안 헤더 설정
+COPY nginx/security-headers.conf /etc/nginx/conf.d/security-headers.conf
+
+# 로그 디렉토리 생성
+RUN mkdir -p /var/log/nginx && \
+    chown nginx:nginx /var/log/nginx
+
+# 헬스체크 설정
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD /usr/local/bin/healthcheck.sh
+
+# 포트 노출
+EXPOSE 80
+
+# non-root 사용자로 실행
+USER nginx
+
+# Nginx 시작
+CMD ["nginx", "-g", "daemon off;"]

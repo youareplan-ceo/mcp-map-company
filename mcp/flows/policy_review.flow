@@ -1,0 +1,10 @@
+name: policy_review
+steps:
+  - flow: policy_match         # intake→policy_auto→matcher (기존)
+  - agent: policy_scorer
+    task: score
+  - agent: policy_reporter
+    task: render
+  - gate: manual_approval      # mcp/policies/policy_human_gate.yaml
+  - agent: policy_notifier
+    task: notify

@@ -1,0 +1,9 @@
+name: policy_match
+steps:
+  - agent: policy_applicant_intake
+    task: collect
+  - flow: policy_auto          # collector→normalizer→db_sync→notifier
+  - agent: policy_matcher
+    task: match
+  - agent: policy_notifier
+    task: notify

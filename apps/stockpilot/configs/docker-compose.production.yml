@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  # 프로덕션 백엔드 서비스
+  backend:
+    build:
+      context: ../
+      dockerfile: backend/Dockerfile
+    container_name: stockpilot-backend-prod
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - ALLOWED_HOSTS=stockpilot-ai.onrender.com,localhost,127.0.0.1
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///app/data/stockpilot.db}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - SECRET_KEY=${SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - UPSTAGE_API_KEY=${UPSTAGE_API_KEY}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+      - NAVER_API_KEY=${NAVER_API_KEY}
+      - NAVER_SECRET_KEY=${NAVER_SECRET_KEY}
+    volumes:
+      - backend_data:/app/data
+      - backend_logs:/app/logs
+    networks:
+      - stockpilot-network
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis 서비스 (캐싱 및 세션 관리)
+  redis:
+    image: redis:7-alpine
+    container_name: stockpilot-redis-prod
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - stockpilot-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-stockpilot2025}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+
+  # Nginx 리버스 프록시
+  nginx:
+    image: nginx:alpine
+    container_name: stockpilot-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ../frontend/build:/usr/share/nginx/html:ro
+    networks:
+      - stockpilot-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.1'
+
+volumes:
+  backend_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data
+  backend_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./logs
+  redis_data:
+    driver: local
+
+networks:
+  stockpilot-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

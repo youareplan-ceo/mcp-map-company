@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# DRY-RUN scheduler stub — 실제 실행 없이 스케줄 정의만 보여줍니다.
+set -euo pipefail
+CFG="mcp/config/schedules.yaml"
+
+if [[ ! -f "$CFG" ]]; then
+  echo "No schedules file: $CFG"
+  exit 1
+fi
+
+echo "[DRY-RUN] Schedules loaded from $CFG"
+echo "--------- SCHEDULES CONTENT ---------"
+sed -n '1,200p' "$CFG"
+echo "-------------------------------------"
+echo "TODO: implement real scheduler that calls bin/flow by cron."

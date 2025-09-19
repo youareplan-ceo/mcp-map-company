@@ -1,0 +1,57 @@
+tool:
+  id: "browser"
+  name: "Browser Automation"
+  description: "Playwright 기반 브라우저 자동화(열기/대기/추출/클릭/입력/스크린샷)"
+  actions:
+    - name: open
+      input_schema:
+        type: object
+        required: [url]
+        properties:
+          url: { type: string }
+          wait: { type: string, enum: ["load","domcontentloaded","networkidle"], default: "domcontentloaded" }
+          timeout_ms: { type: integer, default: 20000 }
+    - name: extract
+      input_schema:
+        type: object
+        properties:
+          selector: { type: string, description: "CSS 선택자(없으면 전체문서)" }
+          mode: { type: string, enum: ["text","html","readability"], default: "text" }
+      output_schema:
+        type: object
+        properties:
+          content: { type: string }
+    - name: click
+      input_schema:
+        type: object
+        required: [selector]
+        properties:
+          selector: { type: string }
+          wait_after_ms: { type: integer, default: 500 }
+    - name: type
+      input_schema:
+        type: object
+        required: [selector, text]
+        properties:
+          selector: { type: string }
+          text: { type: string }
+          submit: { type: boolean, default: false }
+          delay_ms: { type: integer, default: 20 }
+    - name: screenshot
+      input_schema:
+        type: object
+        properties:
+          selector: { type: string }
+          path: { type: string, default: "tmp/last_screenshot.png" }
+      output_schema:
+        type: object
+        properties:
+          path: { type: string }
+    - name: close
+      input_schema:
+        type: object
+        properties: {}
+      output_schema:
+        type: object
+        properties:
+          ok: { type: boolean }

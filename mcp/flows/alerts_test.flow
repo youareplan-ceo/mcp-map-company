@@ -1,0 +1,10 @@
+name: alerts_test
+steps:
+  - agent: stocks.source_registry
+    task: register_sources
+  - agent: stocks.fetcher
+    task: fetch
+  - agent: policy.alerts_gate
+    task: enforce
+  - agent: stocks.summary
+    task: build

@@ -1,0 +1,30 @@
+[run_flow] #오후 :: stocks_intraday
+[FLOW] stocks_intraday  (steps=8)
+  [1/8] AGENT stocks.source_registry.register_sources()
+[stocks.sources] using schemas/stocks/watchlist.yaml
+    ✓ executed
+  [2/8] AGENT stocks.fetcher.fetch()
+[stocks.fetch] symbols=3 ; raw=raw_data/stocks_prices.json (DRY)
+    ✓ executed
+  [3/8] AGENT stocks.indicator.compute()
+[stocks.indicator] computed 1 symbols -> db/stocks_indicators.json
+    ✓ executed
+  [4/8] AGENT stocks.signal.generate()
+[stocks.signal] generated 1 signals -> db/stocks_signals.json
+    ✓ executed
+  [5/8] AGENT stocks.store.persist()
+[stocks.store] inserted 1 indicators, 1 signals into duckdb
+    ✓ executed
+  [6/8] AGENT stocks.notifier.notify()
+[stocks.notify] DRY: would send summary
+    ✓ executed
+  [7/8] AGENT stocks.summary.build()
+[stocks.summary] wrote 1 rows -> db/stocks_summary.json
+ - 005930.KS [SELL] @ 67710.69 | SMA5<SMA20 (momentum down) | MACD<0 (bearish confirm) | 뉴스Top: 3.297점 연합뉴스 - 삼성전자, 차세대 HBM 개발
+    ✓ executed
+  [8/8] AGENT notify.slack.summary()
+[slack.notify] no webhook configured, DRY mode
+{
+  "text": "*005930.KS* → SELL @ 67710.69 | 뉴스 3.30점: 삼성전자, 차세대 HBM 개발"
+}
+    ✓ executed

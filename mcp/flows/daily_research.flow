@@ -1,0 +1,36 @@
+name: daily_research
+steps:
+  - tool: webfetch
+    action: fetch
+    args:
+      url: "https://example.com"   # 시작은 예제로. 나중에 대상 리스트로 확장
+  - agent: researcher
+    task: summarize
+    args:
+      title: "{{ webfetch.title }}"
+      content: "{{ webfetch.content }}"
+  - tool: embedder
+    action: encode
+    args:
+      text: "{{ researcher.summary }}"
+  - tool: qdrant
+    action: upsert
+    args:
+      collection: "mcp_docs"
+      point:
+        id: "{{ webfetch.url }}"
+        vector: "{{ embedder.vector | tojson }}"
+        payload:
+          url: "{{ webfetch.url }}"
+          title: "{{ webfetch.title }}"
+          summary: "{{ researcher.summary }}"
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack
+    args:
+      text: |
+        ✅ Daily Research 저장됨
+        제목: {{ webfetch.title }}
+        URL: {{ webfetch.url }}
+        요약 미리보기:
+        {{ researcher.summary }}

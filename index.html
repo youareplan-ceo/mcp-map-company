@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockPilot AI - 당신의 투자 코파일럿</title>
+<style>
+* {margin:0;padding:0;box-sizing:border-box}
+
+body {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:linear-gradient(135deg,#0a0e27,#1a1f3a);
+    color:white;
+    padding:20px;
+    min-height:100vh;
+}
+
+h1 {
+    font-size:56px;
+    font-weight:800;
+    background:linear-gradient(90deg,#00d4ff,#0099ff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.subtitle {
+    text-align:center;
+    color:#8892b0;
+    margin-bottom:40px;
+    font-size:18px;
+}
+
+/* 포트폴리오 입력 섹션 */
+.portfolio-input {
+    background:rgba(0,150,255,0.1);
+    border-radius:24px;
+    padding:30px;
+    margin:30px auto;
+    max-width:800px;
+}
+
+.portfolio-input h2 {
+    font-size:24px;
+    margin-bottom:20px;
+    color:#00d4ff;
+}
+
+.input-grid {
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.input-grid input {
+    padding:12px;
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:8px;
+    color:white;
+    font-size:16px;
+}
+
+.input-grid input::placeholder {
+    color:rgba(255,255,255,0.5);
+}
+
+.btn-add {
+    padding:12px 24px;
+    background:linear-gradient(135deg,#00ff88,#00d4ff);
+    border:none;
+    border-radius:8px;
+    color:#0a0e27;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform 0.2s;
+}
+
+.btn-add:hover {
+    transform:translateY(-2px);
+}
+
+/* 포트폴리오 현황 */
+.portfolio-summary {
+    background:rgba(0,150,255,0.1);
+    border-radius:24px;
+    padding:40px;
+    margin:30px auto;
+    text-align:center;
+    max-width:800px;
+}
+
+.total-value {
+    font-size:64px;
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.change-today {
+    font-size:32px;
+    margin-bottom:20px;
+}
+
+.positive {color:#00ff88}
+.negative {color:#ff4757}
+
+/* 포트폴리오 리스트 */
+.holdings-list {
+    background:rgba(255,255,255,0.03);
+    border-radius:20px;
+    padding:20px;
+    margin-top:20px;
+    max-height:300px;
+    overflow-y:auto;
+}
+
+.holding-item {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px;
+    margin:10px 0;
+    background:rgba(0,0,0,0.3);
+    border-radius:12px;
+    border-left:3px solid #0099ff;
+}
+
+.holding-name {
+    font-size:18px;
+    font-weight:600;
+}
+
+.holding-info {
+    text-align:right;
+}
+
+.holding-value {
+    font-size:20px;
+    font-weight:700;
+}
+
+.holding-change {
+    font-size:14px;
+    margin-top:5px;
+}
+
+/* AI 시그널 카드 */
+.cards {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+    gap:25px;
+    margin:40px auto;
+    max-width:1200px;
+}
+
+.card {
+    background:rgba(255,255,255,0.03);
+    border-radius:20px;
+    padding:30px;
+    border-left:5px solid #0099ff;
+    transition:transform 0.2s;
+}
+
+.card:hover {
+    transform:translateY(-5px);
+}
+
+.danger {border-left-color:#ff4757}
+.success {border-left-color:#00ff88}
+.warning {border-left-color:#ffd93d}
+
+.card h2 {
+    font-size:24px;
+    margin-bottom:20px;
+}
+
+.details {
+    background:rgba(0,0,0,0.3);
+    padding:20px;
+    border-radius:12px;
+    margin:20px 0;
+    line-height:1.8;
+}
+
+.ai-insight {
+    background:rgba(0,150,255,0.1);
+    border-left:3px solid #0099ff;
+    padding:15px;
+    margin:20px 0;
+    border-radius:10px;
+    font-size:14px;
+    color:#c3cfe2;
+}
+
+.btn-action {
+    width:100%;
+    padding:18px;
+    background:linear-gradient(135deg,#0099ff,#00d4ff);
+    border:none;
+    border-radius:12px;
+    color:white;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.2s;
+}
+
+.btn-action:hover {
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,150,255,0.3);
+}
+
+/* AI 실시간 뉴스 */
+.insights {
+    background:rgba(255,255,255,0.02);
+    border-radius:24px;
+    padding:35px;
+    margin:40px auto;
+    max-width:1200px;
+}
+
+.insights h2 {
+    font-size:28px;
+    margin-bottom:25px;
+    color:#00d4ff;
+}
+
+.news-item {
+    padding:15px 0;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    font-size:16px;
+    line-height:1.6;
+}
+
+.news-item:last-child {
+    border-bottom:none;
+}
+
+/* 시장 지표 티커 */
+.ticker {
+    display:flex;
+    gap:20px;
+    overflow-x:auto;
+    padding:20px 0;
+    margin:40px auto;
+    max-width:1200px;
+}
+
+.tick {
+    min-width:140px;
+    background:rgba(255,255,255,0.03);
+    border-radius:16px;
+    padding:20px;
+    text-align:center;
+}
+
+.tick-label {
+    color:#8892b0;
+    font-size:12px;
+    text-transform:uppercase;
+    margin-bottom:8px;
+}
+
+.tick-value {
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.tick-change {
+    font-size:14px;
+    font-weight:600;
+}
+
+/* 서버 상태 */
+.server-status {
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:rgba(0,0,0,0.8);
+    padding:10px 20px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:12px;
+}
+
+.status-dot {
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#00ff88;
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%,100% {opacity:1}
+    50% {opacity:0.5}
+}
+
+/* 모바일 반응형 */
+@media (max-width:768px) {
+    h1 {font-size:36px}
+    .total-value {font-size:48px}
+    .change-today {font-size:24px}
+    .cards {grid-template-columns:1fr}
+    .input-grid {grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<h1>StockPilot AI</h1>
+<p class="subtitle">AI가 분석하고, 당신이 결정하는 투자 코파일럿</p>
+
+<!-- 포트폴리오 입력 섹션 -->
+<div class="portfolio-input">
+    <h2>📊 내 포트폴리오 등록</h2>
+    <div class="input-grid">
+        <input type="text" id="stock-name" placeholder="종목명 (예: 삼성전자)">
+        <input type="number" id="stock-quantity" placeholder="수량">
+        <input type="number" id="stock-price" placeholder="평균단가">
+        <button class="btn-add" onclick="addStock()">추가 +</button>
+    </div>
+    <div class="holdings-list" id="holdings-list">
+        <!-- 여기에 보유 종목 리스트 표시 -->
+    </div>
+</div>
+
+<!-- 포트폴리오 현황 -->
+<div class="portfolio-summary">
+    <div class="total-value" id="total-value">₩ 0</div>
+    <div class="change-today positive" id="change-today">
+        ▲ ₩0 (+0.00%) 오늘
+    </div>
+</div>
+
+<!-- AI 시그널 카드 -->
+<div class="cards">
+    <div class="card danger">
+        <h2>⚠️ 삼성전자 매도 시그널</h2>
+        <div class="details">
+            현재가: ₩68,500<br>
+            매도 추천가: ₩68,000 이상<br>
+            매도 비중: 보유량의 30%
+        </div>
+        <div class="ai-insight">💡 AI 분석: 반도체 재고 증가 + 외국인 매도세 + RSI 72 과매수 구간. 단기 조정 가능성이 높아 일부 차익 실현을 권장합니다.</div>
+        <button class="btn-action">매도 주문 →</button>
+    </div>
+
+    <div class="card success">
+        <h2>🎯 네이버 매수 찬스</h2>
+        <div class="details">
+            현재가: ₩165,000<br>
+            매수 추천가: ₩164,000-165,000<br>
+            예상 수익: +12% (3개월)
+        </div>
+        <div class="ai-insight">💡 AI 분석: 실적 서프라이즈 예상 + 기관 순매수 전환 + 골든크로스 형성. 중장기 상승 모멘텀이 강화되고 있습니다.</div>
+        <button class="btn-action">매수 주문 →</button>
+    </div>
+
+    <div class="card warning">
+        <h2>💰 현금 비중 늘리기</h2>
+        <div class="details">
+            현재 현금: 5%<br>
+            권장 현금: 15-20%<br>
+            조절 방법: 수익종목 일부 실현
+        </div>
+        <div class="ai-insight">💡 AI 분석: FOMC 회의 임박 + VIX 20 돌파 + 변동성 증가 예상. 시장 불확실성에 대비한 현금 확보를 권장합니다.</div>
+        <button class="btn-action">리밸런싱 →</button>
+    </div>
+</div>
+
+<!-- AI 실시간 분석 -->
+<div class="insights">
+    <h2>🔴 AI 실시간 뉴스 분석</h2>
+    <div class="news-item">🔥 속보: 미 연준 금리 동결 시사 - 나스닥 선물 +1.2% 급등</div>
+    <div class="news-item">📈 기회: SK하이닉스 HBM4 엔비디아 독점 공급 계약 임박</div>
+    <div class="news-item">⚡ 주의: 카카오 실적 발표 D-2, 컨센서스 하회 가능성 제기</div>
+    <div class="news-item">🎯 포착: 기관 삼성SDI 5일 연속 순매수, 배터리 수주 기대감</div>
+</div>
+
+<!-- 시장 지표 -->
+<div class="ticker">
+    <div class="tick">
+        <div class="tick-label">KOSPI</div>
+        <div class="tick-value">2,456.78</div>
+        <div class="tick-change positive">+0.63%</div>
+    </div>
+    <div class="tick">
+        <div class="tick-label">KOSDAQ</div>
+        <div class="tick-value">745.12</div>
+        <div class="tick-change negative">-0.46%</div>
+    </div>
+    <div class="tick">
+        <div class="tick-label">삼성전자</div>
+        <div class="tick-value">68,500</div>
+        <div class="tick-change negative">-1.2%</div>
+    </div>
+    <div class="tick">
+        <div class="tick-label">SK하이닉스</div>
+        <div class="tick-value">124,500</div>
+        <div class="tick-change positive">+2.3%</div>
+    </div>
+    <div class="tick">
+        <div class="tick-label">네이버</div>
+        <div class="tick-value">165,000</div>
+        <div class="tick-change positive">+1.8%</div>
+    </div>
+    <div class="tick">
+        <div class="tick-label">카카오</div>
+        <div class="tick-value">42,350</div>
+        <div class="tick-change negative">-0.7%</div>
+    </div>
+</div>
+
+<!-- 서버 상태 -->
+<div class="server-status">
+    <div class="status-dot"></div>
+    <span>MCP 서버 연결됨</span>
+</div>
+
+<script>
+// 포트폴리오 데이터
+let portfolio = JSON.parse(localStorage.getItem('portfolio') || '[]');
+
+// 포트폴리오 추가
+function addStock() {
+    const name = document.getElementById('stock-name').value;
+    const quantity = parseInt(document.getElementById('stock-quantity').value);
+    const price = parseInt(document.getElementById('stock-price').value);
+    
+    if (!name || !quantity || !price) {
+        alert('모든 항목을 입력해주세요');
+        return;
+    }
+    
+    portfolio.push({
+        name: name,
+        quantity: quantity,
+        avgPrice: price,
+        currentPrice: price, // 실제로는 API에서 가져와야 함
+        change: Math.random() * 10 - 5 // 임시 랜덤 값
+    });
+    
+    localStorage.setItem('portfolio', JSON.stringify(portfolio));
+    
+    // 입력 필드 초기화
+    document.getElementById('stock-name').value = '';
+    document.getElementById('stock-quantity').value = '';
+    document.getElementById('stock-price').value = '';
+    
+    updatePortfolio();
+}
+
+// 포트폴리오 업데이트
+function updatePortfolio() {
+    const holdingsList = document.getElementById('holdings-list');
+    let totalValue = 0;
+    let totalPnL = 0;
+    
+    holdingsList.innerHTML = '';
+    
+    portfolio.forEach(stock => {
+        const value = stock.quantity * stock.currentPrice;
+        const pnl = (stock.currentPrice - stock.avgPrice) * stock.quantity;
+        const pnlPercent = ((stock.currentPrice - stock.avgPrice) / stock.avgPrice * 100).toFixed(2);
+        
+        totalValue += value;
+        totalPnL += pnl;
+        
+        const item = document.createElement('div');
+        item.className = 'holding-item';
+        item.innerHTML = `
+            <div class="holding-name">${stock.name}</div>
+            <div class="holding-info">
+                <div class="holding-value">₩${value.toLocaleString()}</div>
+                <div class="holding-change ${pnl >= 0 ? 'positive' : 'negative'}">
+                    ${pnl >= 0 ? '▲' : '▼'} ${Math.abs(pnlPercent)}%
+                </div>
+            </div>
+        `;
+        holdingsList.appendChild(item);
+    });
+    
+    // 총 평가액 업데이트
+    document.getElementById('total-value').textContent = `₩ ${totalValue.toLocaleString()}`;
+    
+    // 수익률 업데이트
+    const changeToday = document.getElementById('change-today');
+    const totalPnLPercent = portfolio.length > 0 ? 
+        (totalPnL / (totalValue - totalPnL) * 100).toFixed(2) : 0;
+    
+    changeToday.className = `change-today ${totalPnL >= 0 ? 'positive' : 'negative'}`;
+    changeToday.textContent = `${totalPnL >= 0 ? '▲' : '▼'} ₩${Math.abs(totalPnL).toLocaleString()} (${totalPnL >= 0 ? '+' : ''}${totalPnLPercent}%) 오늘`;
+}
+
+// 실시간 업데이트 시뮬레이션
+function updateRealtime() {
+    // 포트폴리오 가격 랜덤 업데이트 (실제로는 API 호출)
+    portfolio.forEach(stock => {
+        const changePercent = (Math.random() - 0.5) * 0.5;
+        stock.currentPrice = Math.round(stock.currentPrice * (1 + changePercent/100));
+    });
+    
+    updatePortfolio();
+}
+
+// 페이지 로드 시 초기화
+window.onload = function() {
+    updatePortfolio();
+    
+    // 5초마다 실시간 업데이트
+    setInterval(updateRealtime, 5000);
+    
+    // 뉴스 업데이트 (30초마다)
+    setInterval(() => {
+        console.log('뉴스 업데이트 중...');
+    }, 30000);
+};
+</script>
+
+</body>
+</html>

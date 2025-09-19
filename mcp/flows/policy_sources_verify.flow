@@ -1,0 +1,6 @@
+name: policy_sources_verify
+steps:
+  - agent: policy_source_registry
+    task: load_sources
+  - agent: policy_source_validator
+    task: verify

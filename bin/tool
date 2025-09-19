@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+mod="$1"; shift
+action="$1"; shift
+payload="${1:-{}}"
+python - <<PY
+import json, importlib, sys
+mod=sys.argv[1]; action=sys.argv[2]; payload=json.loads(sys.argv[3])
+m=importlib.import_module(mod.replace('/','.'))
+print(json.dumps(m.handle(action,payload), ensure_ascii=False))
+PY "$mod" "$action" "$payload"

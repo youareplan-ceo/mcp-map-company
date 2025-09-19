@@ -1,0 +1,22 @@
+name: browser_search
+steps:
+  - tool: browser
+    action: open
+    args:
+      url: "https://duckduckgo.com/"
+      wait: "domcontentloaded"
+  - tool: browser
+    action: type
+    args:
+      selector: "input[name=q]"
+      text: "site:example.com example domain"
+      submit: true
+  - tool: browser
+    action: screenshot
+    args:
+      path: "tmp/search.png"
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack
+  - tool: browser
+    action: close

@@ -1,0 +1,33 @@
+name: stock_batch_csv_rsiatr
+steps:
+  - tool: portfolio
+    action: batch_sma
+    args:
+      csv_path: "data/tickers.csv"
+      period: "3mo"
+      interval: "1d"
+      fast: 5
+      slow: 20
+      # 기본 필터 (원하시면 조정)
+      min_last_close: 50
+      min_avg_vol20: 1000000
+      min_rsi: 40
+      max_rsi: 80
+      min_atr_pct: 0.5
+      max_atr_pct: 6.0
+
+  - gate: manual_approval
+
+  - agent: notifier
+    task: summary_to_slack
+    args:
+      text: |
+        📊 StockPilot CSV(지표필터) 결과 (입력 {{ portfolio.count }} 종목)
+        ✅ 통과/신호 상위:
+        {% for r in portfolio.results if not r.get("filtered") and not r.get("error") %}{% if loop.index <= 15 %}
+        - {{ r.ticker }} | 종가: {{ r.last_close }} | RSI14: {{ r.rsi14|round(1) if r.rsi14 else "-" }} | ATR%: {{ r.atr_pct|round(2) if r.atr_pct else "-" }} | 신호: {{ r.signal }} {{ r.crossed if r.crossed else "" }} | 5/20MA: {{ r.fast_ma|round(2) if r.fast_ma else "-" }}/{{ r.slow_ma|round(2) if r.slow_ma else "-" }} | 거래량20: {{ r.avg_vol20 }}
+        {% endif %}{% endfor %}
+        🔎 필터 제외:
+        {% for r in portfolio.results if r.get("filtered") %}{% if loop.index <= 15 %}
+        - {{ r.ticker }} | 제외이유: {{ r.filtered }} | 종가: {{ r.last_close if r.last_close is not none else "-" }} | RSI14: {{ r.rsi14 if r.rsi14 is not none else "-" }} | ATR%: {{ r.atr_pct|round(2) if r.atr_pct else "-" }}
+        {% endif %}{% endfor %}

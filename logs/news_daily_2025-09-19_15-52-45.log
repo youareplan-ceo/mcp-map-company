@@ -1,0 +1,23 @@
+[run_flow] #오후 :: news_daily
+[FLOW] news_daily  (steps=6)
+  [1/6] AGENT news.fetcher.fetch()
+[news.fetch] raw=raw_data/news_raw.json ; api_key=missing (DRY)
+    ✓ executed
+  [2/6] AGENT news.parser.parse()
+[news.parse] in=3 -> db/news_parsed.json
+    ✓ executed
+  [3/6] AGENT news.linker.link()
+[news.link] linked=3 -> db/news_by_symbol.json
+    ✓ executed
+  [4/6] AGENT news.ranker.rank()
+[news.rank] ranked=3 -> db/news_ranked.json
+    ✓ executed
+  [5/6] AGENT news.store.persist()
+[news.store] inserted 3 rows into duckdb/stocks.db.news
+    ✓ executed
+  [6/6] AGENT news.notifier.notify()
+[news.notify] DRY: top headlines
+  1. (035420.KS) [3.762] NAVER, 클라우드 AI 기능 업데이트 - Bloomberg
+  2. (005930.KS) [3.295] 삼성전자, 차세대 HBM 개발 - 연합뉴스
+  3. (000660.KS) [3.284] SK hynix expands HBM capacity - Reuters
+    ✓ executed

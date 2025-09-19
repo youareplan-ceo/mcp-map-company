@@ -1,0 +1,14 @@
+name: news_daily
+steps:
+  - agent: news.fetcher
+    task: fetch
+  - agent: news.parser
+    task: parse
+  - agent: news.linker
+    task: link
+  - agent: news.ranker
+    task: rank
+  - agent: news.store
+    task: persist
+  - agent: news.notifier
+    task: notify

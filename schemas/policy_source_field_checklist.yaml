@@ -1,0 +1,21 @@
+# 기관별 필수 필드 체크리스트(뼈대)
+# validator가 참고만 함 (아직 로직 없음)
+required_fields:
+  default:
+    - program_id
+    - title
+    - agency
+    - category
+    - apply_period
+  bizinfo:
+    - anncnId
+    - title
+    - agency
+    - periodText
+  semas:
+    - title
+    - periodText
+  kibo:
+    - id
+    - name
+    - limit

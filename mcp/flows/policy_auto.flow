@@ -1,0 +1,10 @@
+name: policy_auto
+steps:
+  - agent: policy_collector
+    task: fetch
+  - agent: policy_normalizer
+    task: normalize
+  - agent: policy_db_sync
+    task: save
+  - agent: policy_notifier
+    task: notify

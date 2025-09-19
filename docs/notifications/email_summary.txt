@@ -1,0 +1,7 @@
+제목: 정책자금 매칭 결과 — {{company_name}}
+내용:
+Top3 추천:
+1) {{program_1}} ({{score_1}})
+2) {{program_2}} ({{score_2}})
+3) {{program_3}} ({{score_3}})
+리포트: docs/out/{{applicant_id}}_brief.md

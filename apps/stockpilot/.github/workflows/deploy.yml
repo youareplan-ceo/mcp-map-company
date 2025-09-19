@@ -1,0 +1,346 @@
+name: 🚀 StockPilot 자동 배포
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # 🧪 테스트 작업
+  test:
+    name: 🧪 테스트 실행
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: stockpilot_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Python 설정
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: 📦 Python 의존성 설치
+      run: |
+        cd backend
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov
+    
+    - name: 🔧 Node.js 설정
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
+    
+    - name: 📦 Node.js 의존성 설치
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: 🧪 Backend 테스트
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/stockpilot_test
+        REDIS_URL: redis://localhost:6379/0
+        JWT_SECRET_KEY: test-secret-key
+        OPENAI_API_KEYS: '["test-key-1", "test-key-2"]'
+      run: |
+        cd backend
+        python -m pytest tests/ -v --cov=. --cov-report=xml
+    
+    - name: 🧪 Frontend 테스트
+      run: |
+        cd frontend
+        npm test -- --coverage --watchAll=false
+    
+    - name: 📊 테스트 커버리지 업로드
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./backend/coverage.xml,./frontend/coverage/lcov.info
+        flags: backend,frontend
+        name: stockpilot-coverage
+
+  # 🏗️ 백엔드 빌드 및 배포
+  deploy-backend:
+    name: 🏗️ 백엔드 배포
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+    
+    - name: 🚀 Render 배포
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+        wait-for-success: true
+    
+    - name: 🔍 배포 상태 확인
+      run: |
+        echo "백엔드 배포 완료"
+        curl -f https://stockpilot-backend.onrender.com/health || exit 1
+    
+    - name: 📬 Slack 알림
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        text: |
+          🏗️ 백엔드 배포 ${{ job.status }}
+          브랜치: ${{ github.ref }}
+          커밋: ${{ github.sha }}
+
+  # 🎨 프론트엔드 빌드 및 배포
+  deploy-frontend:
+    name: 🎨 프론트엔드 배포
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Node.js 설정
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
+    
+    - name: 📦 의존성 설치
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: 🏗️ 프로덕션 빌드
+      env:
+        REACT_APP_API_URL: https://stockpilot-backend.onrender.com
+        REACT_APP_WS_URL: wss://stockpilot-websocket.onrender.com
+        REACT_APP_VERSION: ${{ github.sha }}
+        GENERATE_SOURCEMAP: false
+      run: |
+        cd frontend
+        npm run build
+    
+    - name: 🚀 Vercel 배포
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        vercel-args: '--prod'
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: frontend
+    
+    - name: 🔍 배포 상태 확인
+      run: |
+        echo "프론트엔드 배포 완료"
+        sleep 30  # 배포 완료 대기
+        curl -f https://stockpilot-frontend.vercel.app/health || echo "헬스체크 실패 (정상일 수 있음)"
+    
+    - name: 📬 Slack 알림
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        text: |
+          🎨 프론트엔드 배포 ${{ job.status }}
+          브랜치: ${{ github.ref }}
+          커밋: ${{ github.sha }}
+
+  # 🔍 배포 후 통합 테스트
+  e2e-test:
+    name: 🔍 E2E 테스트
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Node.js 설정
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: 📦 Playwright 설치
+      run: |
+        npm install -g @playwright/test
+        npx playwright install chromium
+    
+    - name: 🧪 E2E 테스트 실행
+      env:
+        BACKEND_URL: https://stockpilot-backend.onrender.com
+        FRONTEND_URL: https://stockpilot-frontend.vercel.app
+      run: |
+        # 서비스 준비 상태 확인
+        timeout 300 bash -c 'until curl -f $BACKEND_URL/health; do sleep 5; done'
+        
+        # E2E 테스트 실행
+        cd e2e-tests
+        npx playwright test
+    
+    - name: 📊 테스트 결과 업로드
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: e2e-test-results
+        path: |
+          e2e-tests/test-results/
+          e2e-tests/playwright-report/
+    
+    - name: 📬 최종 배포 알림
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        text: |
+          🎉 StockPilot 전체 배포 ${{ job.status }}!
+          
+          🔗 링크:
+          • Frontend: https://stockpilot-frontend.vercel.app
+          • Backend: https://stockpilot-backend.onrender.com
+          • API Docs: https://stockpilot-backend.onrender.com/docs
+          
+          📝 변경사항:
+          커밋: ${{ github.sha }}
+          메시지: ${{ github.event.head_commit.message }}
+          
+          🧪 E2E 테스트: ${{ job.status }}
+
+  # 🧹 개발 환경 배포 (develop 브랜치)
+  deploy-staging:
+    name: 🧹 스테이징 배포
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+    
+    - name: 🚀 스테이징 배포 (Render)
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_STAGING_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+        wait-for-success: true
+    
+    - name: 📬 스테이징 알림
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#development'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        text: |
+          🧹 스테이징 배포 완료
+          브랜치: develop
+          URL: https://stockpilot-staging.onrender.com
+          커밋: ${{ github.sha }}
+
+  # 🔒 보안 검사
+  security:
+    name: 🔒 보안 검사
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+    
+    - name: 🔍 의존성 보안 검사
+      run: |
+        cd backend
+        pip install safety
+        safety check
+        
+        cd ../frontend
+        npm audit --audit-level high
+    
+    - name: 🛡️ 코드 보안 스캔
+      uses: github/super-linter@v4
+      env:
+        DEFAULT_BRANCH: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_PYTHON: true
+        VALIDATE_JAVASCRIPT: true
+        VALIDATE_DOCKERFILE: true
+        VALIDATE_YAML: true
+
+  # 📈 성능 모니터링
+  performance:
+    name: 📈 성능 테스트
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 🚀 Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v9
+      with:
+        urls: |
+          https://stockpilot-frontend.vercel.app
+          https://stockpilot-frontend.vercel.app/dashboard
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+    
+    - name: 📊 성능 결과 알림
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "channel": "#performance",
+            "attachments": [{
+              "color": "good",
+              "fields": [{
+                "title": "성능 테스트 완료",
+                "value": "Lighthouse 성능 분석 결과를 확인하세요.",
+                "short": false
+              }]
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

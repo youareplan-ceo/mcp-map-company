@@ -1,0 +1,30 @@
+# MCP Registry (스캐폴드)
+agents:
+  policy_collector:        { tasks: [fetch] }
+  policy_normalizer:       { tasks: [normalize] }
+  policy_db_sync:          { tasks: [save] }
+  policy_notifier:         { tasks: [notify] }
+  policy_applicant_intake: { tasks: [collect] }
+  policy_matcher:          { tasks: [match] }
+  policy_scorer:           { tasks: [score] }
+  policy_reporter:         { tasks: [render] }
+  policy_validator:        { tasks: [check] }
+
+  # 정책자금 정보 뼈대 전용
+  policy_source_registry:  { tasks: [load_sources] }
+  policy_fetcher:          { tasks: [fetch] }
+  policy_parser:           { tasks: [parse] }
+  policy_store:            { tasks: [persist] }
+
+flows:
+  - policy_auto
+  - policy_daily
+  - policy_weekly
+  - policy_match
+  - policy_match_validate
+  - policy_review
+  - policy_sources_install
+  - policy_ingest
+
+policies:
+  - policy_human_gate.yaml

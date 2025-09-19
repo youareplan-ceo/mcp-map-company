@@ -1,0 +1,29 @@
+name: stock_batch_csv
+steps:
+  - tool: portfolio
+    action: batch_sma
+    args:
+      csv_path: "data/tickers.csv"
+      # tickers: ["AAPL"]  # 필요시 수동 추가도 가능
+      period: "3mo"
+      interval: "1d"
+      fast: 5
+      slow: 20
+      min_last_close: 50
+      min_avg_vol20: 1000000
+
+  - gate: manual_approval
+
+  - agent: notifier
+    task: summary_to_slack
+    args:
+      text: |
+        📊 StockPilot CSV 배치 결과 (총 {{ portfolio.count }} 종목 입력)
+        ✅ 통과/신호 상위:
+        {% for r in portfolio.results if not r.get("filtered") and not r.get("error") %}{% if loop.index <= 12 %}
+        - {{ r.ticker }} | 종가: {{ r.last_close }} | 5MA: {{ r.fast_ma }} | 20MA: {{ r.slow_ma }} | 신호: {{ r.signal }} {{ r.crossed if r.crossed else "" }} | 거래량20: {{ r.avg_vol20 }}
+        {% endif %}{% endfor %}
+        🔎 필터로 제외:
+        {% for r in portfolio.results if r.get("filtered") %}{% if loop.index <= 12 %}
+        - {{ r.ticker }} | 이유: {{ r.filtered }} | 종가: {{ r.last_close if r.last_close is not none else "-" }} | 거래량20: {{ r.avg_vol20 if r.avg_vol20 is not none else "-" }}
+        {% endif %}{% endfor %}

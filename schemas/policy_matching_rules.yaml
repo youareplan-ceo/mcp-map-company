@@ -1,0 +1,29 @@
+# 정책자금 매칭 규칙(뼈대/샘플)
+# 포맷 가이드:
+# - program_id: 내부 고유 ID (기관+공고ID 조합 가능)
+# - when.* : 신청자 필드 조건 (모두 만족해야 eligible)
+# - constraints.* : 정책 자체의 계량 조건(한도/금리/기간 등) — 참고용
+# - notes: 사람이 읽는 메모(심사 가이드)
+
+rules:
+  - program_id: ex_kibo_working_capital_2025
+    when:
+      biz_age_months_gte: 12
+      revenue_last12m_gte: 100000000      # 1억원+
+      credit_band_in: ["A","B","C"]
+      tax_arrears_flag: false
+    constraints:
+      limit_max: 300000000                # 3억원
+      interest_rate_max: 5.0              # %
+      apply_period_until: "2025-12-31"
+    notes: "신보 운전자금 예시 — 체납 無 필수"
+
+  - program_id: ex_sbc_startup_loan_young_2025
+    when:
+      biz_age_months_lte: 36
+      special_flags_includes: ["청년"]
+      credit_band_in: ["A","B"]
+    constraints:
+      limit_max: 100000000
+      interest_rate_max: 3.5
+    notes: "중진공 청년창업 예시 — 업력 3년 이내"

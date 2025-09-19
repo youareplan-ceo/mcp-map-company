@@ -1,0 +1,14 @@
+# 드라이런 스케줄(뼈대)
+# 실제 실행은 안 하고, 어떤 플로우를 언제 돌릴지 선언만.
+schedules:
+  - name: daily_policy_ingest
+    cron: "0 6 * * *"         # 매일 06:00
+    flow: policy_daily
+
+  - name: weekly_policy_refresh
+    cron: "0 7 * * 1"         # 매주 월 07:00
+    flow: policy_weekly
+
+  - name: review_pipeline
+    cron: "0 9 * * *"         # 매일 09:00
+    flow: policy_review

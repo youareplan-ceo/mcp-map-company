@@ -1,0 +1,160 @@
+# Render.com 자동 배포 설정
+# StockPilot AI Backend 서비스
+services:
+  # FastAPI Backend 서비스
+  - type: web
+    name: stockpilot-backend
+    env: python
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install uvicorn gunicorn
+    startCommand: |
+      gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --access-logfile - --error-logfile -
+    healthCheckPath: /health
+    envVars:
+      - key: ENV
+        value: production
+      - key: DEBUG
+        value: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: CORS_ORIGINS
+        value: https://stockpilot-frontend.onrender.com,https://stockpilot.ai
+      - key: OPENAI_API_KEYS
+        sync: false  # 환경 변수에서 직접 설정
+      - key: OPENAI_COST_LIMIT_DAILY
+        value: "50.0"
+      - key: OPENAI_KEY_ROTATION_ENABLED
+        value: "true"
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRE_MINUTES
+        value: "30"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stockpilot-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: stockpilot-redis
+          property: connectionString
+      - key: POLYGON_API_KEY
+        sync: false
+      - key: ALPHA_VANTAGE_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
+      - key: EMAIL_SMTP_SERVER
+        value: smtp.gmail.com
+      - key: EMAIL_SMTP_PORT
+        value: "587"
+      - key: EMAIL_USERNAME
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+    disk:
+      name: stockpilot-backend-disk
+      mountPath: /app/data
+      sizeGB: 1
+    
+  # WebSocket 서비스 (별도 서비스)
+  - type: web
+    name: stockpilot-websocket
+    env: python
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install uvicorn websockets
+    startCommand: |
+      python websocket_server.py --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: stockpilot-redis
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: BACKEND_API_URL
+        fromService:
+          type: web
+          name: stockpilot-backend
+          property: url
+
+# 데이터베이스 서비스들
+databases:
+  # PostgreSQL 데이터베이스
+  - name: stockpilot-postgres
+    plan: starter
+    region: oregon
+    databaseName: stockpilot
+    user: stockpilot
+    ipAllowList: []  # Render 서비스에서만 접근
+    
+  # Redis 캐시
+  - name: stockpilot-redis
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+    
+# 환경별 설정
+environments:
+  production:
+    buildCommand: |
+      echo "Production build starting..."
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install gunicorn uvicorn
+      echo "Installing additional production dependencies..."
+      pip install psycopg2-binary redis aioredis
+      echo "Production build completed"
+      
+    preDeployCommand: |
+      echo "Running pre-deploy tasks..."
+      python -c "
+      import os
+      print('Validating environment variables...')
+      required_vars = ['OPENAI_API_KEYS', 'JWT_SECRET_KEY', 'DATABASE_URL', 'REDIS_URL']
+      missing = [var for var in required_vars if not os.getenv(var)]
+      if missing:
+          print(f'Missing environment variables: {missing}')
+          exit(1)
+      print('Environment validation passed')
+      "
+      
+    healthCheck:
+      httpPath: /health
+      initialDelaySeconds: 30
+      timeoutSeconds: 10
+      periodSeconds: 30
+      
+  staging:
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install uvicorn
+      
+    envVars:
+      - key: ENV
+        value: staging
+      - key: DEBUG
+        value: true
+      - key: LOG_LEVEL
+        value: DEBUG

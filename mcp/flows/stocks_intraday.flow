@@ -1,0 +1,18 @@
+name: stocks_intraday
+steps:
+  - agent: stocks.source_registry
+    task: register_sources
+  - agent: stocks.fetcher
+    task: fetch
+  - agent: stocks.indicator
+    task: compute
+  - agent: stocks.signal
+    task: generate
+  - agent: stocks.store
+    task: persist
+  - agent: stocks.notifier
+    task: notify
+  - agent: stocks.summary
+    task: build
+  - agent: notify.slack
+    task: summary

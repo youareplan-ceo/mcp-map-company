@@ -1,0 +1,40 @@
+cat > stockpilot-live.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>StockPilot AI</title>
+<style>
+body{margin:0;padding:20px;font-family:-apple-system,sans-serif;background:linear-gradient(135deg,#0a0e27,#1a1f3a);color:white}
+h1{font-size:56px;font-weight:800;background:linear-gradient(90deg,#00d4ff,#0099ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.portfolio{background:rgba(0,150,255,0.1);border-radius:24px;padding:40px;margin:30px 0;text-align:center}
+.stocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin:30px 0}
+.stock-card{background:rgba(255,255,255,0.05);padding:20px;border-radius:12px}
+</style>
+</head>
+<body>
+<h1>StockPilot AI - LIVE</h1>
+<div class="portfolio">
+<div id="portfolio-value">로딩 중...</div>
+</div>
+<div id="stocks" class="stocks"></div>
+<script>
+fetch('http://localhost:8000/api/v1/stocks/realtime')
+.then(r=>r.json())
+.then(data=>{
+  document.getElementById('stocks').innerHTML = data.stocks.map(s=>
+    `<div class="stock-card">
+      <h3>${s.name}</h3>
+      <p>₩${s.price.toLocaleString()}</p>
+      <p style="color:${s.change>0?'#00ff88':'#ff4757'}">${s.change_percent}%</p>
+    </div>`
+  ).join('')
+})
+fetch('http://localhost:8000/api/v1/dashboard/summary')
+.then(r=>r.json())
+.then(data=>{
+  document.getElementById('portfolio-value').innerHTML = `₩${data.total_portfolio_value.toLocaleString()}`
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# DRY-RUN: duckdb/schema.sql 적용 자리 (실제 적용 로직 미구현)
+set -e
+DB_CFG="config/db.yaml"
+SCHEMA="duckdb/schema.sql"
+
+echo "[DRY-RUN] Would apply schema:"
+echo "  - config : ${DB_CFG}"
+echo "  - schema : ${SCHEMA}"
+echo "  - target : (db_path in config/db.yaml)"
+echo "TODO: hook duckdb CLI or python-duckdb here."

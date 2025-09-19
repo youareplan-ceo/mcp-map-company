@@ -1,0 +1,19 @@
+sources:
+- cadence: intraday
+  id: yfinance
+  name: Yahoo Finance
+  type: api
+- auth:
+    env_var: ALPHAVANTAGE_API_KEY
+    type: api_key
+  cadence: intraday
+  id: alphavantage
+  name: Alpha Vantage
+  type: api
+- auth:
+    env_var: NEWSAPI_KEY
+    type: api_key
+  cadence: hourly
+  id: newsapi
+  name: NewsAPI
+  type: api

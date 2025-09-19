@@ -1,0 +1,11 @@
+name: web_research
+steps:
+  - tool: webfetch
+    action: fetch
+    args:
+      url: "https://example.com"
+  - agent: stockpilot
+    task: research
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack

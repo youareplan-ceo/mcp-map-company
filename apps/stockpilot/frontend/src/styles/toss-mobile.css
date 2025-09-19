@@ -1,0 +1,412 @@
+/* 토스 스타일 글로벌 CSS - 모바일 최적화 */
+
+/* 폰트 및 기본 설정 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f9fafb;
+  color: #111827;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+/* 토스 스타일 컨테이너 */
+.toss-container {
+  max-width: 428px;
+  margin: 0 auto;
+  padding: 0 16px;
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+/* 토스 스타일 카드 */
+.toss-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  margin: 16px 0;
+  overflow: hidden;
+  transition: all 0.15s ease;
+}
+
+.toss-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.15);
+}
+
+.toss-card-header {
+  padding: 20px 20px 0 20px;
+  border-bottom: none;
+}
+
+.toss-card-body {
+  padding: 20px;
+}
+
+.toss-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.toss-card-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+/* 토스 스타일 버튼 */
+.toss-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.toss-btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.toss-btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.toss-btn-primary:active {
+  background: #1e40af;
+  transform: scale(0.98);
+}
+
+.toss-btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.toss-btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.toss-btn-outline {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid #e5e7eb;
+}
+
+/* 토스 스타일 입력 필드 */
+.toss-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #111827;
+  background: #ffffff;
+  transition: all 0.15s ease;
+  margin: 8px 0;
+}
+
+.toss-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+}
+
+.toss-input::placeholder {
+  color: #9ca3af;
+}
+
+/* 토스 스타일 네비게이션 */
+.toss-nav {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.toss-nav-title {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  color: #111827;
+}
+
+/* 토스 스타일 리스트 */
+.toss-list {
+  background: #ffffff;
+  border-radius: 12px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+
+.toss-list-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.toss-list-item:last-child {
+  border-bottom: none;
+}
+
+.toss-list-item:active {
+  background: #f9fafb;
+}
+
+.toss-list-item-content {
+  flex: 1;
+}
+
+.toss-list-item-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.toss-list-item-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.toss-list-item-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* 토스 스타일 태그/배지 */
+.toss-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.toss-badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.toss-badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.toss-badge-error {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.toss-badge-info {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* 토스 스타일 차트 카드 */
+.toss-chart-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.toss-chart-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.toss-chart-label {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 16px;
+}
+
+.toss-chart-change {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 428px) {
+  .toss-container {
+    padding: 0 12px;
+  }
+  
+  .toss-card {
+    margin: 12px 0;
+  }
+  
+  .toss-card-body {
+    padding: 16px;
+  }
+  
+  .toss-btn {
+    padding: 14px 20px;
+  }
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111827;
+    color: #f9fafb;
+  }
+  
+  .toss-container {
+    background: #1f2937;
+  }
+  
+  .toss-card {
+    background: #1f2937;
+    border: 1px solid #374151;
+  }
+  
+  .toss-card-title {
+    color: #f9fafb;
+  }
+  
+  .toss-input {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .toss-nav {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .toss-list {
+    background: #1f2937;
+    border: 1px solid #374151;
+  }
+  
+  .toss-list-item {
+    border-color: #374151;
+  }
+  
+  .toss-list-item:active {
+    background: #374151;
+  }
+}
+
+/* 애니메이션 */
+@keyframes toss-slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.toss-animate-slide-up {
+  animation: toss-slide-up 0.3s ease;
+}
+
+@keyframes toss-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.toss-animate-fade-in {
+  animation: toss-fade-in 0.3s ease;
+}
+
+/* 로딩 스피너 */
+.toss-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 토스 스타일 하단 네비게이션 */
+.toss-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 428px;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0 max(12px, env(safe-area-inset-bottom));
+  z-index: 1000;
+}
+
+.toss-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  color: #6b7280;
+}
+
+.toss-bottom-nav-item.active {
+  color: #2563eb;
+}
+
+.toss-bottom-nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.toss-bottom-nav-label {
+  font-size: 10px;
+  font-weight: 500;
+}

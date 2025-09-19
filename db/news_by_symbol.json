@@ -1,0 +1,26 @@
+[
+  {
+    "symbol": "005930.KS",
+    "hits": 1,
+    "title": "삼성전자, 차세대 HBM 개발",
+    "url": "https://ex/1",
+    "source": "연합뉴스",
+    "publishedAt": "2025-09-18T05:00:00Z"
+  },
+  {
+    "symbol": "000660.KS",
+    "hits": 1,
+    "title": "SK hynix expands HBM capacity",
+    "url": "https://ex/2",
+    "source": "Reuters",
+    "publishedAt": "2025-09-18T03:00:00Z"
+  },
+  {
+    "symbol": "035420.KS",
+    "hits": 1,
+    "title": "NAVER, 클라우드 AI 기능 업데이트",
+    "url": "https://ex/3",
+    "source": "Bloomberg",
+    "publishedAt": "2025-09-17T22:00:00Z"
+  }
+]

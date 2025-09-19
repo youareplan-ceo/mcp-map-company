@@ -1,0 +1,5 @@
+gates:
+  - name: manual_approval
+    steps:
+      - policy_reporter.render   # 리포트 확인 후
+      # - (선택) policy_notifier.notify  # 승인/보류 알림 훗날 연결

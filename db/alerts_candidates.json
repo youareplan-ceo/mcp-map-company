@@ -1,0 +1,15 @@
+[
+  {
+    "symbol": "005930.KS",
+    "decision": "SELL",
+    "close": 67710.69,
+    "rationale": "SMA5<SMA20 (momentum down) | MACD<0 (bearish confirm)",
+    "news": {
+      "score": 3.295,
+      "title": "삼성전자, 차세대 HBM 개발",
+      "source": "연합뉴스",
+      "url": "https://ex/1",
+      "publishedAt": "2025-09-18T05:00:00Z"
+    }
+  }
+]

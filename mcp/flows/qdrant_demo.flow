@@ -1,0 +1,20 @@
+name: qdrant_demo
+steps:
+  - tool: qdrant
+    action: upsert
+    args:
+      collection: "test_vectors"
+      points:
+        - vector: [0.1, 0.2, 0.3]
+          payload: { doc: "테스트 문서1" }
+        - vector: [0.2, 0.1, 0.5]
+          payload: { doc: "테스트 문서2" }
+  - tool: qdrant
+    action: query
+    args:
+      collection: "test_vectors"
+      vector: [0.1, 0.2, 0.25]
+      limit: 2
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack

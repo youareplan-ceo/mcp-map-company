@@ -1,0 +1,10 @@
+# 예외/가점 규칙(뼈대)
+# 예) tax_arrears_flag가 true여도 금액<₩300,000 이면 '경미'로 가중치만 -5 처리
+# TODO: 정량 임계값/가점·감점 표준화
+rules:
+  - id: minor_tax_arrears
+    if: tax_arrears_flag == true AND tax_arrears_amount < 300000
+    then: score_delta = -5 ; note = "경미 체납"
+  - id: regional_bonus
+    if: region in ["세종", "전북", "강원"]
+    then: score_delta = +3 ; note = "지역 가점"

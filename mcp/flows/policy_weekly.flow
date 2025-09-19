@@ -1,0 +1,3 @@
+name: policy_weekly
+steps:
+  - flow: policy_auto

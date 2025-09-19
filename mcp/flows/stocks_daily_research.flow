@@ -1,0 +1,10 @@
+name: stocks_daily_research
+steps:
+  - agent: stocks.source_registry
+    task: load_sources
+  - agent: stocks.fetcher
+    task: fetch
+  - agent: stocks.indicator
+    task: compute
+  - agent: stocks.signal
+    task: generate

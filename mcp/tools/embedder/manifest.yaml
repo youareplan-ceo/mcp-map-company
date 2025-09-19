@@ -1,0 +1,15 @@
+tool:
+  id: "embedder"
+  name: "Sentence Embedder"
+  description: "sentence-transformers 로 텍스트를 벡터로 변환"
+  actions:
+    - name: encode
+      input_schema:
+        type: object
+        required: [text]
+        properties:
+          text: { type: string }
+      output_schema:
+        type: object
+        properties:
+          vector: { type: array }

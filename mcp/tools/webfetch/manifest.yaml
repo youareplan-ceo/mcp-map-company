@@ -1,0 +1,17 @@
+tool:
+  id: "webfetch"
+  name: "Simple Web Fetcher"
+  description: "URL에서 제목과 텍스트 스니펫을 추출"
+  actions:
+    - name: fetch
+      input_schema:
+        type: object
+        required: [url]
+        properties:
+          url: { type: string, description: "http(s) URL" }
+      output_schema:
+        type: object
+        properties:
+          title: { type: string }
+          snippet: { type: string }
+          status: { type: integer }

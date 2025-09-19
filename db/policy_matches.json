@@ -1,0 +1,4 @@
+[
+  {"applicant_id":"A-001","program":"초기창업 패스트트랙","score":0.78,"reason":"업력<6개월 + 무체납 + 전국"},
+  {"applicant_id":"A-002","program":"스마트공장 구축 지원","score":0.66,"reason":"제조업 추정 + 지역 일치, 소액 체납 주의"}
+]

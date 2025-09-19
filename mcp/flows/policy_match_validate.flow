@@ -1,0 +1,9 @@
+name: policy_match_validate
+steps:
+  - agent: policy_applicant_intake
+    task: collect
+  - flow: policy_auto
+  - agent: policy_validator
+    task: check
+  - agent: policy_matcher
+    task: match

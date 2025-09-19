@@ -1,0 +1,19 @@
+name: memory_demo
+steps:
+  - tool: webfetch
+    action: fetch
+    args:
+      url: "https://example.com"
+  - tool: memvector
+    action: upsert
+    args:
+      doc_id: "ex1"
+      text: "${webfetch.snippet}"
+  - tool: memvector
+    action: query
+    args:
+      text: "example domain overview"
+      top_k: 3
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack

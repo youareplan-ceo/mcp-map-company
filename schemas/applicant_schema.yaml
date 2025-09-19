@@ -1,0 +1,16 @@
+# 신청자 공통 스키마(뼈대 확장)
+# 목적: 매칭/스코어링 단계에서 참조하는 표준 필드 집합
+# TODO: 타입/검증 규칙 구체화 (예: string/int/enum, required 여부)
+
+company_name:
+owner_name:
+biz_reg_no:
+region:           # 시/도
+industry_code:    # KSIC/표준산업분류
+biz_age_months:
+revenue_last12m:
+credit_band:      # A/B/C/D 구간
+tax_arrears_flag: # true/false (소액 체납 예외 규칙 별도 처리)
+employment_count:
+special_flags:    # 청년/여성/사회적/수출/스마트팩토리 등
+updated_at:

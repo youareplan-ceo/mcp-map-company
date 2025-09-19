@@ -1,0 +1,15 @@
+name: browser_list
+steps:
+  - tool: browser
+    action: open
+    args:
+      url: "https://example.com"
+      wait: "domcontentloaded"
+  - tool: browser
+    action: extract
+    args:
+      selector: "body"
+      mode: "readability"
+  - gate: manual_approval
+  - agent: notifier
+    task: summary_to_slack

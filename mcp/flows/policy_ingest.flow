@@ -1,0 +1,10 @@
+name: policy_ingest
+steps:
+  - agent: policy_source_registry
+    task: load_sources
+  - agent: policy_fetcher
+    task: fetch
+  - agent: policy_parser
+    task: parse
+  - agent: policy_store
+    task: persist

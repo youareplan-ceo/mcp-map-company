@@ -1,0 +1,4 @@
+[
+  {"id":"A-001","name":"홍길동","biz_age_months":4,"revenue_million":0,"tax_arrears":0,"region":"서울"},
+  {"id":"A-002","name":"김유진","biz_age_months":14,"revenue_million":120,"tax_arrears":1,"region":"경기"}
+]

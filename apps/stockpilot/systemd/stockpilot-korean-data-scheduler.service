@@ -1,0 +1,49 @@
+[Unit]
+Description=StockPilot Korean Data Collection Scheduler
+Documentation=https://stockpilot.ai/docs/data-sources
+After=network.target redis.service
+Wants=redis.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=stockpilot
+Group=stockpilot
+WorkingDirectory=/opt/stockpilot/backend
+Environment=PATH=/opt/stockpilot/backend/venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONPATH=/opt/stockpilot/backend
+Environment=LOG_LEVEL=INFO
+EnvironmentFile=-/opt/stockpilot/.env.production
+ExecStart=/opt/stockpilot/backend/venv/bin/python /opt/stockpilot/backend/korean_data_scheduler.py
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=stockpilot-korean-data
+
+# 보안 강화 설정
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/stockpilot /tmp /opt/stockpilot/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+MemoryDenyWriteExecute=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# 리소스 제한
+MemoryMax=512M
+CPUQuota=50%
+TasksMax=150
+
+[Install]
+WantedBy=multi-user.target

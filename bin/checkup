@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+echo "[CHECK] flows:"; ls -1 mcp/flows | sort
+echo "[CHECK] agents:"; ls -1 mcp/agents | sort
+echo "[CHECK] schemas:"; ls -1 schemas | sort
+echo "[CHECK] notifications:"; ls -1 docs/notifications | sort
+echo "[CHECK] duckdb schema:"; test -f duckdb/schema.sql && echo "OK" || echo "MISSING"
+echo "[CHECK] data files:"; ls -1 data | sort
+echo "[DONE] structure looks good (dry-run)."
