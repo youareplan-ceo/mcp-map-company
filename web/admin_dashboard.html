@@ -299,6 +299,63 @@
             </div>
         </div>
 
+        <!-- Recent Alerts Panel -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">🔔</span>
+                    최근 알림
+                </h2>
+                <div class="flex gap-3">
+                    <button id="refreshAlertsBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        새로고침
+                    </button>
+                    <button id="testAlertBtn" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📢</span>
+                        테스트 알림
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alert Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-red-500/20 dark:bg-red-600/20 border border-red-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">🚨</div>
+                    <div class="text-red-300 dark:text-red-200 text-sm font-medium">Critical</div>
+                    <div id="criticalCount" class="text-red-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-orange-500/20 dark:bg-orange-600/20 border border-orange-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">❌</div>
+                    <div class="text-orange-300 dark:text-orange-200 text-sm font-medium">Error</div>
+                    <div id="errorCount" class="text-orange-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-yellow-500/20 dark:bg-yellow-600/20 border border-yellow-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">⚠️</div>
+                    <div class="text-yellow-300 dark:text-yellow-200 text-sm font-medium">Warning</div>
+                    <div id="warningCount" class="text-yellow-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-blue-500/20 dark:bg-blue-600/20 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">ℹ️</div>
+                    <div class="text-blue-300 dark:text-blue-200 text-sm font-medium">Info</div>
+                    <div id="infoCount" class="text-blue-100 text-2xl font-bold">0</div>
+                </div>
+            </div>
+
+            <!-- Recent Alerts List -->
+            <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg overflow-hidden">
+                <div class="p-4 border-b border-white/10 dark:border-gray-700">
+                    <h3 class="text-white dark:text-gray-100 font-semibold">최근 알림 (20개)</h3>
+                </div>
+                <div id="alertsList" class="max-h-80 overflow-y-auto">
+                    <!-- Alert items will be populated here -->
+                    <div class="p-4 text-center text-white/60 dark:text-gray-400">
+                        알림을 불러오는 중...
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- System Logs Panel -->
         <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
             <div class="flex items-center justify-between mb-4">
@@ -890,10 +947,17 @@
                 addLog('로그가 지워졌습니다', 'info');
             });
 
+            // Alerts Panel Event Listeners
+            document.getElementById('refreshAlertsBtn').addEventListener('click', refreshAlerts);
+            document.getElementById('testAlertBtn').addEventListener('click', sendTestAlert);
+
             // Listen for theme changes
             document.addEventListener('themeChanged', (event) => {
                 addLog(`테마 변경: ${event.detail.darkMode ? '다크모드' : '라이트모드'}`, 'info');
             });
+
+            // Initialize alerts panel
+            await initializeAlerts();
 
             // Initial load
             await refreshAll();
