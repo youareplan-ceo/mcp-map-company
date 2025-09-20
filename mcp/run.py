@@ -15,6 +15,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI
+from .system_metrics_api import router as system_metrics_router  # 시스템 자원 메트릭 라우터
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -38,6 +39,7 @@ log = logging.getLogger("mcp.run")
 # FastAPI (Render entrypoint)
 # ---------------------------------
 app = FastAPI(title="mcp-map-company", version="0.2.0")
+app.include_router(system_metrics_router, prefix="/api/v1/metrics", tags=["system"])  # 시스템 자원 메트릭 라우터 등록
 
 # CORS (Vercel 등 프론트에서 호출 허용)
 # 필요 시 allow_origins=["https://mcp-map.vercel.app"] 처럼 도메인 제한 가능

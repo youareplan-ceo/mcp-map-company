@@ -7,6 +7,7 @@ IP별 분당 요청 수 제한 및 보안 로깅
 import os
 import time
 import logging
+import asyncio
 from collections import defaultdict, deque
 from datetime import datetime, timedelta
 from typing import Dict, Set
@@ -151,7 +152,7 @@ class RateLimiter:
         return False
 
     def _log_rate_limit_violation(self, client_ip: str, request_count: int, request: Request):
-        """Rate Limit 위반 로깅"""
+        """Rate Limit 위반 로깅 및 알림 전송"""
         user_agent = request.headers.get('User-Agent', 'Unknown')
         endpoint = f"{request.method} {request.url.path}"
 
@@ -165,12 +166,38 @@ class RateLimiter:
             'timestamp': datetime.now().isoformat()
         }
 
+        # 보안 로그 기록
         self.security_logger.warning(
             f"Rate limit exceeded - IP: {client_ip}, "
             f"Requests: {request_count}/{self.requests_per_minute}, "
             f"Endpoint: {endpoint}, "
             f"User-Agent: {user_agent}"
         )
+
+        # 비동기 알림 전송 (백그라운드에서 실행)
+        try:
+            asyncio.create_task(self._send_security_notification(
+                client_ip, request_count, endpoint, user_agent
+            ))
+        except Exception as e:
+            self.security_logger.error(f"Failed to send security notification: {e}")
+
+    async def _send_security_notification(self, client_ip: str, request_count: int, endpoint: str, user_agent: str):
+        """보안 알림 전송 (비동기)"""
+        try:
+            # notifier 모듈을 지연 import (순환 import 방지)
+            from .notifier import send_ip_blocked_alert
+
+            await send_ip_blocked_alert(
+                client_ip=client_ip,
+                violation_count=request_count,
+                endpoint=endpoint,
+                user_agent=user_agent
+            )
+        except ImportError:
+            self.security_logger.warning("Notifier module not available - skipping alert")
+        except Exception as e:
+            self.security_logger.error(f"Failed to send IP blocked alert: {e}")
 
     def get_blocked_ips_summary(self) -> Dict:
         """차단된 IP 요약 정보"""
