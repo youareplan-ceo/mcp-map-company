@@ -1,0 +1,15 @@
+{
+  "training_date": "2025-09-20",
+  "tested_mcps": [
+    {
+      "name": "filesystem",
+      "status": "complete",
+      "functions_tested": 12
+    },
+    {
+      "name": "github",
+      "status": "in_progress",
+      "functions_tested": 5
+    }
+  ]
+}
