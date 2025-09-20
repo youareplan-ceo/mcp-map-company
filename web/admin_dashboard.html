@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ko" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>MCP-MAP 관리자 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 2s infinite',
+                        'spin-slow': 'spin 2s linear infinite',
+                        'shake': 'shake 0.5s ease-in-out'
+                    },
+                    keyframes: {
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '75%': { transform: 'translateX(5px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #10b981;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+
+        .log-level-info { color: #10b981; }
+        .log-level-warning { color: #f59e0b; }
+        .log-level-error { color: #ef4444; }
+
+        /* Dark mode styles for charts */
+        .dark .chart-container {
+            background: rgba(31, 41, 55, 0.8);
+        }
+
+        .dark .chart-wrapper {
+            background: rgba(17, 24, 39, 0.9);
+        }
+
+        /* Custom scrollbar for dark mode */
+        .dark ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #374151;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* Transition for theme switch */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 dark:from-gray-900 dark:via-gray-800 dark:to-black transition-all duration-300">
+    <!-- Header with Dark Mode Toggle -->
+    <header class="bg-white/10 dark:bg-gray-800/30 backdrop-blur-md border-b border-white/20 dark:border-gray-700/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold text-white dark:text-gray-100">
+                        🚀 MCP-MAP 관리자 대시보드
+                    </h1>
+                    <span id="connectionStatus" class="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+                        연결 확인 중...
+                    </span>
+                </div>
+
+                <!-- Dark Mode Toggle and Controls -->
+                <div class="flex items-center space-x-4">
+                    <!-- Dark Mode Toggle -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-white dark:text-gray-300">☀️</span>
+                        <button id="darkModeToggle" class="toggle-switch" aria-label="다크모드 토글">
+                        </button>
+                        <span class="text-sm text-white dark:text-gray-300">🌙</span>
+                    </div>
+
+                    <!-- Auto Refresh Toggle -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-white dark:text-gray-300">자동 새로고침</span>
+                        <button id="autoRefreshToggle" class="toggle-switch" aria-label="자동 새로고침 토글">
+                        </button>
+                    </div>
+
+                    <!-- Manual Refresh -->
+                    <button id="refreshBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                        <span>🔄</span>
+                        <span>새로고침</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto p-6 space-y-8">
+        <!-- System Status Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Health Status Card -->
+            <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-white dark:text-gray-100 text-sm font-medium opacity-75">시스템 상태</h3>
+                        <p id="healthStatus" class="text-white dark:text-gray-100 text-2xl font-bold mt-2">확인 중...</p>
+                    </div>
+                    <div class="text-3xl">🏥</div>
+                </div>
+            </div>
+
+            <!-- API Status Card -->
+            <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-white dark:text-gray-100 text-sm font-medium opacity-75">API 상태</h3>
+                        <p id="apiStatus" class="text-white dark:text-gray-100 text-2xl font-bold mt-2">확인 중...</p>
+                    </div>
+                    <div class="text-3xl">🔌</div>
+                </div>
+            </div>
+
+            <!-- Database Status Card -->
+            <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-white dark:text-gray-100 text-sm font-medium opacity-75">데이터베이스</h3>
+                        <p id="dbStatus" class="text-white dark:text-gray-100 text-2xl font-bold mt-2">확인 중...</p>
+                    </div>
+                    <div class="text-3xl">🗄️</div>
+                </div>
+            </div>
+
+            <!-- Uptime Card -->
+            <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-white dark:text-gray-100 text-sm font-medium opacity-75">가동 시간</h3>
+                        <p id="uptime" class="text-white dark:text-gray-100 text-2xl font-bold mt-2">-</p>
+                    </div>
+                    <div class="text-3xl">⏱️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Metrics Panel -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">📊</span>
+                    실시간 메트릭
+                </h2>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center text-white dark:text-gray-300 text-sm">
+                        <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                        실시간 업데이트
+                    </div>
+                    <button id="refreshMetricsBtn" class="bg-white bg-opacity-20 dark:bg-gray-600 dark:bg-opacity-50 hover:bg-opacity-30 text-white dark:text-gray-100 px-4 py-2 rounded-lg transition-all duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        메트릭 새로고침
+                    </button>
+                </div>
+            </div>
+
+            <!-- Metrics Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white dark:text-gray-300 text-sm opacity-75">평균 응답시간</p>
+                            <p class="text-white dark:text-gray-100 text-2xl font-bold" id="avgResponseTime">-</p>
+                            <p class="text-white dark:text-gray-400 text-xs opacity-60">milliseconds</p>
+                        </div>
+                        <div class="text-3xl">⚡</div>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white dark:text-gray-300 text-sm opacity-75">DB 지연시간</p>
+                            <p class="text-white dark:text-gray-100 text-2xl font-bold" id="dbLatency">-</p>
+                            <p class="text-white dark:text-gray-400 text-xs opacity-60">milliseconds</p>
+                        </div>
+                        <div class="text-3xl">🗄️</div>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white dark:text-gray-300 text-sm opacity-75">활성 사용자</p>
+                            <p class="text-white dark:text-gray-100 text-2xl font-bold" id="activeUsers">-</p>
+                            <p class="text-white dark:text-gray-400 text-xs opacity-60">last 5 minutes</p>
+                        </div>
+                        <div class="text-3xl">👥</div>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white dark:text-gray-300 text-sm opacity-75">시스템 CPU</p>
+                            <p class="text-white dark:text-gray-100 text-2xl font-bold" id="systemCpu">-</p>
+                            <p class="text-white dark:text-gray-400 text-xs opacity-60">percentage</p>
+                        </div>
+                        <div class="text-3xl">💻</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Response Time Trend Chart -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm chart-container">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📈</span>
+                        응답시간 추이
+                    </h3>
+                    <div class="relative chart-wrapper" style="height: 250px;">
+                        <canvas id="realTimeResponseChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- System Resource Gauge -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm chart-container">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🎯</span>
+                        시스템 리소스
+                    </h3>
+                    <div class="relative chart-wrapper" style="height: 250px;">
+                        <canvas id="systemResourceGauge"></canvas>
+                    </div>
+                </div>
+
+                <!-- DB Performance Chart -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm chart-container">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🗄️</span>
+                        DB 성능 모니터
+                    </h3>
+                    <div class="relative chart-wrapper" style="height: 250px;">
+                        <canvas id="dbPerformanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- API Call Distribution -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm chart-container">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        API 호출 분포
+                    </h3>
+                    <div class="relative chart-wrapper" style="height: 250px;">
+                        <canvas id="apiCallsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs Panel -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">📋</span>
+                    시스템 로그
+                </h2>
+                <button id="clearLogsBtn" class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    로그 지우기
+                </button>
+            </div>
+            <div id="logContainer" class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4 h-64 overflow-y-auto font-mono text-sm">
+                <div class="text-green-400 dark:text-green-300">시스템 로그를 불러오는 중...</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-white/70 dark:text-gray-400 text-sm">
+            © 2024 MCP-MAP Company. All rights reserved.
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // Dark Mode Toggle Implementation
+        // =============================================
+
+        class DarkModeManager {
+            constructor() {
+                this.darkMode = false;
+                this.toggleButton = document.getElementById('darkModeToggle');
+                this.init();
+            }
+
+            init() {
+                // Load saved theme from localStorage
+                this.loadTheme();
+
+                // Set up event listener for toggle button
+                this.toggleButton.addEventListener('click', () => {
+                    this.toggle();
+                });
+
+                // Apply initial theme
+                this.applyTheme();
+            }
+
+            loadTheme() {
+                const saved = localStorage.getItem('mcp-map-dark-mode');
+                if (saved !== null) {
+                    this.darkMode = JSON.parse(saved);
+                } else {
+                    // Default to system preference
+                    this.darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+            }
+
+            saveTheme() {
+                localStorage.setItem('mcp-map-dark-mode', JSON.stringify(this.darkMode));
+            }
+
+            toggle() {
+                this.darkMode = !this.darkMode;
+                this.saveTheme();
+                this.applyTheme();
+                this.notifyCharts();
+            }
+
+            applyTheme() {
+                const html = document.documentElement;
+                const toggle = this.toggleButton;
+
+                if (this.darkMode) {
+                    html.classList.add('dark');
+                    toggle.classList.add('active');
+                } else {
+                    html.classList.remove('dark');
+                    toggle.classList.remove('active');
+                }
+
+                // Update chart colors if charts are initialized
+                setTimeout(() => {
+                    this.updateChartColors();
+                }, 100);
+            }
+
+            notifyCharts() {
+                // Trigger chart color update
+                const event = new CustomEvent('themeChanged', {
+                    detail: { darkMode: this.darkMode }
+                });
+                document.dispatchEvent(event);
+            }
+
+            updateChartColors() {
+                const charts = [
+                    window.realTimeResponseChart,
+                    window.systemResourceGauge,
+                    window.dbPerformanceChart,
+                    window.apiCallsChart
+                ];
+
+                charts.forEach(chart => {
+                    if (chart) {
+                        this.updateSingleChart(chart);
+                    }
+                });
+            }
+
+            updateSingleChart(chart) {
+                const textColor = this.darkMode ? '#f3f4f6' : '#ffffff';
+                const gridColor = this.darkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(255, 255, 255, 0.1)';
+
+                if (chart.options.scales) {
+                    if (chart.options.scales.x) {
+                        chart.options.scales.x.ticks.color = textColor;
+                        chart.options.scales.x.grid.color = gridColor;
+                    }
+                    if (chart.options.scales.y) {
+                        chart.options.scales.y.ticks.color = textColor;
+                        chart.options.scales.y.grid.color = gridColor;
+                    }
+                }
+
+                if (chart.options.plugins && chart.options.plugins.legend) {
+                    chart.options.plugins.legend.labels.color = textColor;
+                }
+
+                chart.update('none');
+            }
+
+            isDarkMode() {
+                return this.darkMode;
+            }
+        }
+
+        // =============================================
+        // Dashboard Configuration and Data
+        // =============================================
+
+        const CONFIG = {
+            BASE_URL: window.location.hostname === 'localhost'
+                ? 'http://localhost:8000'
+                : 'https://mcp-map-company.onrender.com',
+            REFRESH_INTERVAL: 10000, // 10 seconds for real-time updates
+            API_KEY: ''
+        };
+
+        // Chart variables
+        let realTimeResponseChart = null;
+        let systemResourceGauge = null;
+        let dbPerformanceChart = null;
+        let apiCallsChart = null;
+
+        // Real-time metrics data storage
+        const metricsData = {
+            timestamps: [],
+            responseTimeHistory: [],
+            dbLatencyHistory: [],
+            cpuUsageHistory: [],
+            memoryUsageHistory: [],
+            activeUsersHistory: [],
+            apiCallsByEndpoint: {},
+            maxDataPoints: 30
+        };
+
+        // Auto refresh state
+        let autoRefreshEnabled = false;
+        let refreshInterval = null;
+
+        // Dark mode manager
+        let darkModeManager = null;
+
+        // =============================================
+        // Utility Functions
+        // =============================================
+
+        function addLog(message, level = 'info') {
+            const container = document.getElementById('logContainer');
+            const now = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-level-${level}`;
+            logEntry.textContent = `[${now}] ${message}`;
+
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+
+            // Keep only last 100 log entries
+            while (container.children.length > 100) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        function updateTimestamp() {
+            const now = new Date().toLocaleString('ko-KR');
+            document.getElementById('lastUpdated')?.textContent = `마지막 업데이트: ${now}`;
+        }
+
+        // =============================================
+        // Chart Initialization Functions
+        // =============================================
+
+        function initRealTimeMetricsCharts() {
+            const isDark = darkModeManager.isDarkMode();
+            const textColor = isDark ? '#f3f4f6' : '#ffffff';
+            const gridColor = isDark ? 'rgba(156, 163, 175, 0.2)' : 'rgba(255, 255, 255, 0.1)';
+
+            // Initialize Real-time Response Chart
+            const realTimeCtx = document.getElementById('realTimeResponseChart')?.getContext('2d');
+            if (realTimeCtx) {
+                window.realTimeResponseChart = realTimeResponseChart = new Chart(realTimeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: metricsData.timestamps,
+                        datasets: [{
+                            label: '응답시간 (ms)',
+                            data: metricsData.responseTimeHistory,
+                            borderColor: '#60a5fa',
+                            backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            y: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize System Resource Gauge
+            const systemCtx = document.getElementById('systemResourceGauge')?.getContext('2d');
+            if (systemCtx) {
+                window.systemResourceGauge = systemResourceGauge = new Chart(systemCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['CPU', 'Memory', 'Disk'],
+                        datasets: [{
+                            data: [0, 0, 0],
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.8)',   // CPU - Red
+                                'rgba(59, 130, 246, 0.8)',  // Memory - Blue
+                                'rgba(16, 185, 129, 0.8)'   // Disk - Green
+                            ],
+                            borderColor: [
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(16, 185, 129, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor },
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize DB Performance Chart
+            const dbCtx = document.getElementById('dbPerformanceChart')?.getContext('2d');
+            if (dbCtx) {
+                window.dbPerformanceChart = dbPerformanceChart = new Chart(dbCtx, {
+                    type: 'line',
+                    data: {
+                        labels: metricsData.timestamps,
+                        datasets: [{
+                            label: 'DB 지연시간 (ms)',
+                            data: metricsData.dbLatencyHistory,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            y: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize API Calls Chart
+            const apiCtx = document.getElementById('apiCallsChart')?.getContext('2d');
+            if (apiCtx) {
+                window.apiCallsChart = apiCallsChart = new Chart(apiCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'API 호출 수',
+                            data: [],
+                            backgroundColor: [
+                                'rgba(34, 197, 94, 0.8)',
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(139, 92, 246, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(34, 197, 94, 1)',
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(245, 158, 11, 1)',
+                                'rgba(139, 92, 246, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            y: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            addLog('실시간 메트릭 차트 초기화 완료', 'info');
+        }
+
+        // =============================================
+        // Data Fetching Functions
+        // =============================================
+
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${CONFIG.BASE_URL}/health`);
+                const data = await response.json();
+
+                document.getElementById('healthStatus').textContent = '정상';
+                document.getElementById('healthStatus').className = 'text-green-400 text-2xl font-bold mt-2';
+
+                addLog('시스템 상태 점검 완료 - 정상', 'info');
+                return true;
+            } catch (error) {
+                document.getElementById('healthStatus').textContent = '오류';
+                document.getElementById('healthStatus').className = 'text-red-400 text-2xl font-bold mt-2';
+
+                addLog(`시스템 상태 점검 실패: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function checkAPI() {
+            try {
+                const response = await fetch(`${CONFIG.BASE_URL}/api/v1/health`);
+                const data = await response.json();
+
+                document.getElementById('apiStatus').textContent = '연결됨';
+                document.getElementById('apiStatus').className = 'text-green-400 text-2xl font-bold mt-2';
+
+                addLog('API 상태 점검 완료 - 연결됨', 'info');
+                return true;
+            } catch (error) {
+                document.getElementById('apiStatus').textContent = '오류';
+                document.getElementById('apiStatus').className = 'text-red-400 text-2xl font-bold mt-2';
+
+                addLog(`API 상태 점검 실패: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function refreshRealTimeMetrics() {
+            try {
+                // Simulate metrics data for demo
+                const mockMetrics = {
+                    timestamp: new Date().toISOString(),
+                    system: {
+                        cpu_percent: Math.random() * 100,
+                        memory_percent: Math.random() * 100,
+                        disk_percent: Math.random() * 100
+                    },
+                    application: {
+                        avg_response_time: Math.random() * 200 + 50,
+                        active_users: Math.floor(Math.random() * 50),
+                        uptime_hours: Math.random() * 24
+                    },
+                    database: {
+                        avg_latency: Math.random() * 50 + 10,
+                        active_connections: Math.floor(Math.random() * 20)
+                    }
+                };
+
+                updateRealTimeMetrics(mockMetrics);
+                addLog('실시간 메트릭 업데이트 완료', 'info');
+
+            } catch (error) {
+                addLog(`실시간 메트릭 업데이트 실패: ${error.message}`, 'error');
+            }
+        }
+
+        function updateRealTimeMetrics(metrics) {
+            // Update summary cards
+            document.getElementById('avgResponseTime').textContent =
+                metrics.application?.avg_response_time?.toFixed(1) || '-';
+            document.getElementById('dbLatency').textContent =
+                metrics.database?.avg_latency?.toFixed(1) || '-';
+            document.getElementById('activeUsers').textContent =
+                metrics.application?.active_users || '-';
+            document.getElementById('systemCpu').textContent =
+                metrics.system?.cpu_percent?.toFixed(1) + '%' || '-';
+
+            // Add new data point to time series
+            const now = new Date().toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            metricsData.timestamps.push(now);
+            metricsData.responseTimeHistory.push(metrics.application?.avg_response_time || 0);
+            metricsData.dbLatencyHistory.push(metrics.database?.avg_latency || 0);
+            metricsData.cpuUsageHistory.push(metrics.system?.cpu_percent || 0);
+            metricsData.memoryUsageHistory.push(metrics.system?.memory_percent || 0);
+            metricsData.activeUsersHistory.push(metrics.application?.active_users || 0);
+
+            // Keep only recent data points
+            if (metricsData.timestamps.length > metricsData.maxDataPoints) {
+                metricsData.timestamps.shift();
+                metricsData.responseTimeHistory.shift();
+                metricsData.dbLatencyHistory.shift();
+                metricsData.cpuUsageHistory.shift();
+                metricsData.memoryUsageHistory.shift();
+                metricsData.activeUsersHistory.shift();
+            }
+
+            // Update charts
+            updateRealTimeCharts(metrics);
+        }
+
+        function updateRealTimeCharts(metrics) {
+            // Update real-time response chart
+            if (realTimeResponseChart) {
+                realTimeResponseChart.data.labels = [...metricsData.timestamps];
+                realTimeResponseChart.data.datasets[0].data = [...metricsData.responseTimeHistory];
+                realTimeResponseChart.update('none');
+            }
+
+            // Update system resource gauge
+            if (systemResourceGauge) {
+                systemResourceGauge.data.datasets[0].data = [
+                    metrics.system?.cpu_percent || 0,
+                    metrics.system?.memory_percent || 0,
+                    metrics.system?.disk_percent || 0
+                ];
+                systemResourceGauge.update('none');
+            }
+
+            // Update DB performance chart
+            if (dbPerformanceChart) {
+                dbPerformanceChart.data.labels = [...metricsData.timestamps];
+                dbPerformanceChart.data.datasets[0].data = [...metricsData.dbLatencyHistory];
+                dbPerformanceChart.update('none');
+            }
+
+            // Update API calls chart with mock data
+            if (apiCallsChart) {
+                const endpoints = ['/api/health', '/api/metrics', '/api/status', '/api/data'];
+                const calls = endpoints.map(() => Math.floor(Math.random() * 100));
+
+                apiCallsChart.data.labels = endpoints;
+                apiCallsChart.data.datasets[0].data = calls;
+                apiCallsChart.update('none');
+            }
+        }
+
+        // =============================================
+        // Auto Refresh Functions
+        // =============================================
+
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            const toggle = document.getElementById('autoRefreshToggle');
+
+            if (autoRefreshEnabled) {
+                toggle.classList.add('active');
+                startAutoRefresh();
+                addLog('자동 새로고침 활성화', 'info');
+            } else {
+                toggle.classList.remove('active');
+                stopAutoRefresh();
+                addLog('자동 새로고침 비활성화', 'info');
+            }
+        }
+
+        function startAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+
+            refreshInterval = setInterval(async () => {
+                await refreshAll();
+            }, CONFIG.REFRESH_INTERVAL);
+        }
+
+        function stopAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+        }
+
+        async function refreshAll() {
+            addLog('전체 데이터 새로고침 시작', 'info');
+            updateTimestamp();
+
+            try {
+                await Promise.allSettled([
+                    checkHealth(),
+                    checkAPI(),
+                    refreshRealTimeMetrics()
+                ]);
+
+                addLog('전체 데이터 새로고침 완료', 'info');
+            } catch (error) {
+                addLog(`새로고침 중 오류 발생: ${error.message}`, 'error');
+            }
+        }
+
+        // =============================================
+        // Initialization
+        // =============================================
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize dark mode manager
+            darkModeManager = new DarkModeManager();
+
+            // Initialize charts
+            initRealTimeMetricsCharts();
+
+            // Set up event listeners
+            document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+            document.getElementById('autoRefreshToggle').addEventListener('click', toggleAutoRefresh);
+            document.getElementById('refreshMetricsBtn').addEventListener('click', refreshRealTimeMetrics);
+            document.getElementById('clearLogsBtn').addEventListener('click', () => {
+                document.getElementById('logContainer').innerHTML = '';
+                addLog('로그가 지워졌습니다', 'info');
+            });
+
+            // Listen for theme changes
+            document.addEventListener('themeChanged', (event) => {
+                addLog(`테마 변경: ${event.detail.darkMode ? '다크모드' : '라이트모드'}`, 'info');
+            });
+
+            // Initial load
+            await refreshAll();
+
+            // Set up uptime counter
+            let startTime = Date.now();
+            setInterval(() => {
+                const uptime = Date.now() - startTime;
+                const hours = Math.floor(uptime / (1000 * 60 * 60));
+                const minutes = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+            }, 60000);
+
+            addLog('대시보드 초기화 완료', 'info');
+        });
+
+        // =============================================
+        // Global Error Handler
+        // =============================================
+
+        window.addEventListener('error', function(event) {
+            addLog(`JavaScript 오류: ${event.error?.message || event.message}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', function(event) {
+            addLog(`처리되지 않은 Promise 거부: ${event.reason}`, 'error');
+        });
+    </script>
+</body>
+</html>
