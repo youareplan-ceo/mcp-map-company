@@ -1,0 +1,40 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(title="StockPilot API", version="0.1.0")
+
+# CORS(필요시 도메인 지정)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# --- Health ---
+@app.get("/health")
+def health():
+    return {"ok": True, "service": "stockpilot", "status": "alive"}
+
+# --- Routers (있으면 붙이고, 없으면 건너뜀) ---
+def _include_optional(module_path: str, attr: str = "router", prefix: str | None = None):
+    try:
+        mod = __import__(module_path, fromlist=[attr])
+        router = getattr(mod, attr)
+        if prefix:
+            app.include_router(router, prefix=prefix)
+        else:
+            app.include_router(router)
+        print(f"[router] mounted: {module_path} as {prefix or ''}")
+    except Exception as e:
+        print(f"[router] skip {module_path}: {e}")
+
+# 추천 API (필수)
+_include_optional("mcp.recommend_api", attr="router", prefix="/api/v1/stock")
+
+# 뉴스 점수 API (선택)
+_include_optional("mcp.news_api", attr="router", prefix="/api/v1/news")
+
+# 기존에 쓰시던 시그널/포트폴리오 등(있으면 자동 부착)
+_include_optional("mcp.signals_api", attr="router", prefix="/api/v1/stock")
+_include_optional("mcp.portfolio_api", attr="router", prefix="/api/v1/portfolio")

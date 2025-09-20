@@ -22,7 +22,6 @@
     .topbar{
       background:#ffe8a3;color:#333;border-radius:10px;padding:10px 14px;
       font-size:12px;margin:0 auto 16px; text-align:center;
-    }
     h1{font-size:28px;margin:20px 0 16px}
     .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
     .card{grid-column:span 12;background:var(--card);border:1px solid #1f2a42;border-radius:14px;padding:18px}
@@ -49,10 +48,10 @@
     @media (max-width: 960px){
       .kpis{grid-template-columns:repeat(2,1fr)}
       .signals{grid-template-columns:1fr}
-    }
   </style>
 </head>
 <body>
+<div id="reco-root" style="margin:16px 0"></div>
 <div style="margin:16px 0"><button id="summary-refresh">수동 새로고침</button> <span id="summary-status" style="margin-left:8px;color:#666">대기중…</span><div id="summary-root" style="margin-top:12px"></div></div>
 <div id="summary-root" style="margin:16px 0"></div>
   <div class="container">
@@ -65,7 +64,6 @@
         <button id="retryBtn" class="btn secondary">다시 연결</button>
       </div>
     </div>
-
     <!-- 요약 카드 -->
     <div class="card">
       <div class="row">
@@ -81,35 +79,24 @@
         </div>
         <div class="flex">
           <button id="refreshBtn" class="btn">실시간 업데이트</button>
-        </div>
-      </div>
-
       <!-- KPI -->
       <div class="kpis">
         <div class="kpi"><div class="label">누적 수익</div><div class="value" id="profit">—</div></div>
         <div class="kpi"><div class="label">수익률</div><div class="value" id="profitPct">—</div></div>
         <div class="kpi"><div class="label">상태</div><div class="value ok" id="apiHealth">확인 중…</div></div>
         <div class="kpi"><div class="label">마지막 갱신</div><div class="value" id="lastCheck">—</div></div>
-      </div>
-
       <!-- 시그널 -->
       <h3 style="margin:18px 0 6px">AI 시그널</h3>
       <div class="signals" id="signalsWrap">
         <!-- JS로 채움 -->
-      </div>
-
       <div class="status" id="statusLine"></div>
-    </div>
-
     <div class="footer">© StockPilot / MCP Map Company</div>
   </div>
-
   <script>
     // ====== 설정 (필요하면 여기만 바꿔도 됨) ======
     const API_BASE = 'https://mcp-map-company.onrender.com';
     const SIGNALS_URL = `${API_BASE}/api/v1/ai/signals`;
     const HEALTH_URL  = `${API_BASE}/health`;
-
     // ====== 유틸 ======
     const fmtKRW = v => {
       try {
@@ -118,7 +105,6 @@
     };
     const fmtPct = v => `${Number(v).toFixed(1)}%`;
     const el = id => document.getElementById(id);
-
     // ====== 렌더러 ======
     function renderPortfolio(p) {
       el('totalValue').textContent   = fmtKRW(p.totalValue ?? 0);
@@ -128,8 +114,6 @@
       el('riskLevel').textContent    = p.riskLevel ?? '—';
       el('profit').textContent       = fmtKRW(p.profit ?? 0);
       el('profitPct').textContent    = `${Number(p.profitPercentage ?? 0).toFixed(1)}%`;
-    }
-
     function renderSignals(list) {
       const wrap = el('signalsWrap');
       wrap.innerHTML = '';
@@ -143,12 +127,9 @@
           <div class="row" style="margin-top:10px">
             <span class="pill">수량 ${sig.quantity ?? '-'}주</span>
             <span class="pill">가격 ${sig.price ? fmtKRW(sig.price*1400) : '—'}</span>
-          </div>
         `;
         wrap.appendChild(div);
       });
-    }
-
     function setStatus(ok, msg){
       el('connectionStatus').textContent = ok ? '연결 정상' : '연결 끊김';
       el('connectionStatus').style.background = ok ? '#0e2f22' : '#2f0e10';
@@ -157,12 +138,9 @@
       el('apiHealth').className = ok ? 'value ok' : 'value error';
       el('statusLine').textContent = msg || '';
       el('lastCheck').textContent = new Date().toLocaleString();
-    }
-
     async function getJSON(url, opts={}){
       const ctrl = new AbortController();
       const t = setTimeout(()=>ctrl.abort(), opts.timeout ?? 10000);
-      try {
         const res = await fetch(url, {
           method: 'GET',
           mode: 'cors',
@@ -174,8 +152,6 @@
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
         return await res.json();
       } finally { clearTimeout(t); }
-    }
-
     async function loadHealth(){
       try{
         await getJSON(HEALTH_URL,{timeout:6000});
@@ -185,33 +161,23 @@
         setStatus(false, `API 연결 실패: ${e.message}`);
         return false;
       }
-    }
-
     async function loadSignals(){
-      try{
         const data = await getJSON(SIGNALS_URL,{timeout:8000});
         if(data?.portfolio) renderPortfolio(data.portfolio);
         if(data?.signals)   renderSignals(data.signals);
         setStatus(true, '시그널 최신 데이터 반영됨');
-      }catch(e){
         setStatus(false, `시그널 로드 실패: ${e.message}`);
         // 화면은 유지
-      }
-    }
-
     async function bootstrap(){
       const ok = await loadHealth();
       if(ok) await loadSignals();
-    }
-
     // 이벤트
     el('retryBtn').addEventListener('click', bootstrap);
     el('refreshBtn').addEventListener('click', loadSignals);
-
     // 첫 진입
     bootstrap();
   </script>
 <script src="/js/summary.js"></script>
-<script src="/js/summary.js"></script>
+<script src="/js/reco.js"></script>
 </body>
 </html>
