@@ -928,6 +928,249 @@
         }
 
         // =============================================
+        // Alerts Panel Functions
+        // =============================================
+
+        // Mock alerts data for testing
+        let alertsData = [];
+        let alertsStats = { critical: 0, error: 0, warning: 0, info: 0 };
+
+        function generateMockAlerts() {
+            const alertTypes = ['critical', 'error', 'warning', 'info'];
+            const alertTitles = [
+                'Database Connection Lost',
+                'High Memory Usage Detected',
+                'API Rate Limit Exceeded',
+                'System Backup Completed',
+                'New User Registration',
+                'Service Restart Required',
+                'Cache Clear Warning',
+                'Security Alert Triggered',
+                'Performance Degradation',
+                'Health Check Success',
+                'SSL Certificate Expiring',
+                'Disk Space Warning',
+                'Network Latency High',
+                'Scheduled Maintenance',
+                'Data Sync Complete'
+            ];
+
+            const alerts = [];
+            for (let i = 0; i < 20; i++) {
+                const type = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+                const title = alertTitles[Math.floor(Math.random() * alertTitles.length)];
+                const timestamp = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000); // Last 7 days
+
+                alerts.push({
+                    id: `alert-${i}`,
+                    type: type,
+                    title: title,
+                    message: getAlertMessage(type, title),
+                    timestamp: timestamp,
+                    resolved: Math.random() > 0.7
+                });
+            }
+
+            // Sort by timestamp (newest first)
+            return alerts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        }
+
+        function getAlertMessage(type, title) {
+            const messages = {
+                critical: [
+                    'Immediate attention required - system stability at risk',
+                    'Service unavailable - critical failure detected',
+                    'Data integrity compromised - urgent action needed'
+                ],
+                error: [
+                    'Service error detected - user experience impacted',
+                    'API request failed - retry mechanism activated',
+                    'Process crashed - automatic restart attempted'
+                ],
+                warning: [
+                    'Resource usage approaching threshold limits',
+                    'Performance degradation observed in subsystem',
+                    'Scheduled maintenance window approaching'
+                ],
+                info: [
+                    'Routine operation completed successfully',
+                    'System checkpoint reached normally',
+                    'Regular maintenance task executed'
+                ]
+            };
+
+            const typeMessages = messages[type] || messages.info;
+            return typeMessages[Math.floor(Math.random() * typeMessages.length)];
+        }
+
+        function getAlertIcon(type) {
+            const icons = {
+                critical: '🚨',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            return icons[type] || 'ℹ️';
+        }
+
+        function getAlertColorClasses(type) {
+            const colors = {
+                critical: {
+                    bg: 'bg-red-500/10 dark:bg-red-600/10',
+                    border: 'border-l-red-500 dark:border-l-red-400',
+                    text: 'text-red-300 dark:text-red-200',
+                    time: 'text-red-400 dark:text-red-300'
+                },
+                error: {
+                    bg: 'bg-orange-500/10 dark:bg-orange-600/10',
+                    border: 'border-l-orange-500 dark:border-l-orange-400',
+                    text: 'text-orange-300 dark:text-orange-200',
+                    time: 'text-orange-400 dark:text-orange-300'
+                },
+                warning: {
+                    bg: 'bg-yellow-500/10 dark:bg-yellow-600/10',
+                    border: 'border-l-yellow-500 dark:border-l-yellow-400',
+                    text: 'text-yellow-300 dark:text-yellow-200',
+                    time: 'text-yellow-400 dark:text-yellow-300'
+                },
+                info: {
+                    bg: 'bg-blue-500/10 dark:bg-blue-600/10',
+                    border: 'border-l-blue-500 dark:border-l-blue-400',
+                    text: 'text-blue-300 dark:text-blue-200',
+                    time: 'text-blue-400 dark:text-blue-300'
+                }
+            };
+            return colors[type] || colors.info;
+        }
+
+        function updateAlertsStats() {
+            alertsStats = { critical: 0, error: 0, warning: 0, info: 0 };
+
+            alertsData.forEach(alert => {
+                if (!alert.resolved && alertsStats.hasOwnProperty(alert.type)) {
+                    alertsStats[alert.type]++;
+                }
+            });
+
+            // Update UI
+            document.getElementById('criticalCount').textContent = alertsStats.critical;
+            document.getElementById('errorCount').textContent = alertsStats.error;
+            document.getElementById('warningCount').textContent = alertsStats.warning;
+            document.getElementById('infoCount').textContent = alertsStats.info;
+        }
+
+        function renderAlertsList() {
+            const alertsList = document.getElementById('alertsList');
+
+            if (alertsData.length === 0) {
+                alertsList.innerHTML = `
+                    <div class="p-4 text-center text-white/60 dark:text-gray-400">
+                        현재 표시할 알림이 없습니다.
+                    </div>
+                `;
+                return;
+            }
+
+            const alertsHtml = alertsData.map(alert => {
+                const colors = getAlertColorClasses(alert.type);
+                const icon = getAlertIcon(alert.type);
+                const timeStr = alert.timestamp.toLocaleDateString('ko-KR', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const resolvedClass = alert.resolved ? 'opacity-60' : '';
+                const resolvedBadge = alert.resolved ? '<span class="text-green-400 text-xs ml-2">✓ 해결됨</span>' : '';
+
+                return `
+                    <div class="border-b border-white/10 dark:border-gray-700 last:border-b-0 ${resolvedClass}">
+                        <div class="p-4 ${colors.bg} ${colors.border} border-l-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <span class="text-lg mr-2">${icon}</span>
+                                        <span class="font-medium ${colors.text} text-sm uppercase tracking-wide">${alert.type}</span>
+                                        ${resolvedBadge}
+                                    </div>
+                                    <h4 class="text-white dark:text-gray-100 font-semibold mb-1">${alert.title}</h4>
+                                    <p class="text-white/80 dark:text-gray-300 text-sm mb-2">${alert.message}</p>
+                                </div>
+                                <div class="text-right ml-4">
+                                    <div class="${colors.time} text-xs">${timeStr}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            alertsList.innerHTML = alertsHtml;
+        }
+
+        async function initializeAlerts() {
+            try {
+                // For now, use mock data. In production, this would fetch from API
+                alertsData = generateMockAlerts();
+                updateAlertsStats();
+                renderAlertsList();
+                addLog('알림 패널 초기화 완료', 'info');
+            } catch (error) {
+                addLog(`알림 초기화 오류: ${error.message}`, 'error');
+            }
+        }
+
+        async function refreshAlerts() {
+            addLog('알림 데이터 새로고침 중...', 'info');
+
+            try {
+                // In production, this would fetch from the actual alerts API
+                // For now, regenerate mock data to simulate refresh
+                alertsData = generateMockAlerts();
+                updateAlertsStats();
+                renderAlertsList();
+                addLog(`알림 새로고침 완료 - ${alertsData.length}개 알림 로드됨`, 'info');
+            } catch (error) {
+                addLog(`알림 새로고침 오류: ${error.message}`, 'error');
+            }
+        }
+
+        async function sendTestAlert() {
+            addLog('테스트 알림 전송 중...', 'info');
+
+            try {
+                // Create a test alert
+                const testAlert = {
+                    id: `test-alert-${Date.now()}`,
+                    type: 'info',
+                    title: 'Test Alert from Dashboard',
+                    message: '관리자 대시보드에서 전송된 테스트 알림입니다.',
+                    timestamp: new Date(),
+                    resolved: false
+                };
+
+                // Add to the beginning of the alerts array
+                alertsData.unshift(testAlert);
+
+                // Keep only the latest 20 alerts
+                if (alertsData.length > 20) {
+                    alertsData = alertsData.slice(0, 20);
+                }
+
+                updateAlertsStats();
+                renderAlertsList();
+                addLog('테스트 알림이 성공적으로 생성되었습니다', 'info');
+
+                // In production, this would also send the alert via the notification system
+                // await fetch('/api/alerts/test', { method: 'POST', ... });
+
+            } catch (error) {
+                addLog(`테스트 알림 전송 오류: ${error.message}`, 'error');
+            }
+        }
+
+        // =============================================
         // Initialization
         // =============================================
 
