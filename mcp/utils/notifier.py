@@ -10,6 +10,7 @@ import smtplib
 import logging
 import json
 import time
+import random
 from datetime import datetime
 from email.mime.text import MimeText
 from email.mime.multipart import MimeMultipart
@@ -23,6 +24,18 @@ logger = logging.getLogger(__name__)
 
 # 알림 전송 속도 제한을 위한 글로벌 딕셔너리
 _last_notification_times = defaultdict(lambda: defaultdict(float))
+
+# 재시도 설정
+MAX_RETRY_ATTEMPTS = 3  # 최대 재시도 횟수
+RETRY_BASE_DELAY = 1    # 기본 지연 시간 (초)
+
+# NotificationLevel enum 정의를 위해 이동
+class NotificationLevel(Enum):
+    """알림 심각도 레벨"""
+    CRITICAL = "critical"
+    ERROR = "error"
+    WARNING = "warning"
+    INFO = "info"
 
 # 알림 레벨별 지연 시간 (초)
 NOTIFICATION_DELAYS = {
@@ -243,10 +256,17 @@ def setup_logging():
     text_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
     text_logger.addHandler(text_handler)
 
-    return json_logger, text_logger
+    # 알림 전용 로거 설정 (성공/실패 내역 기록)
+    notifier_logger = logging.getLogger('notifier_status')
+    notifier_logger.setLevel(logging.INFO)
+    notifier_handler = logging.FileHandler(log_dir / 'notifier.log')
+    notifier_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    notifier_logger.addHandler(notifier_handler)
+
+    return json_logger, text_logger, notifier_logger
 
 # 로거 초기화
-json_logger, text_logger = setup_logging()
+json_logger, text_logger, notifier_logger = setup_logging()
 
 def log_notification(level: str, message: str, channel: str, success: bool, **kwargs):
     """알림을 JSON과 텍스트 형식으로 동시 기록"""
@@ -285,12 +305,72 @@ async def apply_notification_delay(level: NotificationLevel, channel: str):
 
         _last_notification_times[channel][level.value] = time.time()
 
-class NotificationLevel(Enum):
-    """알림 심각도 레벨"""
-    CRITICAL = "critical"
-    ERROR = "error"
-    WARNING = "warning"
-    INFO = "info"
+async def retry_with_backoff(func, *args, **kwargs):
+    """
+    지수 백오프를 사용한 재시도 함수
+
+    Args:
+        func: 실행할 비동기 함수
+        *args: 함수에 전달할 인수
+        **kwargs: 함수에 전달할 키워드 인수
+
+    Returns:
+        함수 실행 결과 또는 False (모든 재시도 실패 시)
+    """
+    last_exception = None
+
+    for attempt in range(MAX_RETRY_ATTEMPTS):
+        try:
+            result = await func(*args, **kwargs)
+            if result:  # 성공한 경우
+                if attempt > 0:  # 재시도를 통해 성공한 경우
+                    notifier_logger.info(f"재시도 성공: {attempt + 1}회 시도 후 성공")
+                return result
+            else:
+                # 함수가 False를 반환한 경우 (실패)
+                raise Exception("Function returned False")
+
+        except Exception as e:
+            last_exception = e
+
+            if attempt < MAX_RETRY_ATTEMPTS - 1:  # 마지막 시도가 아닌 경우
+                delay = RETRY_BASE_DELAY * (2 ** attempt) + random.uniform(0, 1)  # 지수 백오프 + 지터
+                notifier_logger.warning(f"알림 전송 실패 (시도 {attempt + 1}/{MAX_RETRY_ATTEMPTS}): {str(e)}, {delay:.2f}초 후 재시도")
+                await asyncio.sleep(delay)
+            else:
+                # 모든 재시도 실패
+                notifier_logger.error(f"모든 재시도 실패 ({MAX_RETRY_ATTEMPTS}회): 최종 오류 - {str(e)}")
+
+    return False
+
+def get_log_links(level: NotificationLevel) -> Dict[str, str]:
+    """
+    심각도에 따른 관련 로그 파일 링크 생성
+
+    Args:
+        level: 알림 심각도 레벨
+
+    Returns:
+        로그 파일명과 링크가 포함된 딕셔너리
+    """
+    base_url = os.getenv('LOG_BASE_URL', 'http://localhost:8088/logs')  # 환경변수에서 로그 베이스 URL 가져오기
+    log_links = {}
+
+    # 심각도별로 우선 확인할 로그 파일들 정의
+    if level in [NotificationLevel.CRITICAL, NotificationLevel.ERROR]:
+        # 심각한 오류의 경우 보안 로그와 API 로그 모두 제공
+        log_links["보안 로그"] = f"{base_url}/security.log"
+        log_links["API 로그"] = f"{base_url}/api.log"
+        log_links["시스템 로그"] = f"{base_url}/app.log"
+    elif level == NotificationLevel.WARNING:
+        # 경고의 경우 API 로그와 시스템 로그
+        log_links["API 로그"] = f"{base_url}/api.log"
+        log_links["시스템 로그"] = f"{base_url}/app.log"
+    else:  # INFO
+        # 정보성 알림의 경우 시스템 로그만
+        log_links["시스템 로그"] = f"{base_url}/app.log"
+
+    return log_links
 
 class NotificationChannel(Enum):
     """지원되는 알림 채널"""
@@ -347,13 +427,15 @@ class SlackNotifier:
         fields: Optional[Dict[str, Any]] = None,
         attach_logs: bool = False
     ) -> bool:
-        """Slack 채널로 알림 전송 (템플릿 기반, 속도 제한 적용)"""
-        if not self.enabled:
-            logger.warning("Slack 알림이 비활성화됨 - 웹훅 URL 미설정")
-            log_notification(level.value, message, "slack", False, reason="disabled")
-            return False
+        """Slack 채널로 알림 전송 (재시도 기능, 로그 링크 포함)"""
+        # 재시도 기능을 위한 내부 함수 정의
+        async def _send_slack_notification():
+            if not self.enabled:
+                logger.warning("Slack 알림이 비활성화됨 - 웹훅 URL 미설정")
+                notifier_logger.warning("Slack 알림 실패: 웹훅 URL 미설정")
+                log_notification(level.value, message, "slack", False, reason="disabled")
+                return False
 
-        try:
             # 전송 속도 제한 적용
             await apply_notification_delay(level, "slack")
 
@@ -367,6 +449,11 @@ class SlackNotifier:
 
             config = level_config.get(level, level_config[NotificationLevel.INFO])
             fields = fields or {}
+
+            # 로그 링크 추가
+            log_links = get_log_links(level)
+            for log_name, log_url in log_links.items():
+                fields[f"🔗 {log_name}"] = f"<{log_url}|로그 확인>"
 
             # 템플릿 데이터 준비
             template_data = {
@@ -428,18 +515,27 @@ class SlackNotifier:
                 ) as response:
                     if response.status == 200:
                         logger.info("Slack 알림 전송 성공")
+                        notifier_logger.info(f"Slack 알림 전송 성공: {title or '제목없음'} - {level.value}")
                         log_notification(level.value, message, "slack", True, title=title, has_logs=bool(recent_logs))
                         return True
                     else:
-                        logger.error(f"Slack 알림 전송 실패: {response.status}")
+                        error_msg = f"HTTP {response.status}"
+                        logger.error(f"Slack 알림 전송 실패: {error_msg}")
+                        notifier_logger.error(f"Slack 알림 전송 실패: {error_msg} - {title or '제목없음'}")
                         log_notification(level.value, message, "slack", False,
                                        reason=f"http_{response.status}", title=title)
                         return False
 
-        except Exception as e:
-            logger.error(f"Slack 알림 전송 오류: {e}")
-            log_notification(level.value, message, "slack", False, reason=str(e), title=title)
-            return False
+        # 재시도 기능을 사용하여 실제 알림 전송
+        notifier_logger.info(f"Slack 알림 전송 시작: {title or '제목없음'} - {level.value}")
+        result = await retry_with_backoff(_send_slack_notification)
+
+        if result:
+            notifier_logger.info(f"Slack 알림 최종 성공: {title or '제목없음'}")
+        else:
+            notifier_logger.error(f"Slack 알림 최종 실패: {title or '제목없음'}")
+
+        return result
 
 class DiscordNotifier:
     """Discord 웹훅 알림 처리기"""
@@ -456,13 +552,15 @@ class DiscordNotifier:
         fields: Optional[Dict[str, Any]] = None,
         attach_logs: bool = False
     ) -> bool:
-        """Discord 채널로 알림 전송 (템플릿 기반, 속도 제한 적용)"""
-        if not self.enabled:
-            logger.warning("Discord 알림이 비활성화됨 - 웹훅 URL 미설정")
-            log_notification(level.value, message, "discord", False, reason="disabled")
-            return False
+        """Discord 채널로 알림 전송 (재시도 기능, 로그 링크 포함)"""
+        # 재시도 기능을 위한 내부 함수 정의
+        async def _send_discord_notification():
+            if not self.enabled:
+                logger.warning("Discord 알림이 비활성화됨 - 웹훅 URL 미설정")
+                notifier_logger.warning("Discord 알림 실패: 웹훅 URL 미설정")
+                log_notification(level.value, message, "discord", False, reason="disabled")
+                return False
 
-        try:
             # 전송 속도 제한 적용
             await apply_notification_delay(level, "discord")
 
@@ -476,6 +574,11 @@ class DiscordNotifier:
 
             config = level_config.get(level, level_config[NotificationLevel.INFO])
             fields = fields or {}
+
+            # 로그 링크 추가
+            log_links = get_log_links(level)
+            for log_name, log_url in log_links.items():
+                fields[f"🔗 {log_name}"] = f"[로그 확인]({log_url})"
 
             # 템플릿 데이터 준비
             template_data = {
@@ -538,18 +641,27 @@ class DiscordNotifier:
                 ) as response:
                     if response.status == 204:  # Discord는 성공 시 204 반환
                         logger.info("Discord 알림 전송 성공")
+                        notifier_logger.info(f"Discord 알림 전송 성공: {title or '제목없음'} - {level.value}")
                         log_notification(level.value, message, "discord", True, title=title, has_logs=bool(recent_logs))
                         return True
                     else:
-                        logger.error(f"Discord 알림 전송 실패: {response.status}")
+                        error_msg = f"HTTP {response.status}"
+                        logger.error(f"Discord 알림 전송 실패: {error_msg}")
+                        notifier_logger.error(f"Discord 알림 전송 실패: {error_msg} - {title or '제목없음'}")
                         log_notification(level.value, message, "discord", False,
                                        reason=f"http_{response.status}", title=title)
                         return False
 
-        except Exception as e:
-            logger.error(f"Discord 알림 전송 오류: {e}")
-            log_notification(level.value, message, "discord", False, reason=str(e), title=title)
-            return False
+        # 재시도 기능을 사용하여 실제 알림 전송
+        notifier_logger.info(f"Discord 알림 전송 시작: {title or '제목없음'} - {level.value}")
+        result = await retry_with_backoff(_send_discord_notification)
+
+        if result:
+            notifier_logger.info(f"Discord 알림 최종 성공: {title or '제목없음'}")
+        else:
+            notifier_logger.error(f"Discord 알림 최종 실패: {title or '제목없음'}")
+
+        return result
 
 class EmailNotifier:
     """SMTP 이메일 알림 처리기"""
@@ -584,13 +696,15 @@ class EmailNotifier:
         fields: Optional[Dict[str, Any]] = None,
         attach_logs: bool = False
     ) -> bool:
-        """이메일 알림 전송 (템플릿 기반, 속도 제한 적용)"""
-        if not self.enabled:
-            logger.warning("이메일 알림이 비활성화됨 - 설정 누락")
-            log_notification(level.value, message, "email", False, reason="disabled")
-            return False
+        """이메일 알림 전송 (재시도 기능, 로그 링크 포함)"""
+        # 재시도 기능을 위한 내부 함수 정의
+        async def _send_email_notification():
+            if not self.enabled:
+                logger.warning("이메일 알림이 비활성화됨 - 설정 누락")
+                notifier_logger.warning("이메일 알림 실패: 설정 누락")
+                log_notification(level.value, message, "email", False, reason="disabled")
+                return False
 
-        try:
             # 전송 속도 제한 적용
             await apply_notification_delay(level, "email")
 
@@ -599,6 +713,12 @@ class EmailNotifier:
             msg['Subject'] = title or f'MCP-MAP {level.value.upper()} 알림'
             msg['From'] = self.email
             msg['To'] = ', '.join(self.recipients)
+
+            # 필드에 로그 링크 추가
+            fields = fields or {}
+            log_links = get_log_links(level)
+            for log_name, log_url in log_links.items():
+                fields[f"🔗 {log_name}"] = log_url
 
             # 로그 내용 가져오기 (심각도별)
             recent_logs = None
@@ -632,14 +752,21 @@ class EmailNotifier:
             )
 
             logger.info(f"이메일 알림 전송 성공 ({len(self.recipients)}명)")
+            notifier_logger.info(f"이메일 알림 전송 성공: {title or '제목없음'} - {level.value} ({len(self.recipients)}명)")
             log_notification(level.value, message, "email", True,
                            recipients=len(self.recipients), title=title, has_logs=bool(recent_logs))
             return True
 
-        except Exception as e:
-            logger.error(f"이메일 알림 전송 오류: {e}")
-            log_notification(level.value, message, "email", False, reason=str(e), title=title)
-            return False
+        # 재시도 기능을 사용하여 실제 알림 전송
+        notifier_logger.info(f"이메일 알림 전송 시작: {title or '제목없음'} - {level.value}")
+        result = await retry_with_backoff(_send_email_notification)
+
+        if result:
+            notifier_logger.info(f"이메일 알림 최종 성공: {title or '제목없음'}")
+        else:
+            notifier_logger.error(f"이메일 알림 최종 실패: {title or '제목없음'}")
+
+        return result
 
     def _send_email_sync(self, msg: MimeMultipart):
         """동기식 이메일 전송"""
@@ -819,6 +946,239 @@ async def send_warning(message: str, **kwargs):
 async def send_info(message: str, **kwargs):
     """정보 알림 전송"""
     return await notification_manager.send_info(message, **kwargs)
+
+# ================================================
+# Security-Specific Notification Functions
+# ================================================
+
+def get_security_logs(log_file_path: str = "logs/security.log", lines: int = 50) -> str:
+    """
+    보안 로그 파일에서 최근 로그를 가져옵니다.
+
+    Args:
+        log_file_path: 보안 로그 파일 경로
+        lines: 가져올 라인 수
+
+    Returns:
+        최근 보안 로그 내용
+    """
+    try:
+        # 여러 가능한 보안 로그 파일 경로 시도
+        possible_paths = [
+            Path(log_file_path),
+            Path("logs/security.log"),
+            Path("logs/rate_limit.log"),
+            Path("../logs/security.log")
+        ]
+
+        for path in possible_paths:
+            if path.exists() and path.is_file():
+                with open(path, 'r', encoding='utf-8') as f:
+                    all_lines = f.readlines()
+                    recent_lines = all_lines[-lines:] if len(all_lines) > lines else all_lines
+                    return ''.join(recent_lines).strip()
+
+        return f"보안 로그 파일을 찾을 수 없습니다. 확인된 경로: {[str(p) for p in possible_paths]}"
+
+    except Exception as e:
+        logger.error(f"보안 로그 파일 읽기 오류: {e}")
+        return f"보안 로그 파일 읽기 오류: {str(e)}"
+
+async def send_security_alert(
+    event_type: str,
+    client_ip: str,
+    details: Dict[str, Any],
+    level: NotificationLevel = NotificationLevel.CRITICAL
+) -> Dict[str, bool]:
+    """
+    보안 이벤트 알림 전송
+
+    Args:
+        event_type: 보안 이벤트 유형 (예: 'IP_BLOCKED', 'RATE_LIMIT_EXCEEDED')
+        client_ip: 관련 클라이언트 IP
+        details: 추가 세부 정보
+        level: 알림 심각도
+
+    Returns:
+        채널별 전송 결과
+    """
+    # 이벤트 유형별 메시지 템플릿
+    event_messages = {
+        'IP_BLOCKED': f"🚫 IP 주소 {client_ip}가 Rate Limit 초과로 차단되었습니다.",
+        'RATE_LIMIT_EXCEEDED': f"⚠️ IP 주소 {client_ip}에서 요청 한도를 초과했습니다.",
+        'WHITELIST_ADDED': f"✅ IP 주소 {client_ip}가 화이트리스트에 추가되었습니다.",
+        'SECURITY_BREACH_ATTEMPT': f"🚨 IP 주소 {client_ip}에서 보안 침해 시도가 감지되었습니다.",
+        'SUSPICIOUS_ACTIVITY': f"🔍 IP 주소 {client_ip}에서 의심스러운 활동이 감지되었습니다."
+    }
+
+    message = event_messages.get(event_type, f"🔒 보안 이벤트 감지: {event_type} (IP: {client_ip})")
+
+    # 알림 제목 생성
+    title = f"🔒 보안 알림: {event_type}"
+
+    # 세부 정보 필드 준비
+    security_fields = {
+        "🌐 IP 주소": client_ip,
+        "📅 발생 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "🚨 이벤트 유형": event_type
+    }
+
+    # details의 내용을 필드에 추가
+    for key, value in details.items():
+        if isinstance(value, (str, int, float)):
+            security_fields[f"📋 {key}"] = str(value)
+
+    # 보안 로그 첨부 (Critical 및 Error 레벨의 경우)
+    attach_security_logs = level in [NotificationLevel.CRITICAL, NotificationLevel.ERROR]
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=level,
+        title=title,
+        fields=security_fields,
+        attach_logs=attach_security_logs
+    )
+
+async def send_ip_blocked_alert(client_ip: str, violation_count: int, endpoint: str, user_agent: str = "Unknown") -> Dict[str, bool]:
+    """
+    IP 차단 알림 전송
+
+    Args:
+        client_ip: 차단된 IP 주소
+        violation_count: 위반 횟수
+        endpoint: 요청된 엔드포인트
+        user_agent: User-Agent 정보
+
+    Returns:
+        채널별 전송 결과
+    """
+    details = {
+        "위반 횟수": violation_count,
+        "요청 엔드포인트": endpoint,
+        "User-Agent": user_agent[:100] + "..." if len(user_agent) > 100 else user_agent,
+        "조치 사항": "자동 차단 적용됨"
+    }
+
+    return await send_security_alert(
+        event_type="IP_BLOCKED",
+        client_ip=client_ip,
+        details=details,
+        level=NotificationLevel.CRITICAL
+    )
+
+async def send_rate_limit_alert(client_ip: str, request_count: int, limit: int, endpoint: str) -> Dict[str, bool]:
+    """
+    Rate Limit 초과 알림 전송
+
+    Args:
+        client_ip: 요청 IP 주소
+        request_count: 현재 요청 수
+        limit: 허용된 요청 한도
+        endpoint: 요청된 엔드포인트
+
+    Returns:
+        채널별 전송 결과
+    """
+    details = {
+        "현재 요청 수": request_count,
+        "허용 한도": limit,
+        "초과율": f"{((request_count - limit) / limit * 100):.1f}%",
+        "요청 엔드포인트": endpoint
+    }
+
+    return await send_security_alert(
+        event_type="RATE_LIMIT_EXCEEDED",
+        client_ip=client_ip,
+        details=details,
+        level=NotificationLevel.ERROR
+    )
+
+async def send_whitelist_update_alert(client_ip: str, action: str = "added") -> Dict[str, bool]:
+    """
+    화이트리스트 업데이트 알림 전송
+
+    Args:
+        client_ip: 화이트리스트에 추가/제거된 IP
+        action: 수행된 작업 ("added" 또는 "removed")
+
+    Returns:
+        채널별 전송 결과
+    """
+    details = {
+        "수행 작업": action,
+        "관리자 조치": "수동 화이트리스트 관리",
+        "영향": "해당 IP는 Rate Limit 제한에서 제외됨" if action == "added" else "해당 IP에 Rate Limit 적용됨"
+    }
+
+    event_type = "WHITELIST_ADDED" if action == "added" else "WHITELIST_REMOVED"
+
+    return await send_security_alert(
+        event_type=event_type,
+        client_ip=client_ip,
+        details=details,
+        level=NotificationLevel.INFO
+    )
+
+async def send_security_summary_alert(blocked_count: int, violations_24h: int, new_ips: List[str]) -> Dict[str, bool]:
+    """
+    보안 요약 정보 알림 전송 (일일 리포트용)
+
+    Args:
+        blocked_count: 현재 차단된 IP 수
+        violations_24h: 최근 24시간 위반 횟수
+        new_ips: 새로 차단된 IP 목록
+
+    Returns:
+        채널별 전송 결과
+    """
+    message = f"📊 일일 보안 현황 요약이 도착했습니다."
+
+    fields = {
+        "🚫 현재 차단된 IP": f"{blocked_count}개",
+        "⚠️ 24시간 위반 횟수": f"{violations_24h}회",
+        "🆕 신규 차단 IP": f"{len(new_ips)}개",
+        "🔍 신규 차단 목록": ", ".join(new_ips[:5]) + ("..." if len(new_ips) > 5 else "")
+    }
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=NotificationLevel.INFO,
+        title="📊 일일 보안 현황 요약",
+        fields=fields,
+        attach_logs=False
+    )
+
+# Override get_recent_logs to include security logs when appropriate
+def get_recent_logs_with_security(log_file_path: str = "logs/app.log", lines: int = 50, include_security: bool = False) -> str:
+    """
+    일반 로그와 보안 로그를 함께 가져오는 확장 함수
+
+    Args:
+        log_file_path: 기본 로그 파일 경로
+        lines: 가져올 라인 수
+        include_security: 보안 로그 포함 여부
+
+    Returns:
+        통합된 로그 내용
+    """
+    # 기본 로그 가져오기
+    main_logs = get_recent_logs(log_file_path, lines)
+
+    if not include_security:
+        return main_logs
+
+    # 보안 로그 가져오기
+    security_logs = get_security_logs(lines=lines//2)  # 보안 로그는 절반만
+
+    if security_logs and "오류" not in security_logs:
+        combined_logs = f"""=== 주요 시스템 로그 (최근 {lines}줄) ===
+{main_logs}
+
+=== 보안 로그 (최근 {lines//2}줄) ===
+{security_logs}"""
+        return combined_logs
+
+    return main_logs
 
 async def test_notifications():
     """알림 시스템 테스트"""
