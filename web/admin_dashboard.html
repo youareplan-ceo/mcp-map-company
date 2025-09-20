@@ -94,6 +94,44 @@
         * {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
+
+        /* 날짜 필터 버튼 스타일 */
+        .date-filter.active {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6) !important;
+            color: white !important;
+        }
+
+        /* 모달 애니메이션 */
+        #alertDetailModal {
+            transition: opacity 0.3s ease;
+        }
+
+        #alertDetailModal.show {
+            display: flex !important;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 알림 항목 hover 효과 */
+        .alert-item {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .alert-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 dark:from-gray-900 dark:via-gray-800 dark:to-black transition-all duration-300">
@@ -344,39 +382,93 @@
 
             <!-- Alert Controls -->
             <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4 mb-4">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <!-- Search Box -->
-                    <div class="flex-1">
-                        <input
-                            type="text"
-                            id="alertSearch"
-                            placeholder="알림 제목이나 메시지 검색..."
-                            class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                <div class="flex flex-col gap-4">
+                    <!-- 첫 번째 행: 검색 및 레벨 필터 -->
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <!-- Search Box -->
+                        <div class="flex-1">
+                            <input
+                                type="text"
+                                id="alertSearch"
+                                placeholder="알림 제목이나 메시지 검색..."
+                                class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        <!-- Level Filter -->
+                        <div>
+                            <select
+                                id="alertLevelFilter"
+                                class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="all">모든 레벨</option>
+                                <option value="critical">🚨 Critical</option>
+                                <option value="error">❌ Error</option>
+                                <option value="warning">⚠️ Warning</option>
+                                <option value="info">ℹ️ Info</option>
+                            </select>
+                        </div>
+
+                        <!-- Clear Filters -->
+                        <div>
+                            <button
+                                id="clearFiltersBtn"
+                                class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
+                            >
+                                필터 초기화
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Level Filter -->
-                    <div>
-                        <select
-                            id="alertLevelFilter"
-                            class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="all">모든 레벨</option>
-                            <option value="critical">🚨 Critical</option>
-                            <option value="error">❌ Error</option>
-                            <option value="warning">⚠️ Warning</option>
-                            <option value="info">ℹ️ Info</option>
-                        </select>
-                    </div>
+                    <!-- 두 번째 행: 날짜 필터 및 내보내기 -->
+                    <div class="flex flex-col md:flex-row gap-4 items-center">
+                        <!-- Date Filters -->
+                        <div class="flex gap-2">
+                            <button
+                                id="dateFilterToday"
+                                class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm date-filter active"
+                                data-filter="today"
+                            >
+                                📅 오늘
+                            </button>
+                            <button
+                                id="dateFilter7days"
+                                class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors duration-200 text-sm date-filter"
+                                data-filter="7days"
+                            >
+                                📅 7일
+                            </button>
+                            <button
+                                id="dateFilter30days"
+                                class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors duration-200 text-sm date-filter"
+                                data-filter="30days"
+                            >
+                                📅 30일
+                            </button>
+                            <button
+                                id="dateFilterAll"
+                                class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors duration-200 text-sm date-filter"
+                                data-filter="all"
+                            >
+                                📅 전체
+                            </button>
+                        </div>
 
-                    <!-- Clear Filters -->
-                    <div>
-                        <button
-                            id="clearFiltersBtn"
-                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
-                        >
-                            필터 초기화
-                        </button>
+                        <!-- Export Buttons -->
+                        <div class="flex gap-2 ml-auto">
+                            <button
+                                id="exportAlertsJSON"
+                                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 text-sm flex items-center"
+                            >
+                                📄 JSON 내보내기
+                            </button>
+                            <button
+                                id="exportAlertsCSV"
+                                class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors duration-200 text-sm flex items-center"
+                            >
+                                📊 CSV 내보내기
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -432,6 +524,169 @@
                         >
                             다음 →
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Resource Monitoring Panel -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">🖥️</span>
+                    시스템 자원 모니터링
+                </h2>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center text-white dark:text-gray-300 text-sm">
+                        <div class="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></div>
+                        실시간 모니터링
+                    </div>
+                    <button id="refreshSystemMetricsBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        자원 새로고침
+                    </button>
+                </div>
+            </div>
+
+            <!-- Resource Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <!-- CPU 사용률 카드 -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white dark:text-gray-300 text-sm opacity-75">CPU 사용률</p>
+                            <p class="text-white dark:text-gray-100 text-2xl font-bold" id="cpuUsagePercent">-</p>
+                            <p class="text-white dark:text-gray-400 text-xs opacity-60">percentage</p>
+                        </div>
+                        <div class="text-3xl">🔥</div>
+                    </div>
+                    <!-- CPU 프로그레스 바 -->
+                    <div class="mt-3 bg-gray-700 rounded-full h-2">
+                        <div id="cpuProgressBar" class="bg-red-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- 메모리 사용률 카드 -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white dark:text-gray-300 text-sm opacity-75">메모리 사용률</p>
+                            <p class="text-white dark:text-gray-100 text-2xl font-bold" id="memoryUsagePercent">-</p>
+                            <p class="text-white dark:text-gray-400 text-xs opacity-60">percentage</p>
+                        </div>
+                        <div class="text-3xl">💾</div>
+                    </div>
+                    <!-- 메모리 프로그레스 바 -->
+                    <div class="mt-3 bg-gray-700 rounded-full h-2">
+                        <div id="memoryProgressBar" class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- 디스크 사용률 카드 -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white dark:text-gray-300 text-sm opacity-75">디스크 사용률</p>
+                            <p class="text-white dark:text-gray-100 text-2xl font-bold" id="diskUsagePercent">-</p>
+                            <p class="text-white dark:text-gray-400 text-xs opacity-60">percentage</p>
+                        </div>
+                        <div class="text-3xl">💿</div>
+                    </div>
+                    <!-- 디스크 프로그레스 바 -->
+                    <div class="mt-3 bg-gray-700 rounded-full h-2">
+                        <div id="diskProgressBar" class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- 네트워크 I/O 카드 -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white dark:text-gray-300 text-sm opacity-75">네트워크 I/O</p>
+                            <p class="text-white dark:text-gray-100 text-2xl font-bold" id="networkIORate">-</p>
+                            <p class="text-white dark:text-gray-400 text-xs opacity-60">MB/s</p>
+                        </div>
+                        <div class="text-3xl">🌐</div>
+                    </div>
+                    <!-- 네트워크 업로드/다운로드 표시기 -->
+                    <div class="mt-3 flex justify-between text-xs">
+                        <span class="text-green-400">↑ <span id="networkUpload">0</span> MB/s</span>
+                        <span class="text-blue-400">↓ <span id="networkDownload">0</span> MB/s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Resource Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- CPU 사용률 추이 차트 -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm chart-container">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🔥</span>
+                        CPU 사용률 추이
+                    </h3>
+                    <div class="relative chart-wrapper" style="height: 250px;">
+                        <canvas id="cpuUsageChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 메모리 사용률 추이 차트 -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm chart-container">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">💾</span>
+                        메모리 사용률 추이
+                    </h3>
+                    <div class="relative chart-wrapper" style="height: 250px;">
+                        <canvas id="memoryUsageChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 디스크 I/O 차트 -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm chart-container">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">💿</span>
+                        디스크 I/O 추이
+                    </h3>
+                    <div class="relative chart-wrapper" style="height: 250px;">
+                        <canvas id="diskIOChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 네트워크 I/O 차트 -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm chart-container">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🌐</span>
+                        네트워크 I/O 추이
+                    </h3>
+                    <div class="relative chart-wrapper" style="height: 250px;">
+                        <canvas id="networkIOChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information Summary -->
+            <div class="mt-6 bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                    <span class="mr-2">ℹ️</span>
+                    시스템 정보 요약
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- 시스템 상태 -->
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-400" id="systemHealthScore">95</div>
+                        <div class="text-white/60 text-sm">시스템 건강도</div>
+                    </div>
+
+                    <!-- 평균 부하 -->
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-400" id="avgLoadLevel">0.5</div>
+                        <div class="text-white/60 text-sm">평균 부하</div>
+                    </div>
+
+                    <!-- 활성 프로세스 -->
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-yellow-400" id="activeProcesses">245</div>
+                        <div class="text-white/60 text-sm">활성 프로세스</div>
                     </div>
                 </div>
             </div>
@@ -719,7 +974,12 @@
                     window.systemResourceGauge,
                     window.dbPerformanceChart,
                     window.apiCallsChart,
-                    window.securityEventsChart
+                    window.securityEventsChart,
+                    // 시스템 자원 모니터링 차트들 추가
+                    window.cpuUsageChart,
+                    window.memoryUsageChart,
+                    window.diskIOChart,
+                    window.networkIOChart
                 ];
 
                 charts.forEach(chart => {
@@ -774,6 +1034,12 @@
         let dbPerformanceChart = null;
         let apiCallsChart = null;
 
+        // 시스템 자원 모니터링 차트 변수들
+        let cpuUsageChart = null;
+        let memoryUsageChart = null;
+        let diskIOChart = null;
+        let networkIOChart = null;
+
         // Real-time metrics data storage
         const metricsData = {
             timestamps: [],
@@ -784,6 +1050,24 @@
             activeUsersHistory: [],
             apiCallsByEndpoint: {},
             maxDataPoints: 30
+        };
+
+        // 시스템 자원 모니터링 데이터 저장소
+        const systemResourceData = {
+            timestamps: [],
+            cpuHistory: [],
+            memoryHistory: [],
+            diskIOHistory: [],
+            networkInHistory: [],
+            networkOutHistory: [],
+            maxDataPoints: 30,
+            currentMetrics: {
+                cpu: 0,
+                memory: 0,
+                disk: 0,
+                networkIn: 0,
+                networkOut: 0
+            }
         };
 
         // Auto refresh state
@@ -993,6 +1277,189 @@
         }
 
         // =============================================
+        // 시스템 자원 모니터링 차트 초기화 함수
+        // =============================================
+
+        function initSystemResourceCharts() {
+            const isDark = darkModeManager.isDarkMode();
+            const textColor = isDark ? '#f3f4f6' : '#ffffff';
+            const gridColor = isDark ? 'rgba(156, 163, 175, 0.2)' : 'rgba(255, 255, 255, 0.1)';
+
+            // CPU 사용률 차트 초기화
+            const cpuCtx = document.getElementById('cpuUsageChart')?.getContext('2d');
+            if (cpuCtx) {
+                window.cpuUsageChart = cpuUsageChart = new Chart(cpuCtx, {
+                    type: 'line',
+                    data: {
+                        labels: systemResourceData.timestamps,
+                        datasets: [{
+                            label: 'CPU 사용률 (%)',
+                            data: systemResourceData.cpuHistory,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            y: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor },
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 메모리 사용률 차트 초기화
+            const memoryCtx = document.getElementById('memoryUsageChart')?.getContext('2d');
+            if (memoryCtx) {
+                window.memoryUsageChart = memoryUsageChart = new Chart(memoryCtx, {
+                    type: 'line',
+                    data: {
+                        labels: systemResourceData.timestamps,
+                        datasets: [{
+                            label: '메모리 사용률 (%)',
+                            data: systemResourceData.memoryHistory,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            y: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor },
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 디스크 I/O 차트 초기화
+            const diskCtx = document.getElementById('diskIOChart')?.getContext('2d');
+            if (diskCtx) {
+                window.diskIOChart = diskIOChart = new Chart(diskCtx, {
+                    type: 'line',
+                    data: {
+                        labels: systemResourceData.timestamps,
+                        datasets: [{
+                            label: '디스크 사용률 (%)',
+                            data: systemResourceData.diskIOHistory,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            y: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor },
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 네트워크 I/O 차트 초기화
+            const networkCtx = document.getElementById('networkIOChart')?.getContext('2d');
+            if (networkCtx) {
+                window.networkIOChart = networkIOChart = new Chart(networkCtx, {
+                    type: 'line',
+                    data: {
+                        labels: systemResourceData.timestamps,
+                        datasets: [{
+                            label: '업로드 (MB/s)',
+                            data: systemResourceData.networkInHistory,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }, {
+                            label: '다운로드 (MB/s)',
+                            data: systemResourceData.networkOutHistory,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            y: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            addLog('시스템 자원 모니터링 차트 초기화 완료', 'info');
+        }
+
+        // =============================================
         // Data Fetching Functions
         // =============================================
 
@@ -1102,6 +1569,204 @@
             updateRealTimeCharts(metrics);
         }
 
+        // =============================================
+        // 시스템 자원 모니터링 데이터 함수들
+        // =============================================
+
+        async function fetchSystemMetrics() {
+            try {
+                // API에서 시스템 메트릭 데이터 가져오기 시도
+                const response = await fetch(`${CONFIG.BASE_URL}/api/v1/metrics/system`).catch(() => null);
+
+                let systemMetrics;
+                if (response && response.ok) {
+                    systemMetrics = await response.json();
+                    addLog('시스템 메트릭 API에서 데이터 로드 완료', 'info');
+                } else {
+                    // API를 사용할 수 없는 경우 모의 데이터 생성
+                    systemMetrics = generateMockSystemMetrics();
+                    addLog('API 연결 실패 - 모의 시스템 메트릭 데이터 사용', 'warning');
+                }
+
+                updateSystemResourceMetrics(systemMetrics);
+                addLog('시스템 자원 메트릭 업데이트 완료', 'info');
+
+            } catch (error) {
+                addLog(`시스템 메트릭 가져오기 실패: ${error.message}`, 'error');
+                // 오류 발생 시 모의 데이터 사용
+                const fallbackMetrics = generateMockSystemMetrics();
+                updateSystemResourceMetrics(fallbackMetrics);
+            }
+        }
+
+        function generateMockSystemMetrics() {
+            // 실제 시스템과 유사한 패턴의 모의 데이터 생성
+            const now = Date.now();
+            const timeVariation = Math.sin(now / 300000) * 0.3; // 5분 주기 변동
+
+            return {
+                timestamp: new Date().toISOString(),
+                cpu: Math.max(0, Math.min(100, 15 + Math.random() * 50 + timeVariation * 20)),
+                memory: Math.max(0, Math.min(100, 40 + Math.random() * 30 + timeVariation * 15)),
+                disk: Math.max(0, Math.min(100, 60 + Math.random() * 20 + timeVariation * 10)),
+                network: {
+                    in: Math.random() * 50 + timeVariation * 10,
+                    out: Math.random() * 30 + timeVariation * 8
+                },
+                system_info: {
+                    load_average: (Math.random() * 2).toFixed(2),
+                    processes: Math.floor(200 + Math.random() * 100),
+                    health_score: Math.floor(85 + Math.random() * 15)
+                }
+            };
+        }
+
+        function updateSystemResourceMetrics(metrics) {
+            // 현재 메트릭 업데이트
+            systemResourceData.currentMetrics = {
+                cpu: metrics.cpu || 0,
+                memory: metrics.memory || 0,
+                disk: metrics.disk || 0,
+                networkIn: metrics.network?.in || 0,
+                networkOut: metrics.network?.out || 0
+            };
+
+            // UI 카드 업데이트
+            updateSystemResourceCards(metrics);
+
+            // 시간별 데이터 히스토리에 추가
+            const now = new Date().toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            systemResourceData.timestamps.push(now);
+            systemResourceData.cpuHistory.push(metrics.cpu || 0);
+            systemResourceData.memoryHistory.push(metrics.memory || 0);
+            systemResourceData.diskIOHistory.push(metrics.disk || 0);
+            systemResourceData.networkInHistory.push(metrics.network?.in || 0);
+            systemResourceData.networkOutHistory.push(metrics.network?.out || 0);
+
+            // 최대 데이터 포인트 수 제한
+            if (systemResourceData.timestamps.length > systemResourceData.maxDataPoints) {
+                systemResourceData.timestamps.shift();
+                systemResourceData.cpuHistory.shift();
+                systemResourceData.memoryHistory.shift();
+                systemResourceData.diskIOHistory.shift();
+                systemResourceData.networkInHistory.shift();
+                systemResourceData.networkOutHistory.shift();
+            }
+
+            // 차트 업데이트
+            updateSystemResourceCharts();
+        }
+
+        function updateSystemResourceCards(metrics) {
+            // CPU 사용률 카드 업데이트
+            const cpuPercent = metrics.cpu?.toFixed(1) || '-';
+            document.getElementById('cpuUsagePercent').textContent = `${cpuPercent}%`;
+
+            const cpuProgressBar = document.getElementById('cpuProgressBar');
+            if (cpuProgressBar) {
+                cpuProgressBar.style.width = `${metrics.cpu || 0}%`;
+                // CPU 사용률에 따른 색상 변경
+                if (metrics.cpu > 80) {
+                    cpuProgressBar.className = 'bg-red-500 h-2 rounded-full transition-all duration-500';
+                } else if (metrics.cpu > 60) {
+                    cpuProgressBar.className = 'bg-yellow-500 h-2 rounded-full transition-all duration-500';
+                } else {
+                    cpuProgressBar.className = 'bg-green-500 h-2 rounded-full transition-all duration-500';
+                }
+            }
+
+            // 메모리 사용률 카드 업데이트
+            const memoryPercent = metrics.memory?.toFixed(1) || '-';
+            document.getElementById('memoryUsagePercent').textContent = `${memoryPercent}%`;
+
+            const memoryProgressBar = document.getElementById('memoryProgressBar');
+            if (memoryProgressBar) {
+                memoryProgressBar.style.width = `${metrics.memory || 0}%`;
+                // 메모리 사용률에 따른 색상 변경
+                if (metrics.memory > 80) {
+                    memoryProgressBar.className = 'bg-red-500 h-2 rounded-full transition-all duration-500';
+                } else if (metrics.memory > 60) {
+                    memoryProgressBar.className = 'bg-yellow-500 h-2 rounded-full transition-all duration-500';
+                } else {
+                    memoryProgressBar.className = 'bg-blue-500 h-2 rounded-full transition-all duration-500';
+                }
+            }
+
+            // 디스크 사용률 카드 업데이트
+            const diskPercent = metrics.disk?.toFixed(1) || '-';
+            document.getElementById('diskUsagePercent').textContent = `${diskPercent}%`;
+
+            const diskProgressBar = document.getElementById('diskProgressBar');
+            if (diskProgressBar) {
+                diskProgressBar.style.width = `${metrics.disk || 0}%`;
+                // 디스크 사용률에 따른 색상 변경
+                if (metrics.disk > 90) {
+                    diskProgressBar.className = 'bg-red-500 h-2 rounded-full transition-all duration-500';
+                } else if (metrics.disk > 75) {
+                    diskProgressBar.className = 'bg-yellow-500 h-2 rounded-full transition-all duration-500';
+                } else {
+                    diskProgressBar.className = 'bg-green-500 h-2 rounded-full transition-all duration-500';
+                }
+            }
+
+            // 네트워크 I/O 카드 업데이트
+            const networkIn = metrics.network?.in?.toFixed(1) || '0';
+            const networkOut = metrics.network?.out?.toFixed(1) || '0';
+            const totalIO = ((metrics.network?.in || 0) + (metrics.network?.out || 0)).toFixed(1);
+
+            document.getElementById('networkIORate').textContent = `${totalIO}`;
+            document.getElementById('networkUpload').textContent = networkOut;
+            document.getElementById('networkDownload').textContent = networkIn;
+
+            // 시스템 정보 요약 업데이트
+            if (metrics.system_info) {
+                document.getElementById('avgLoadLevel').textContent = metrics.system_info.load_average || '0.0';
+                document.getElementById('activeProcesses').textContent = metrics.system_info.processes || '0';
+                document.getElementById('systemHealthScore').textContent = metrics.system_info.health_score || '95';
+            }
+        }
+
+        function updateSystemResourceCharts() {
+            // CPU 사용률 차트 업데이트
+            if (cpuUsageChart) {
+                cpuUsageChart.data.labels = [...systemResourceData.timestamps];
+                cpuUsageChart.data.datasets[0].data = [...systemResourceData.cpuHistory];
+                cpuUsageChart.update('none');
+            }
+
+            // 메모리 사용률 차트 업데이트
+            if (memoryUsageChart) {
+                memoryUsageChart.data.labels = [...systemResourceData.timestamps];
+                memoryUsageChart.data.datasets[0].data = [...systemResourceData.memoryHistory];
+                memoryUsageChart.update('none');
+            }
+
+            // 디스크 I/O 차트 업데이트
+            if (diskIOChart) {
+                diskIOChart.data.labels = [...systemResourceData.timestamps];
+                diskIOChart.data.datasets[0].data = [...systemResourceData.diskIOHistory];
+                diskIOChart.update('none');
+            }
+
+            // 네트워크 I/O 차트 업데이트
+            if (networkIOChart) {
+                networkIOChart.data.labels = [...systemResourceData.timestamps];
+                networkIOChart.data.datasets[0].data = [...systemResourceData.networkInHistory];
+                networkIOChart.data.datasets[1].data = [...systemResourceData.networkOutHistory];
+                networkIOChart.update('none');
+            }
+        }
+
+        async function refreshSystemMetrics() {
+            addLog('시스템 자원 메트릭 새로고침 중...', 'info');
+            await fetchSystemMetrics();
+        }
+
         function updateRealTimeCharts(metrics) {
             // Update real-time response chart
             if (realTimeResponseChart) {
@@ -1182,7 +1847,8 @@
                 await Promise.allSettled([
                     checkHealth(),
                     checkAPI(),
-                    refreshRealTimeMetrics()
+                    refreshRealTimeMetrics(),
+                    fetchSystemMetrics()  // 시스템 자원 메트릭도 자동 새로고침에 포함
                 ]);
 
                 addLog('전체 데이터 새로고침 완료', 'info');
@@ -1203,6 +1869,7 @@
         let alertsPerPage = 20;
         let searchTerm = '';
         let levelFilter = 'all';
+        let dateFilter = 'today'; // 날짜 필터 변수 추가
 
         function generateMockAlerts() {
             const alertTypes = ['critical', 'error', 'warning', 'info'];
@@ -1229,6 +1896,9 @@
                 'CDN Response Slow'
             ];
 
+            const channels = ['Slack', 'Discord', 'Email', 'SMS'];
+            const statuses = ['sent', 'failed', 'pending', 'retry'];
+
             const alerts = [];
             // Generate 100 alerts for better pagination testing
             for (let i = 0; i < 100; i++) {
@@ -1236,19 +1906,111 @@
                 const title = alertTitles[Math.floor(Math.random() * alertTitles.length)];
                 const timestamp = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000); // Last 30 days
 
+                // 로그 링크 생성 (심각도별)
+                const logLinks = getLogLinksForType(type);
+
+                // 추가 정보 생성
+                const additionalInfo = getAdditionalInfoForAlert(type, title);
+
+                // 로그 내용 (Critical과 Error의 경우만)
+                const logContent = (type === 'critical' || type === 'error') ? generateMockLogContent(type) : null;
+
                 alerts.push({
-                    id: `alert-${i + 1}`,
+                    id: `alert-${String(i + 1).padStart(6, '0')}`, // alert-000001 형식
                     type: type,
                     title: title,
                     message: getAlertMessage(type, title),
                     timestamp: timestamp,
                     resolved: Math.random() > 0.7,
-                    source: ['API', 'Database', 'Security', 'System', 'Network'][Math.floor(Math.random() * 5)]
+                    source: ['API', 'Database', 'Security', 'System', 'Network'][Math.floor(Math.random() * 5)],
+                    channel: channels[Math.floor(Math.random() * channels.length)],
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    logLinks: logLinks,
+                    additionalInfo: additionalInfo,
+                    logContent: logContent,
+                    retryCount: type === 'critical' || type === 'error' ? Math.floor(Math.random() * 3) : 0
                 });
             }
 
             // Sort by timestamp (newest first)
             return alerts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        }
+
+        // 심각도별 로그 링크 생성 함수
+        function getLogLinksForType(type) {
+            const baseUrl = 'http://localhost:8088/logs';
+            const links = [];
+
+            if (type === 'critical' || type === 'error') {
+                links.push(
+                    { name: '보안 로그', url: `${baseUrl}/security.log` },
+                    { name: 'API 로그', url: `${baseUrl}/api.log` },
+                    { name: '시스템 로그', url: `${baseUrl}/app.log` }
+                );
+            } else if (type === 'warning') {
+                links.push(
+                    { name: 'API 로그', url: `${baseUrl}/api.log` },
+                    { name: '시스템 로그', url: `${baseUrl}/app.log` }
+                );
+            } else {
+                links.push(
+                    { name: '시스템 로그', url: `${baseUrl}/app.log` }
+                );
+            }
+
+            return links;
+        }
+
+        // 추가 정보 생성 함수
+        function getAdditionalInfoForAlert(type, title) {
+            const additionalInfoMap = {
+                'Database Connection Lost': {
+                    'Connection Pool': '15/20 사용 중',
+                    'Last Successful Connection': '2024-01-15 14:30:25',
+                    'Error Code': 'DB_CONN_TIMEOUT_001'
+                },
+                'High Memory Usage Detected': {
+                    'Memory Usage': '85% (6.8GB / 8GB)',
+                    'Top Process': 'mcp-api (2.3GB)',
+                    'Threshold': '80%'
+                },
+                'API Rate Limit Exceeded': {
+                    'Client IP': '192.168.1.100',
+                    'Request Count': '156/100 (분당)',
+                    'Endpoint': '/api/v1/portfolio'
+                },
+                'Security Alert Triggered': {
+                    'Event Type': 'Suspicious Login',
+                    'Source IP': '203.0.113.50',
+                    'Risk Level': 'High'
+                }
+            };
+
+            return additionalInfoMap[title] || {
+                'Alert ID': `ALT-${Math.floor(Math.random() * 100000)}`,
+                'Source': 'MCP-MAP System',
+                'Priority': type === 'critical' ? 'P1' : type === 'error' ? 'P2' : 'P3'
+            };
+        }
+
+        // 모의 로그 내용 생성 함수
+        function generateMockLogContent(type) {
+            const criticalLogs = [
+                '2024-01-15 14:30:25 [CRITICAL] Database connection pool exhausted',
+                '2024-01-15 14:30:24 [ERROR] Failed to acquire database connection after 30s timeout',
+                '2024-01-15 14:30:23 [WARN] Connection pool usage above 90%',
+                '2024-01-15 14:30:22 [INFO] New connection request queued',
+                '2024-01-15 14:30:21 [DEBUG] Active connections: 19/20'
+            ];
+
+            const errorLogs = [
+                '2024-01-15 14:30:25 [ERROR] API request failed with status 500',
+                '2024-01-15 14:30:24 [WARN] High response time detected: 2.5s',
+                '2024-01-15 14:30:23 [INFO] Processing request from 192.168.1.100',
+                '2024-01-15 14:30:22 [DEBUG] Request validation successful'
+            ];
+
+            return type === 'critical' ? criticalLogs.join('\n') : errorLogs.join('\n');
         }
 
         function getAlertMessage(type, title) {
@@ -1323,6 +2085,26 @@
             // Start with all alerts
             let filtered = [...allAlertsData];
 
+            // Apply date filter (날짜 필터 적용)
+            if (dateFilter !== 'all') {
+                const now = new Date();
+                const cutoffDate = new Date();
+
+                switch (dateFilter) {
+                    case 'today':
+                        cutoffDate.setHours(0, 0, 0, 0); // 오늘 00:00:00
+                        break;
+                    case '7days':
+                        cutoffDate.setDate(now.getDate() - 7); // 7일 전
+                        break;
+                    case '30days':
+                        cutoffDate.setDate(now.getDate() - 30); // 30일 전
+                        break;
+                }
+
+                filtered = filtered.filter(alert => new Date(alert.timestamp) >= cutoffDate);
+            }
+
             // Apply level filter
             if (levelFilter !== 'all') {
                 filtered = filtered.filter(alert => alert.type === levelFilter);
@@ -1334,7 +2116,8 @@
                 filtered = filtered.filter(alert =>
                     alert.title.toLowerCase().includes(searchLower) ||
                     alert.message.toLowerCase().includes(searchLower) ||
-                    alert.source.toLowerCase().includes(searchLower)
+                    alert.source.toLowerCase().includes(searchLower) ||
+                    alert.id.toLowerCase().includes(searchLower)
                 );
             }
 
@@ -1405,19 +2188,28 @@
 
                 return `
                     <div class="border-b border-white/10 dark:border-gray-700 last:border-b-0 ${resolvedClass}">
-                        <div class="p-4 ${colors.bg} ${colors.border} border-l-4">
+                        <div class="p-4 ${colors.bg} ${colors.border} border-l-4 alert-item" onclick="showAlertDetailModal('${alert.id}')">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center mb-2">
                                         <span class="text-lg mr-2">${icon}</span>
                                         <span class="font-medium ${colors.text} text-sm uppercase tracking-wide">${alert.type}</span>
                                         ${resolvedBadge}
+                                        <span class="text-white/60 text-xs ml-2">#${alert.id}</span>
                                     </div>
                                     <h4 class="text-white dark:text-gray-100 font-semibold mb-1">${alert.title}</h4>
                                     <p class="text-white/80 dark:text-gray-300 text-sm mb-2">${alert.message}</p>
+                                    <div class="flex items-center space-x-4 text-xs text-white/60">
+                                        <span>📡 ${alert.channel}</span>
+                                        <span>📊 ${alert.source}</span>
+                                        <span class="${alert.status === 'sent' ? 'text-green-400' : alert.status === 'failed' ? 'text-red-400' : 'text-yellow-400'}">
+                                            ${alert.status === 'sent' ? '✅' : alert.status === 'failed' ? '❌' : '⏳'} ${alert.status}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="text-right ml-4">
                                     <div class="${colors.time} text-xs">${timeStr}</div>
+                                    <div class="text-white/60 text-xs mt-1">클릭하여 세부정보 보기</div>
                                 </div>
                             </div>
                         </div>
@@ -1607,6 +2399,231 @@
             } catch (error) {
                 addLog(`테스트 알림 전송 오류: ${error.message}`, 'error');
             }
+        }
+
+        // =============================================
+        // 새로운 알림 패널 기능들
+        // =============================================
+
+        // 알림 세부 정보 모달 표시 함수
+        function showAlertDetailModal(alertId) {
+            const alert = allAlertsData.find(a => a.id === alertId);
+            if (!alert) {
+                addLog(`알림을 찾을 수 없습니다: ${alertId}`, 'error');
+                return;
+            }
+
+            // 모달 데이터 채우기
+            const modal = document.getElementById('alertDetailModal');
+
+            // 아이콘 설정
+            const iconMap = {
+                'critical': '🚨',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            };
+            document.getElementById('modalAlertIcon').textContent = iconMap[alert.type] || '📢';
+
+            // 기본 정보 설정
+            document.getElementById('modalAlertTitle').textContent = alert.title;
+            document.getElementById('modalAlertLevel').innerHTML = `<span class="${getAlertColorClasses(alert.type).text}">${iconMap[alert.type]} ${alert.type.toUpperCase()}</span>`;
+            document.getElementById('modalAlertTime').textContent = alert.timestamp.toLocaleString('ko-KR');
+            document.getElementById('modalAlertId').textContent = alert.id;
+            document.getElementById('modalAlertChannel').textContent = alert.channel;
+
+            // 상태 설정 (상태별 색상 적용)
+            const statusElement = document.getElementById('modalAlertStatus');
+            const statusColors = {
+                'sent': 'text-green-600 dark:text-green-400',
+                'failed': 'text-red-600 dark:text-red-400',
+                'pending': 'text-yellow-600 dark:text-yellow-400',
+                'retry': 'text-blue-600 dark:text-blue-400'
+            };
+            const statusIcons = {
+                'sent': '✅',
+                'failed': '❌',
+                'pending': '⏳',
+                'retry': '🔄'
+            };
+            statusElement.innerHTML = `<span class="${statusColors[alert.status] || ''}">${statusIcons[alert.status] || '❓'} ${alert.status}</span>`;
+
+            // 메시지 설정
+            document.getElementById('modalAlertMessage').textContent = alert.message;
+
+            // 로그 링크 설정
+            const logLinksContainer = document.getElementById('modalLogLinks');
+            if (alert.logLinks && alert.logLinks.length > 0) {
+                logLinksContainer.innerHTML = alert.logLinks.map(link => `
+                    <a href="${link.url}" target="_blank"
+                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm">
+                        🔗 ${link.name}
+                    </a>
+                `).join('');
+            } else {
+                logLinksContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">관련 로그가 없습니다.</p>';
+            }
+
+            // 추가 정보 설정
+            const additionalInfoElement = document.getElementById('modalAdditionalInfo');
+            const additionalInfoContent = document.getElementById('modalAdditionalInfoContent');
+            if (alert.additionalInfo && Object.keys(alert.additionalInfo).length > 0) {
+                additionalInfoElement.classList.remove('hidden');
+                additionalInfoContent.innerHTML = Object.entries(alert.additionalInfo)
+                    .map(([key, value]) => `<div class="mb-2"><strong>${key}:</strong> ${value}</div>`)
+                    .join('');
+            } else {
+                additionalInfoElement.classList.add('hidden');
+            }
+
+            // 로그 내용 설정
+            const logContentElement = document.getElementById('modalLogContent');
+            const logContentText = document.getElementById('modalLogContentText');
+            if (alert.logContent) {
+                logContentElement.classList.remove('hidden');
+                logContentText.textContent = alert.logContent;
+            } else {
+                logContentElement.classList.add('hidden');
+            }
+
+            // 모달 표시
+            modal.classList.remove('hidden');
+            modal.classList.add('show');
+
+            // 현재 선택된 알림 ID 저장 (내보내기용)
+            modal.dataset.currentAlertId = alertId;
+
+            addLog(`알림 세부 정보 모달 열림: ${alert.title}`, 'info');
+        }
+
+        // 알림 세부 정보 모달 숨김 함수
+        function hideAlertDetailModal() {
+            const modal = document.getElementById('alertDetailModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('show');
+            delete modal.dataset.currentAlertId;
+            addLog('알림 세부 정보 모달 닫힘', 'info');
+        }
+
+        // 알림 내보내기 함수 (JSON/CSV)
+        function exportAlerts(format) {
+            const dataToExport = filteredAlertsData.length > 0 ? filteredAlertsData : allAlertsData;
+
+            if (dataToExport.length === 0) {
+                addLog('내보낼 알림이 없습니다', 'warning');
+                return;
+            }
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const filename = `mcp-alerts-${timestamp}`;
+
+            if (format === 'json') {
+                exportAlertsAsJSON(dataToExport, filename);
+            } else if (format === 'csv') {
+                exportAlertsAsCSV(dataToExport, filename);
+            }
+
+            addLog(`알림 데이터 ${format.toUpperCase()} 내보내기 완료: ${dataToExport.length}개 항목`, 'info');
+        }
+
+        // JSON 형식으로 알림 내보내기
+        function exportAlertsAsJSON(data, filename) {
+            const exportData = data.map(alert => ({
+                id: alert.id,
+                type: alert.type,
+                title: alert.title,
+                message: alert.message,
+                timestamp: alert.timestamp.toISOString(),
+                resolved: alert.resolved,
+                source: alert.source,
+                channel: alert.channel,
+                status: alert.status,
+                retryCount: alert.retryCount,
+                additionalInfo: alert.additionalInfo
+            }));
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            downloadFile(blob, `${filename}.json`);
+        }
+
+        // CSV 형식으로 알림 내보내기
+        function exportAlertsAsCSV(data, filename) {
+            const headers = ['ID', '심각도', '제목', '메시지', '발생시간', '해결여부', '소스', '채널', '상태', '재시도횟수'];
+            const csvContent = [
+                headers.join(','),
+                ...data.map(alert => [
+                    `"${alert.id}"`,
+                    `"${alert.type}"`,
+                    `"${alert.title.replace(/"/g, '""')}"`,
+                    `"${alert.message.replace(/"/g, '""')}"`,
+                    `"${alert.timestamp.toLocaleString('ko-KR')}"`,
+                    `"${alert.resolved ? '해결됨' : '미해결'}"`,
+                    `"${alert.source}"`,
+                    `"${alert.channel}"`,
+                    `"${alert.status}"`,
+                    `"${alert.retryCount || 0}"`
+                ].join(','))
+            ].join('\n');
+
+            // UTF-8 BOM 추가 (한글 깨짐 방지)
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            downloadFile(blob, `${filename}.csv`);
+        }
+
+        // 현재 모달의 알림 세부 정보 내보내기
+        function exportCurrentAlertDetail() {
+            const modal = document.getElementById('alertDetailModal');
+            const alertId = modal.dataset.currentAlertId;
+
+            if (!alertId) {
+                addLog('내보낼 알림 정보가 없습니다', 'warning');
+                return;
+            }
+
+            const alert = allAlertsData.find(a => a.id === alertId);
+            if (!alert) {
+                addLog('알림을 찾을 수 없습니다', 'error');
+                return;
+            }
+
+            // 상세 정보를 포함한 JSON 생성
+            const detailData = {
+                id: alert.id,
+                type: alert.type,
+                title: alert.title,
+                message: alert.message,
+                timestamp: alert.timestamp.toISOString(),
+                resolved: alert.resolved,
+                source: alert.source,
+                channel: alert.channel,
+                status: alert.status,
+                retryCount: alert.retryCount,
+                logLinks: alert.logLinks,
+                additionalInfo: alert.additionalInfo,
+                logContent: alert.logContent,
+                exportedAt: new Date().toISOString()
+            };
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const filename = `alert-detail-${alert.id}-${timestamp}.json`;
+
+            const blob = new Blob([JSON.stringify(detailData, null, 2)], { type: 'application/json' });
+            downloadFile(blob, filename);
+
+            addLog(`알림 세부 정보 내보내기 완료: ${alert.title}`, 'info');
+        }
+
+        // 파일 다운로드 헬퍼 함수
+        function downloadFile(blob, filename) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
         }
 
         // =============================================
@@ -1960,11 +2977,15 @@
 
             // Initialize charts
             initRealTimeMetricsCharts();
+            initSystemResourceCharts();
 
             // Set up event listeners
             document.getElementById('refreshBtn').addEventListener('click', refreshAll);
             document.getElementById('autoRefreshToggle').addEventListener('click', toggleAutoRefresh);
             document.getElementById('refreshMetricsBtn').addEventListener('click', refreshRealTimeMetrics);
+
+            // 시스템 자원 모니터링 이벤트 리스너 추가
+            document.getElementById('refreshSystemMetricsBtn').addEventListener('click', refreshSystemMetrics);
             document.getElementById('clearLogsBtn').addEventListener('click', () => {
                 document.getElementById('logContainer').innerHTML = '';
                 addLog('로그가 지워졌습니다', 'info');
@@ -1973,6 +2994,44 @@
             // Alerts Panel Event Listeners
             document.getElementById('refreshAlertsBtn').addEventListener('click', refreshAlerts);
             document.getElementById('testAlertBtn').addEventListener('click', sendTestAlert);
+
+            // 새로운 알림 패널 기능 이벤트 리스너들
+            // 날짜 필터 버튼들
+            document.querySelectorAll('.date-filter').forEach(button => {
+                button.addEventListener('click', function() {
+                    // 모든 날짜 필터 버튼의 active 클래스 제거
+                    document.querySelectorAll('.date-filter').forEach(btn => btn.classList.remove('active'));
+                    // 클릭한 버튼에 active 클래스 추가
+                    this.classList.add('active');
+                    // 날짜 필터 설정
+                    dateFilter = this.dataset.filter;
+                    // 필터 적용
+                    filterAlerts();
+                });
+            });
+
+            // 내보내기 버튼들
+            document.getElementById('exportAlertsJSON').addEventListener('click', () => exportAlerts('json'));
+            document.getElementById('exportAlertsCSV').addEventListener('click', () => exportAlerts('csv'));
+
+            // 모달 관련 이벤트 리스너들
+            document.getElementById('closeModalBtn').addEventListener('click', hideAlertDetailModal);
+            document.getElementById('modalCloseBtn').addEventListener('click', hideAlertDetailModal);
+            document.getElementById('modalExportBtn').addEventListener('click', exportCurrentAlertDetail);
+
+            // 모달 배경 클릭 시 닫기
+            document.getElementById('alertDetailModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideAlertDetailModal();
+                }
+            });
+
+            // ESC 키로 모달 닫기
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !document.getElementById('alertDetailModal').classList.contains('hidden')) {
+                    hideAlertDetailModal();
+                }
+            });
 
             // Listen for theme changes
             document.addEventListener('themeChanged', (event) => {
@@ -1994,6 +3053,9 @@
 
             // Initial load
             await refreshAll();
+
+            // 시스템 자원 메트릭 초기 로드
+            await fetchSystemMetrics();
 
             // Set up uptime counter
             let startTime = Date.now();
@@ -2019,5 +3081,103 @@
             addLog(`처리되지 않은 Promise 거부: ${event.reason}`, 'error');
         });
     </script>
+
+    <!-- 알림 세부 정보 모달 -->
+    <div id="alertDetailModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+            <!-- 모달 헤더 -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 p-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-white flex items-center">
+                        <span id="modalAlertIcon" class="mr-3">📢</span>
+                        알림 세부 정보
+                    </h3>
+                    <button
+                        id="closeModalBtn"
+                        class="text-white hover:text-gray-200 transition-colors p-2 hover:bg-white/10 rounded-lg"
+                    >
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <!-- 모달 내용 -->
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <!-- 알림 기본 정보 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">알림 제목</label>
+                            <div id="modalAlertTitle" class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">심각도</label>
+                            <div id="modalAlertLevel" class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">발생 시간</label>
+                            <div id="modalAlertTime" class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">알림 ID</label>
+                            <div id="modalAlertId" class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100 font-mono text-sm"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">채널</label>
+                            <div id="modalAlertChannel" class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">상태</label>
+                            <div id="modalAlertStatus" class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 알림 메시지 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">알림 메시지</label>
+                    <div id="modalAlertMessage" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100 whitespace-pre-wrap"></div>
+                </div>
+
+                <!-- 관련 로그 링크 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">관련 로그</label>
+                    <div id="modalLogLinks" class="space-y-2">
+                        <!-- 로그 링크들이 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 추가 정보 (있는 경우) -->
+                <div id="modalAdditionalInfo" class="mb-6 hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">추가 정보</label>
+                    <div id="modalAdditionalInfoContent" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100"></div>
+                </div>
+
+                <!-- 로그 내용 (있는 경우) -->
+                <div id="modalLogContent" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">첨부된 로그 내용</label>
+                    <div id="modalLogContentText" class="p-4 bg-gray-900 dark:bg-gray-800 rounded-lg text-green-400 font-mono text-sm overflow-x-auto max-h-64 overflow-y-auto whitespace-pre"></div>
+                </div>
+            </div>
+
+            <!-- 모달 푸터 -->
+            <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end gap-3">
+                <button
+                    id="modalExportBtn"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center"
+                >
+                    📄 내보내기
+                </button>
+                <button
+                    id="modalCloseBtn"
+                    class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
+                >
+                    닫기
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
