@@ -1,30 +1,49 @@
+import os
 from fastapi import APIRouter, Query
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 from .news_score import get_news_score
 
-router = APIRouter(prefix="/api/v1", tags=["recommendations"])
+router = APIRouter(tags=["recommendations"])
 
-@router.get("/stock/recommendations")
+TECH_WEIGHT = float(os.getenv("TECH_WEIGHT", "0.7"))
+NEWS_WEIGHT = float(os.getenv("NEWS_WEIGHT", "0.3"))
+RECOMMEND_THRESHOLD = float(os.getenv("RECOMMEND_THRESHOLD", "2.5"))
+WARN_THRESHOLD = float(os.getenv("WARN_THRESHOLD", "-2.5"))
+
+@router.get("/recommendations")
 def get_recommendations(
     exchange: str = Query("NASDAQ"),
-    limit: int = Query(10, ge=1, le=50),
-    tech_weight: float = 0.7,
-    news_weight: float = 0.3,
-    recommend_threshold: float = 2.5,
-    warn_threshold: float = -2.5,
+    limit: int = Query(5, ge=1, le=50)
 ) -> Dict[str, Any]:
-    """
-    뼈대만: 지금은 실제 계산 없이 빈 리스트(또는 목업) 반환.
-    다음 배치에서: 기존 기술점수 + get_news_score(symbol) 결합해 상위 N개만 리턴.
-    """
+    tech_baseline: Dict[str, float] = {
+        "AAPL": 3.2,
+        "NVDA": 3.8,
+        "TSLA": 2.6,
+    }
+    candidates: List[str] = list(tech_baseline.keys())
+    items: List[Dict[str, Any]] = []
+    for symbol in candidates:
+        tech = float(tech_baseline.get(symbol, 0.0))
+        news = float(get_news_score(symbol))
+        final = TECH_WEIGHT * tech + NEWS_WEIGHT * news
+        why = [
+            f"기술:{tech:.2f}×{TECH_WEIGHT:.1f}",
+            f"뉴스:{news:.2f}×{NEWS_WEIGHT:.1f}",
+            f"합산:{final:.2f}",
+        ]
+        if final >= RECOMMEND_THRESHOLD:
+            items.append({"symbol": symbol, "score": round(final, 2), "why": why})
+    items.sort(key=lambda x: x["score"], reverse=True)
+    items = items[:limit]
     return {
         "ok": True,
         "exchange": exchange,
-        "items": [],  # 다음 배치에서 채움
+        "items": items,
         "meta": {
-            "tech_weight": tech_weight,
-            "news_weight": news_weight,
-            "recommend_threshold": recommend_threshold,
-            "warn_threshold": warn_threshold,
+            "tech_weight": TECH_WEIGHT,
+            "news_weight": NEWS_WEIGHT,
+            "recommend_threshold": RECOMMEND_THRESHOLD,
+            "warn_threshold": WARN_THRESHOLD,
+            "mode": "TECH+NEWS",
         },
     }

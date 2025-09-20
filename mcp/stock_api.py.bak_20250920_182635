@@ -1,11 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from mcp import recommend_api, news_api, portfolio_api
+# 필수 라우터는 명시적 import
+from mcp import recommend_api, news_api
+
+# 선택 라우터는 있으면 붙이고, 없으면 건너뜀
 try:
     from mcp import signals_api
 except Exception:
     signals_api = None
+try:
+    from mcp import portfolio_api
+except Exception:
+    portfolio_api = None
 
 app = FastAPI(title="StockPilot API", version="0.1.0")
 
@@ -20,9 +27,10 @@ app.add_middleware(
 def health():
     return {"ok": True, "service": "stockpilot", "status": "alive"}
 
-# ✅ 라우터 명시적 include
+# ✅ 라우터 명시 부착 (launchd 환경에서도 확실히 붙도록)
 app.include_router(recommend_api.router, prefix="/api/v1/stock")
 app.include_router(news_api.router, prefix="/api/v1/news")
-app.include_router(portfolio_api.router, prefix="/api/v1/portfolio")
 if signals_api:
     app.include_router(signals_api.router, prefix="/api/v1/stock")
+if portfolio_api:
+    app.include_router(portfolio_api.router, prefix="/api/v1/portfolio")
