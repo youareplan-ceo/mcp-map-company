@@ -22,6 +22,9 @@ from pydantic import BaseModel
 from .portfolio_api import router as portfolio_router
 from .recommend_api import router as recommend_router
 
+# Import rate limiter
+from .utils.rate_limiter import rate_limit_middleware, get_security_stats, add_ip_to_whitelist
+
 # ---------------------------------
 # Logging
 # ---------------------------------
@@ -38,6 +41,9 @@ app = FastAPI(title="mcp-map-company", version="0.2.0")
 
 # CORS (Vercel 등 프론트에서 호출 허용)
 # 필요 시 allow_origins=["https://mcp-map.vercel.app"] 처럼 도메인 제한 가능
+# Add rate limiting middleware
+app.middleware("http")(rate_limit_middleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # 초기 개발 단계는 * 허용. 운영 전 도메인 고정 권장.
@@ -133,6 +139,20 @@ def get_signals() -> Dict[str, Any]:
         ],
     }
     return data
+
+# ---------------------------------
+# Security API endpoints
+# ---------------------------------
+@app.get("/api/v1/security/stats")
+def get_security_statistics() -> Dict[str, Any]:
+    """보안 통계 정보 API"""
+    return get_security_stats()
+
+@app.post("/api/v1/security/whitelist/{ip}")
+def add_ip_whitelist(ip: str) -> Dict[str, Any]:
+    """IP 화이트리스트 추가 API"""
+    success = add_ip_to_whitelist(ip)
+    return {"success": success, "ip": ip, "message": "IP가 화이트리스트에 추가되었습니다." if success else "화이트리스트 추가에 실패했습니다."}
 
 # ---------------------------------
 # (옵션) 매우 단순한 Flow Runner 스텁

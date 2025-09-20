@@ -356,6 +356,97 @@
             </div>
         </div>
 
+        <!-- Security Panel -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">🔒</span>
+                    보안 모니터링
+                </h2>
+                <div class="flex space-x-2">
+                    <button id="refreshSecurityBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        새로고침
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-red-500/20 dark:bg-red-600/20 border border-red-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">🚫</div>
+                    <div class="text-red-300 dark:text-red-200 text-sm font-medium">차단된 IP</div>
+                    <div id="blockedIpCount" class="text-red-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-yellow-500/20 dark:bg-yellow-600/20 border border-yellow-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">⚠️</div>
+                    <div class="text-yellow-300 dark:text-yellow-200 text-sm font-medium">Rate Limit 위반</div>
+                    <div id="rateLimitViolations" class="text-yellow-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-green-500/20 dark:bg-green-600/20 border border-green-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">✅</div>
+                    <div class="text-green-300 dark:text-green-200 text-sm font-medium">화이트리스트</div>
+                    <div id="whitelistCount" class="text-green-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-blue-500/20 dark:bg-blue-600/20 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">👀</div>
+                    <div class="text-blue-300 dark:text-blue-200 text-sm font-medium">모니터링 IP</div>
+                    <div id="monitoredIpCount" class="text-blue-100 text-2xl font-bold">0</div>
+                </div>
+            </div>
+
+            <!-- Security Charts and Lists Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Security Events Chart -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📊</span>
+                        차단 이벤트 추이
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="securityEventsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Blocked IPs List -->
+                <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🚫</span>
+                        차단된 IP 목록
+                    </h3>
+                    <div id="blockedIpsList" class="max-h-64 overflow-y-auto space-y-2">
+                        <div class="text-center text-white/60 dark:text-gray-400 py-8">
+                            차단된 IP가 없습니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IP Whitelist Management -->
+            <div class="mt-6 bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                    <span class="mr-2">⚪</span>
+                    IP 화이트리스트 관리
+                </h3>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input
+                        type="text"
+                        id="whitelistIpInput"
+                        placeholder="IP 주소 입력 (예: 192.168.1.100)"
+                        class="flex-1 bg-white/10 dark:bg-gray-800/50 border border-white/30 dark:border-gray-600 rounded-lg px-4 py-2 text-white dark:text-gray-100 placeholder-white/50 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                    <button
+                        id="addWhitelistBtn"
+                        class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 flex items-center"
+                    >
+                        <span class="mr-2">➕</span>
+                        추가
+                    </button>
+                </div>
+                <div id="whitelistResult" class="mt-3 text-sm hidden"></div>
+            </div>
+        </div>
+
         <!-- System Logs Panel -->
         <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
             <div class="flex items-center justify-between mb-4">
@@ -455,7 +546,8 @@
                     window.realTimeResponseChart,
                     window.systemResourceGauge,
                     window.dbPerformanceChart,
-                    window.apiCallsChart
+                    window.apiCallsChart,
+                    window.securityEventsChart
                 ];
 
                 charts.forEach(chart => {
@@ -1171,6 +1263,347 @@
         }
 
         // =============================================
+        // Security Panel Functions
+        // =============================================
+
+        // Security data storage
+        let securityData = {
+            blockedIps: [],
+            violations: [],
+            whitelist: [],
+            stats: {
+                blockedCount: 0,
+                violationCount: 0,
+                whitelistCount: 0,
+                monitoredCount: 0
+            }
+        };
+
+        let securityEventsChart = null;
+
+        function generateMockSecurityData() {
+            // Mock blocked IPs with violation details
+            const mockBlockedIps = [
+                { ip: '192.168.100.45', violations: 156, lastViolation: new Date(Date.now() - 30000), country: 'Unknown' },
+                { ip: '203.142.78.23', violations: 89, lastViolation: new Date(Date.now() - 120000), country: 'CN' },
+                { ip: '45.76.158.207', violations: 245, lastViolation: new Date(Date.now() - 300000), country: 'RU' },
+                { ip: '178.128.45.91', violations: 67, lastViolation: new Date(Date.now() - 600000), country: 'SG' },
+                { ip: '159.203.184.72', violations: 134, lastViolation: new Date(Date.now() - 900000), country: 'US' }
+            ];
+
+            // Generate violation events for chart (last 24 hours)
+            const violationEvents = [];
+            const now = Date.now();
+            for (let i = 23; i >= 0; i--) {
+                const hour = new Date(now - (i * 60 * 60 * 1000));
+                const violations = Math.floor(Math.random() * 20) + (i < 6 ? Math.random() * 30 : 0); // More activity in recent hours
+                violationEvents.push({
+                    time: hour,
+                    violations: violations
+                });
+            }
+
+            // Mock whitelist (load from localStorage if available)
+            const savedWhitelist = localStorage.getItem('mcp-security-whitelist');
+            const mockWhitelist = savedWhitelist ? JSON.parse(savedWhitelist) : [
+                '127.0.0.1',
+                '::1',
+                '192.168.1.0/24',
+                '10.0.0.0/8'
+            ];
+
+            return {
+                blockedIps: mockBlockedIps,
+                violations: violationEvents,
+                whitelist: mockWhitelist,
+                stats: {
+                    blockedCount: mockBlockedIps.length,
+                    violationCount: violationEvents.reduce((sum, event) => sum + event.violations, 0),
+                    whitelistCount: mockWhitelist.length,
+                    monitoredCount: mockBlockedIps.length + Math.floor(Math.random() * 50) + 20
+                }
+            };
+        }
+
+        function updateSecurityStats() {
+            // Update stats cards
+            document.getElementById('blockedIpCount').textContent = securityData.stats.blockedCount;
+            document.getElementById('rateLimitViolations').textContent = securityData.stats.violationCount;
+            document.getElementById('whitelistCount').textContent = securityData.stats.whitelistCount;
+            document.getElementById('monitoredIpCount').textContent = securityData.stats.monitoredCount;
+        }
+
+        function renderBlockedIpsList() {
+            const blockedIpsList = document.getElementById('blockedIpsList');
+
+            if (securityData.blockedIps.length === 0) {
+                blockedIpsList.innerHTML = `
+                    <div class="text-center text-white/60 dark:text-gray-400 py-8">
+                        차단된 IP가 없습니다.
+                    </div>
+                `;
+                return;
+            }
+
+            const ipsHtml = securityData.blockedIps.map(ipData => {
+                const timeStr = ipData.lastViolation.toLocaleDateString('ko-KR', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const countryFlag = getCountryFlag(ipData.country);
+
+                return `
+                    <div class="bg-red-500/10 dark:bg-red-600/10 border border-red-400/30 rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center">
+                                    <span class="font-mono text-white dark:text-gray-100 font-semibold">${ipData.ip}</span>
+                                    <span class="ml-2 text-lg">${countryFlag}</span>
+                                </div>
+                                <div class="text-red-300 dark:text-red-200 text-sm mt-1">
+                                    ${ipData.violations}회 위반 • 마지막: ${timeStr}
+                                </div>
+                            </div>
+                            <button onclick="unblockIp('${ipData.ip}')" class="text-red-300 hover:text-red-100 transition-colors duration-200">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            blockedIpsList.innerHTML = ipsHtml;
+        }
+
+        function getCountryFlag(countryCode) {
+            const flags = {
+                'US': '🇺🇸', 'CN': '🇨🇳', 'RU': '🇷🇺', 'SG': '🇸🇬',
+                'DE': '🇩🇪', 'JP': '🇯🇵', 'KR': '🇰🇷', 'GB': '🇬🇧',
+                'FR': '🇫🇷', 'CA': '🇨🇦', 'Unknown': '🏴‍☠️'
+            };
+            return flags[countryCode] || '🌍';
+        }
+
+        function createSecurityEventsChart() {
+            const ctx = document.getElementById('securityEventsChart').getContext('2d');
+
+            // Prepare chart data
+            const labels = securityData.violations.map(event =>
+                event.time.toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+            );
+            const data = securityData.violations.map(event => event.violations);
+
+            const isDark = darkModeManager && darkModeManager.isDarkMode();
+            const textColor = isDark ? '#f3f4f6' : '#ffffff';
+            const gridColor = isDark ? 'rgba(156, 163, 175, 0.2)' : 'rgba(255, 255, 255, 0.1)';
+
+            securityEventsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '차단 이벤트',
+                        data: data,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: textColor,
+                                maxTicksLimit: 6
+                            },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Store chart reference globally for theme updates
+            window.securityEventsChart = securityEventsChart;
+        }
+
+        async function fetchSecurityData() {
+            try {
+                addLog('보안 데이터 로드 중...', 'info');
+
+                // In production, this would fetch from the actual security API
+                // For now, use mock data
+                const response = await fetch('/api/v1/security/stats').catch(() => null);
+
+                if (response && response.ok) {
+                    const apiData = await response.json();
+                    // Merge API data with mock data
+                    securityData = {
+                        ...generateMockSecurityData(),
+                        stats: {
+                            ...generateMockSecurityData().stats,
+                            ...apiData
+                        }
+                    };
+                } else {
+                    // Use mock data if API is not available
+                    securityData = generateMockSecurityData();
+                }
+
+                addLog(`보안 데이터 로드 완료 - 차단된 IP: ${securityData.stats.blockedCount}개`, 'info');
+                return true;
+            } catch (error) {
+                addLog(`보안 데이터 로드 오류: ${error.message}`, 'error');
+                // Fallback to mock data
+                securityData = generateMockSecurityData();
+                return false;
+            }
+        }
+
+        async function refreshSecurityData() {
+            addLog('보안 데이터 새로고침 중...', 'info');
+
+            try {
+                await fetchSecurityData();
+                updateSecurityStats();
+                renderBlockedIpsList();
+
+                // Update chart if it exists
+                if (securityEventsChart) {
+                    const labels = securityData.violations.map(event =>
+                        event.time.toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+                    );
+                    const data = securityData.violations.map(event => event.violations);
+
+                    securityEventsChart.data.labels = labels;
+                    securityEventsChart.data.datasets[0].data = data;
+                    securityEventsChart.update('none');
+                }
+
+                addLog('보안 데이터 새로고침 완료', 'info');
+            } catch (error) {
+                addLog(`보안 데이터 새로고침 오류: ${error.message}`, 'error');
+            }
+        }
+
+        async function addIpToWhitelist() {
+            const ipInput = document.getElementById('whitelistIpInput');
+            const resultDiv = document.getElementById('whitelistResult');
+            const ip = ipInput.value.trim();
+
+            if (!ip) {
+                showWhitelistResult('IP 주소를 입력해주세요.', 'error');
+                return;
+            }
+
+            // Basic IP validation
+            const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            if (!ipRegex.test(ip) && !ip.includes('/')) {
+                showWhitelistResult('올바른 IP 주소 형식이 아닙니다.', 'error');
+                return;
+            }
+
+            try {
+                addLog(`IP 화이트리스트 추가 시도: ${ip}`, 'info');
+
+                // Try to call the API
+                const response = await fetch(`/api/v1/security/whitelist/${encodeURIComponent(ip)}`, {
+                    method: 'POST'
+                }).catch(() => null);
+
+                let success = false;
+                if (response && response.ok) {
+                    const result = await response.json();
+                    success = result.success;
+                } else {
+                    // Fallback to localStorage for demo
+                    const existingWhitelist = localStorage.getItem('mcp-security-whitelist');
+                    const whitelist = existingWhitelist ? JSON.parse(existingWhitelist) : [];
+
+                    if (!whitelist.includes(ip)) {
+                        whitelist.push(ip);
+                        localStorage.setItem('mcp-security-whitelist', JSON.stringify(whitelist));
+                        success = true;
+                    }
+                }
+
+                if (success) {
+                    showWhitelistResult(`IP ${ip}가 화이트리스트에 추가되었습니다.`, 'success');
+                    ipInput.value = '';
+
+                    // Update security data
+                    if (!securityData.whitelist.includes(ip)) {
+                        securityData.whitelist.push(ip);
+                        securityData.stats.whitelistCount++;
+                        updateSecurityStats();
+                    }
+
+                    addLog(`IP 화이트리스트 추가 완료: ${ip}`, 'info');
+                } else {
+                    showWhitelistResult('화이트리스트 추가에 실패했습니다.', 'error');
+                }
+            } catch (error) {
+                showWhitelistResult(`오류: ${error.message}`, 'error');
+                addLog(`IP 화이트리스트 추가 오류: ${error.message}`, 'error');
+            }
+        }
+
+        function showWhitelistResult(message, type) {
+            const resultDiv = document.getElementById('whitelistResult');
+            resultDiv.textContent = message;
+            resultDiv.className = `mt-3 text-sm ${type === 'success' ? 'text-green-400' : 'text-red-400'}`;
+            resultDiv.classList.remove('hidden');
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                resultDiv.classList.add('hidden');
+            }, 3000);
+        }
+
+        function unblockIp(ip) {
+            if (confirm(`IP ${ip}의 차단을 해제하시겠습니까?`)) {
+                // Remove from blocked list
+                securityData.blockedIps = securityData.blockedIps.filter(item => item.ip !== ip);
+                securityData.stats.blockedCount = securityData.blockedIps.length;
+
+                updateSecurityStats();
+                renderBlockedIpsList();
+                addLog(`IP 차단 해제: ${ip}`, 'info');
+            }
+        }
+
+        async function initializeSecurity() {
+            try {
+                addLog('보안 패널 초기화 중...', 'info');
+
+                await fetchSecurityData();
+                updateSecurityStats();
+                renderBlockedIpsList();
+                createSecurityEventsChart();
+
+                addLog('보안 패널 초기화 완료', 'info');
+            } catch (error) {
+                addLog(`보안 패널 초기화 오류: ${error.message}`, 'error');
+            }
+        }
+
+        // =============================================
         // Initialization
         // =============================================
 
@@ -1201,6 +1634,16 @@
 
             // Initialize alerts panel
             await initializeAlerts();
+            await initializeSecurity();
+
+            // Set up security event listeners
+            document.getElementById('refreshSecurityBtn').addEventListener('click', refreshSecurityData);
+            document.getElementById('addWhitelistBtn').addEventListener('click', addIpToWhitelist);
+            document.getElementById('whitelistIpInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addIpToWhitelist();
+                }
+            });
 
             // Initial load
             await refreshAll();
