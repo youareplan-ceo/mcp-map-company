@@ -44,6 +44,11 @@ NC='\033[0m' # No Color
 JSON_OUTPUT=false
 DETAILED_MODE=false
 WATCH_MODE=false
+CHECK_K8S=false
+CHECK_SERVICES=false
+CHECK_NGINX=false  # Nginx 상태 점검 플래그
+CHECK_SSL=false    # SSL 인증서 검사 플래그
+SHOW_LOGS=false    # 로그 표시 플래그
 
 # Logging function
 log() {
@@ -459,6 +464,41 @@ collect_status() {
         system_status=$(get_system_resources)
     fi
 
+    # 새로운 기능들: Nginx, SSL, 로그 상태 수집
+    local nginx_status="{}"
+    if [[ "$CHECK_NGINX" == "true" ]]; then
+        log "DEBUG" "Collecting Nginx status..."
+        nginx_status=$(get_nginx_status)
+    fi
+
+    local ssl_status="{}"
+    if [[ "$CHECK_SSL" == "true" ]]; then
+        log "DEBUG" "Checking SSL certificates..."
+        ssl_status=$(check_ssl_certificates)
+    fi
+
+    local logs_status="{}"
+    if [[ "$SHOW_LOGS" == "true" ]]; then
+        log "DEBUG" "Collecting recent logs..."
+        logs_status=$(get_recent_logs)
+    fi
+
+    # K8s 상태 (기존 기능)
+    local k8s_status="{}"
+    local k8s_pods="{}"
+    if [[ "$CHECK_K8S" == "true" ]]; then
+        log "DEBUG" "Collecting Kubernetes status..."
+        k8s_status=$(get_k8s_status)
+        k8s_pods=$(get_k8s_pods)
+    fi
+
+    # 외부 서비스 상태 (기존 기능)
+    local external_services="{}"
+    if [[ "$CHECK_SERVICES" == "true" ]]; then
+        log "DEBUG" "Checking external services..."
+        external_services=$(get_external_services_status)
+    fi
+
     # Combine all status information
     local combined_status=$(cat <<EOF
 {
@@ -466,12 +506,563 @@ collect_status() {
     "git": $git_status,
     "docker": $docker_status,
     "ports": $port_status,
-    "system": $system_status
+    "system": $system_status,
+    "nginx": $nginx_status,
+    "ssl": $ssl_status,
+    "logs": $logs_status,
+    "kubernetes": $k8s_status,
+    "k8s_pods": $k8s_pods,
+    "external_services": $external_services
 }
 EOF
 )
 
     echo "$combined_status"
+}
+
+# =============================================
+# Kubernetes Status Functions
+# =============================================
+
+# Get Kubernetes cluster status
+get_k8s_status() {
+    if ! command_exists kubectl; then
+        echo "{\"available\": false, \"reason\": \"kubectl not installed\"}"
+        return
+    fi
+
+    # Test cluster connectivity
+    if ! kubectl cluster-info >/dev/null 2>&1; then
+        echo "{\"available\": false, \"reason\": \"cluster not accessible\"}"
+        return
+    fi
+
+    # Get cluster info
+    local cluster_info=$(kubectl cluster-info --short 2>/dev/null | head -1 || echo "unknown")
+    local kubernetes_version=$(kubectl version --short --client 2>/dev/null | grep Client | awk '{print $3}' || echo "unknown")
+    local server_version=$(kubectl version --short --server 2>/dev/null | grep Server | awk '{print $3}' || echo "unknown")
+
+    # Get node status
+    local node_count=0
+    local ready_nodes=0
+    local node_list=()
+
+    while read -r name status; do
+        if [[ -n "$name" && "$name" != "NAME" ]]; then
+            node_count=$((node_count + 1))
+            if [[ "$status" == "Ready" ]]; then
+                ready_nodes=$((ready_nodes + 1))
+            fi
+            node_list+=("{\"name\": \"$name\", \"status\": \"$status\"}")
+        fi
+    done < <(kubectl get nodes --no-headers -o wide 2>/dev/null | awk '{print $1, $2}')
+
+    local nodes_json="[$(IFS=','; echo "${node_list[*]}")]"
+
+    echo "{
+        \"available\": true,
+        \"cluster_info\": \"$cluster_info\",
+        \"kubernetes_version\": \"$kubernetes_version\",
+        \"server_version\": \"$server_version\",
+        \"node_count\": $node_count,
+        \"ready_nodes\": $ready_nodes,
+        \"nodes\": $nodes_json
+    }"
+}
+
+# Get pod status for MCP-related services
+get_k8s_pods() {
+    if ! command_exists kubectl || ! kubectl cluster-info >/dev/null 2>&1; then
+        echo "{\"available\": false, \"pods\": []}"
+        return
+    fi
+
+    local pod_list=()
+    local total_pods=0
+    local running_pods=0
+
+    # Get all pods with MCP in the name or in specific namespaces
+    local kubectl_output
+    kubectl_output=$(kubectl get pods --all-namespaces -o wide 2>/dev/null | grep -i mcp || true)
+
+    if [[ -z "$kubectl_output" ]]; then
+        # If no MCP pods found, get pods from default namespace
+        kubectl_output=$(kubectl get pods -o wide 2>/dev/null || true)
+    fi
+
+    while read -r namespace name ready status restarts age; do
+        if [[ -n "$name" && "$name" != "NAME" ]]; then
+            total_pods=$((total_pods + 1))
+            if [[ "$status" == "Running" ]]; then
+                running_pods=$((running_pods + 1))
+            fi
+            pod_list+=("{\"namespace\": \"$namespace\", \"name\": \"$name\", \"ready\": \"$ready\", \"status\": \"$status\", \"restarts\": \"$restarts\", \"age\": \"$age\"}")
+        fi
+    done <<< "$kubectl_output"
+
+    local pods_json="[$(IFS=','; echo "${pod_list[*]}")]"
+
+    echo "{
+        \"available\": true,
+        \"total_pods\": $total_pods,
+        \"running_pods\": $running_pods,
+        \"pods\": $pods_json
+    }"
+}
+
+# =============================================
+# Nginx Status Functions
+# =============================================
+
+# Get Nginx service status
+get_nginx_status() {
+    if ! $CHECK_NGINX; then
+        echo "{\"available\": false, \"reason\": \"nginx check disabled\"}"
+        return
+    fi
+
+    local nginx_info='{"available": false}'
+
+    # Nginx 설정 파일 경로들
+    local nginx_config_paths=(
+        "/etc/nginx/nginx.conf"
+        "/usr/local/nginx/conf/nginx.conf"
+        "/opt/nginx/conf/nginx.conf"
+        "/usr/local/etc/nginx/nginx.conf"  # macOS Homebrew
+    )
+
+    # Nginx 바이너리 경로들
+    local nginx_binary_paths=(
+        "/usr/sbin/nginx"
+        "/usr/local/sbin/nginx"
+        "/opt/nginx/sbin/nginx"
+        "/usr/local/bin/nginx"  # macOS Homebrew
+    )
+
+    # Nginx 바이너리 찾기
+    local nginx_binary=""
+    for path in "${nginx_binary_paths[@]}"; do
+        if [[ -x "$path" ]]; then
+            nginx_binary="$path"
+            break
+        fi
+    done
+
+    # Nginx가 설치되지 않은 경우
+    if [[ -z "$nginx_binary" ]] && ! command_exists nginx; then
+        echo "{\"available\": false, \"reason\": \"nginx not installed\"}"
+        return
+    fi
+
+    # Nginx 명령어 설정
+    if [[ -n "$nginx_binary" ]]; then
+        local nginx_cmd="$nginx_binary"
+    else
+        local nginx_cmd="nginx"
+    fi
+
+    # Nginx 프로세스 상태 확인
+    local is_running=false
+    local process_count=0
+    local master_pid=""
+    local worker_count=0
+
+    if command_exists pgrep; then
+        process_count=$(pgrep -c nginx 2>/dev/null || echo "0")
+        if [[ $process_count -gt 0 ]]; then
+            is_running=true
+            master_pid=$(pgrep -f "nginx: master process" 2>/dev/null | head -1 || echo "unknown")
+            worker_count=$(pgrep -c "nginx: worker process" 2>/dev/null || echo "0")
+        fi
+    elif command_exists ps; then
+        if ps aux | grep -v grep | grep -q nginx; then
+            is_running=true
+            process_count=$(ps aux | grep -v grep | grep -c nginx || echo "0")
+            master_pid=$(ps aux | grep -v grep | grep "nginx: master" | awk '{print $2}' | head -1 || echo "unknown")
+            worker_count=$(ps aux | grep -v grep | grep -c "nginx: worker" || echo "0")
+        fi
+    fi
+
+    # Nginx 설정 파일 찾기
+    local config_file=""
+    for path in "${nginx_config_paths[@]}"; do
+        if [[ -f "$path" ]]; then
+            config_file="$path"
+            break
+        fi
+    done
+
+    # Nginx 버전 정보
+    local nginx_version="unknown"
+    if [[ -n "$nginx_binary" ]] || command_exists nginx; then
+        nginx_version=$($nginx_cmd -v 2>&1 | grep -o "nginx/[0-9.]*" || echo "unknown")
+    fi
+
+    # 설정 테스트
+    local config_test="unknown"
+    if [[ $is_running == true ]] && [[ -n "$nginx_binary" || -n "$(command -v nginx)" ]]; then
+        if $nginx_cmd -t >/dev/null 2>&1; then
+            config_test="valid"
+        else
+            config_test="invalid"
+        fi
+    fi
+
+    # 포트 확인 (HTTP: 80, HTTPS: 443)
+    local http_port_status="unknown"
+    local https_port_status="unknown"
+
+    if command_exists netstat; then
+        if netstat -tulpn 2>/dev/null | grep -q ":80 "; then
+            http_port_status="listening"
+        else
+            http_port_status="not_listening"
+        fi
+
+        if netstat -tulpn 2>/dev/null | grep -q ":443 "; then
+            https_port_status="listening"
+        else
+            https_port_status="not_listening"
+        fi
+    elif command_exists ss; then
+        if ss -tulpn 2>/dev/null | grep -q ":80 "; then
+            http_port_status="listening"
+        else
+            http_port_status="not_listening"
+        fi
+
+        if ss -tulpn 2>/dev/null | grep -q ":443 "; then
+            https_port_status="listening"
+        else
+            https_port_status="not_listening"
+        fi
+    fi
+
+    echo "{
+        \"available\": true,
+        \"running\": $is_running,
+        \"version\": \"$nginx_version\",
+        \"process_count\": $process_count,
+        \"master_pid\": \"$master_pid\",
+        \"worker_count\": $worker_count,
+        \"config_file\": \"$config_file\",
+        \"config_test\": \"$config_test\",
+        \"http_port_status\": \"$http_port_status\",
+        \"https_port_status\": \"$https_port_status\"
+    }"
+}
+
+# =============================================
+# SSL Certificate Functions
+# =============================================
+
+# Check SSL certificate status for domains
+check_ssl_certificates() {
+    if ! $CHECK_SSL; then
+        echo "{\"available\": false, \"reason\": \"ssl check disabled\"}"
+        return
+    fi
+
+    # 확인할 도메인 목록 (환경변수 또는 기본값)
+    local domains_to_check="${SSL_DOMAINS:-localhost,127.0.0.1,mcp-map.company}"
+    IFS=',' read -ra DOMAIN_ARRAY <<< "$domains_to_check"
+
+    local ssl_results=()
+    local total_domains=0
+    local valid_certificates=0
+
+    for domain in "${DOMAIN_ARRAY[@]}"; do
+        domain=$(echo "$domain" | tr -d ' ') # 공백 제거
+        if [[ -z "$domain" ]]; then
+            continue
+        fi
+
+        total_domains=$((total_domains + 1))
+        local ssl_info=$(check_domain_ssl "$domain")
+
+        # 유효한 인증서인지 확인
+        if echo "$ssl_info" | jq -e '.valid == true' >/dev/null 2>&1; then
+            valid_certificates=$((valid_certificates + 1))
+        fi
+
+        ssl_results+=("$ssl_info")
+    done
+
+    local certificates_json="[$(IFS=','; echo "${ssl_results[*]}")]"
+
+    echo "{
+        \"available\": true,
+        \"total_domains\": $total_domains,
+        \"valid_certificates\": $valid_certificates,
+        \"certificates\": $certificates_json
+    }"
+}
+
+# Check SSL certificate for a specific domain
+check_domain_ssl() {
+    local domain="$1"
+    local port="${2:-443}"
+
+    # OpenSSL이 설치되어 있는지 확인
+    if ! command_exists openssl; then
+        echo "{\"domain\": \"$domain\", \"valid\": false, \"reason\": \"openssl not available\"}"
+        return
+    fi
+
+    # 도메인 연결 테스트
+    if ! timeout 10 bash -c "</dev/tcp/$domain/$port" 2>/dev/null; then
+        echo "{\"domain\": \"$domain\", \"valid\": false, \"reason\": \"connection failed\"}"
+        return
+    fi
+
+    # SSL 인증서 정보 가져오기
+    local cert_info
+    cert_info=$(timeout 10 openssl s_client -connect "$domain:$port" -servername "$domain" 2>/dev/null | openssl x509 -noout -dates -subject -issuer 2>/dev/null)
+
+    if [[ -z "$cert_info" ]]; then
+        echo "{\"domain\": \"$domain\", \"valid\": false, \"reason\": \"failed to retrieve certificate\"}"
+        return
+    fi
+
+    # 만료일 추출
+    local not_after
+    not_after=$(echo "$cert_info" | grep "notAfter=" | cut -d= -f2)
+
+    if [[ -z "$not_after" ]]; then
+        echo "{\"domain\": \"$domain\", \"valid\": false, \"reason\": \"failed to parse expiry date\"}"
+        return
+    fi
+
+    # 발급자 정보 추출
+    local issuer
+    issuer=$(echo "$cert_info" | grep "issuer=" | cut -d= -f2- | sed 's/^[[:space:]]*//')
+
+    # 주체 정보 추출
+    local subject
+    subject=$(echo "$cert_info" | grep "subject=" | cut -d= -f2- | sed 's/^[[:space:]]*//')
+
+    # 만료일까지 남은 일수 계산
+    local expiry_timestamp
+    if command_exists date; then
+        # macOS와 Linux 호환성을 위한 날짜 파싱
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            expiry_timestamp=$(date -j -f "%b %d %H:%M:%S %Y %Z" "$not_after" "+%s" 2>/dev/null || echo "0")
+        else
+            expiry_timestamp=$(date -d "$not_after" "+%s" 2>/dev/null || echo "0")
+        fi
+    else
+        expiry_timestamp="0"
+    fi
+
+    local current_timestamp=$(date "+%s")
+    local days_until_expiry=$(( (expiry_timestamp - current_timestamp) / 86400 ))
+
+    # 인증서 유효성 판단
+    local is_valid=true
+    local status="valid"
+    local warnings=()
+
+    if [[ $days_until_expiry -lt 0 ]]; then
+        is_valid=false
+        status="expired"
+    elif [[ $days_until_expiry -lt 7 ]]; then
+        status="expiring_soon"
+        warnings+=("expires in $days_until_expiry days")
+    elif [[ $days_until_expiry -lt 30 ]]; then
+        status="warning"
+        warnings+=("expires in $days_until_expiry days")
+    fi
+
+    local warnings_json="[]"
+    if [[ ${#warnings[@]} -gt 0 ]]; then
+        warnings_json="[\"$(IFS='","'; echo "${warnings[*]}")\"]"
+    fi
+
+    echo "{
+        \"domain\": \"$domain\",
+        \"valid\": $is_valid,
+        \"status\": \"$status\",
+        \"expiry_date\": \"$not_after\",
+        \"days_until_expiry\": $days_until_expiry,
+        \"issuer\": \"$issuer\",
+        \"subject\": \"$subject\",
+        \"warnings\": $warnings_json
+    }"
+}
+
+# =============================================
+# Log Display Functions
+# =============================================
+
+# Get recent deployment logs
+get_recent_logs() {
+    if ! $SHOW_LOGS; then
+        echo "{\"available\": false, \"reason\": \"logs display disabled\"}"
+        return
+    fi
+
+    # 확인할 로그 파일들 (우선순위 순)
+    local log_files=(
+        "$PROJECT_ROOT/logs/deploy.log"
+        "$PROJECT_ROOT/logs/app.log"
+        "$PROJECT_ROOT/logs/api.log"
+        "$PROJECT_ROOT/logs/scheduler.log"
+        "/var/log/nginx/access.log"
+        "/var/log/nginx/error.log"
+        "/var/log/syslog"
+        "/var/log/messages"
+    )
+
+    local available_logs=()
+    local log_summaries=()
+
+    for log_file in "${log_files[@]}"; do
+        if [[ -f "$log_file" && -r "$log_file" ]]; then
+            local file_size=$(stat -f%z "$log_file" 2>/dev/null || stat -c%s "$log_file" 2>/dev/null || echo "0")
+            local line_count=$(wc -l < "$log_file" 2>/dev/null || echo "0")
+            local last_modified
+
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                last_modified=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" "$log_file" 2>/dev/null || echo "unknown")
+            else
+                last_modified=$(stat -c "%y" "$log_file" 2>/dev/null | cut -d. -f1 || echo "unknown")
+            fi
+
+            # 최근 10줄의 로그 내용 (에러나 중요한 내용 우선)
+            local recent_content=""
+            if command_exists tail; then
+                recent_content=$(tail -10 "$log_file" 2>/dev/null | sed 's/"/\\"/g' | tr '\n' '\\n' || echo "")
+            fi
+
+            available_logs+=("\"$log_file\"")
+            log_summaries+=("{
+                \"file\": \"$log_file\",
+                \"size_bytes\": $file_size,
+                \"line_count\": $line_count,
+                \"last_modified\": \"$last_modified\",
+                \"recent_content\": \"$recent_content\"
+            }")
+        fi
+    done
+
+    local logs_json="[$(IFS=','; echo "${log_summaries[*]}")]"
+    local available_logs_json="[$(IFS=','; echo "${available_logs[*]}")]"
+
+    echo "{
+        \"available\": true,
+        \"total_log_files\": ${#available_logs[@]},
+        \"available_logs\": $available_logs_json,
+        \"log_details\": $logs_json
+    }"
+}
+
+# =============================================
+# External Services Monitoring Functions
+# =============================================
+
+# Define external services to monitor
+declare -a EXTERNAL_SERVICES=(
+    "redis://localhost:6379"
+    "mongodb://localhost:27017"
+    "http://localhost:3000/health"
+    "http://localhost:8080/health"
+    "https://api.github.com"
+)
+
+# Check external service connectivity
+check_external_service() {
+    local service_url="$1"
+    local protocol=$(echo "$service_url" | cut -d: -f1)
+    local host_port=$(echo "$service_url" | cut -d/ -f3)
+    local host=$(echo "$host_port" | cut -d: -f1)
+    local port=$(echo "$host_port" | cut -d: -f2)
+    local path=$(echo "$service_url" | cut -d/ -f4-)
+
+    case "$protocol" in
+        "http" | "https")
+            if command_exists curl; then
+                local response_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$service_url" 2>/dev/null || echo "000")
+                local response_time=$(curl -s -o /dev/null -w "%{time_total}" --max-time 5 "$service_url" 2>/dev/null || echo "999")
+                if [[ "$response_code" -ge 200 && "$response_code" -lt 400 ]]; then
+                    echo "{\"status\": \"healthy\", \"response_code\": $response_code, \"response_time\": $response_time}"
+                else
+                    echo "{\"status\": \"unhealthy\", \"response_code\": $response_code, \"response_time\": $response_time}"
+                fi
+            else
+                echo "{\"status\": \"unknown\", \"reason\": \"curl not available\"}"
+            fi
+            ;;
+        "redis")
+            if command_exists redis-cli; then
+                if timeout 5 redis-cli -h "$host" -p "${port:-6379}" ping >/dev/null 2>&1; then
+                    echo "{\"status\": \"healthy\", \"type\": \"redis\"}"
+                else
+                    echo "{\"status\": \"unhealthy\", \"type\": \"redis\"}"
+                fi
+            elif command_exists nc; then
+                if timeout 3 nc -z "$host" "${port:-6379}" >/dev/null 2>&1; then
+                    echo "{\"status\": \"reachable\", \"type\": \"redis\", \"note\": \"port accessible but redis-cli not available\"}"
+                else
+                    echo "{\"status\": \"unreachable\", \"type\": \"redis\"}"
+                fi
+            else
+                echo "{\"status\": \"unknown\", \"type\": \"redis\", \"reason\": \"no redis-cli or nc available\"}"
+            fi
+            ;;
+        "mongodb")
+            if command_exists mongosh; then
+                if timeout 5 mongosh "$service_url" --eval "db.runCommand('ping')" >/dev/null 2>&1; then
+                    echo "{\"status\": \"healthy\", \"type\": \"mongodb\"}"
+                else
+                    echo "{\"status\": \"unhealthy\", \"type\": \"mongodb\"}"
+                fi
+            elif command_exists mongo; then
+                if timeout 5 mongo "$service_url" --eval "db.runCommand('ping')" >/dev/null 2>&1; then
+                    echo "{\"status\": \"healthy\", \"type\": \"mongodb\"}"
+                else
+                    echo "{\"status\": \"unhealthy\", \"type\": \"mongodb\"}"
+                fi
+            elif command_exists nc; then
+                if timeout 3 nc -z "$host" "${port:-27017}" >/dev/null 2>&1; then
+                    echo "{\"status\": \"reachable\", \"type\": \"mongodb\", \"note\": \"port accessible but mongo client not available\"}"
+                else
+                    echo "{\"status\": \"unreachable\", \"type\": \"mongodb\"}"
+                fi
+            else
+                echo "{\"status\": \"unknown\", \"type\": \"mongodb\", \"reason\": \"no mongo client or nc available\"}"
+            fi
+            ;;
+        *)
+            echo "{\"status\": \"unknown\", \"reason\": \"unsupported protocol: $protocol\"}"
+            ;;
+    esac
+}
+
+# Get status of all external services
+get_external_services_status() {
+    local service_list=()
+    local healthy_count=0
+    local total_count=0
+
+    for service in "${EXTERNAL_SERVICES[@]}"; do
+        total_count=$((total_count + 1))
+        local service_status=$(check_external_service "$service")
+        local status=$(echo "$service_status" | jq -r '.status' 2>/dev/null || echo "unknown")
+
+        if [[ "$status" == "healthy" ]]; then
+            healthy_count=$((healthy_count + 1))
+        fi
+
+        service_list+=("{\"url\": \"$service\", \"status\": $service_status}")
+    done
+
+    local services_json="[$(IFS=','; echo "${service_list[*]}")]"
+
+    echo "{
+        \"total_services\": $total_count,
+        \"healthy_services\": $healthy_count,
+        \"services\": $services_json
+    }"
 }
 
 # Main execution function
@@ -519,18 +1110,38 @@ OPTIONS:
     --json          JSON 형식으로 결과 출력
     --detailed      상세 정보 포함 (시스템 리소스 등)
     --watch         실시간 모니터링 모드 (5초마다 갱신)
+    --k8s           Kubernetes 클러스터 및 Pod 상태 점검
+    --services      외부 서비스 연결 상태 점검 (Redis, MongoDB 등)
+    --nginx         Nginx 웹서버 상태 점검
+    --ssl           SSL 인증서 유효성 검사 및 만료일 확인
+    --logs          최근 배포 및 시스템 로그 표시
     --help, -h      이 도움말 출력
 
 예시:
-    $0                      # 기본 상태 체크
-    $0 --json               # JSON 형식 출력
-    $0 --detailed --watch   # 상세 정보와 함께 실시간 모니터링
+    $0                          # 기본 상태 체크
+    $0 --json                   # JSON 형식 출력
+    $0 --detailed --watch       # 상세 정보와 함께 실시간 모니터링
+    $0 --nginx --ssl            # Nginx 및 SSL 인증서 상태 포함
+    $0 --logs                   # 최근 로그 표시
+    $0 --k8s --services         # Kubernetes 및 외부 서비스 상태 포함
+    $0 --nginx --ssl --logs     # 웹서버 전체 점검
 
 이 스크립트는 다음 항목들을 점검합니다:
     - Git 브랜치 및 커밋 상태
     - Docker 컨테이너 상태 (MCP 서비스 포함)
     - 포트 점유 상태 (8080, 8088, 8000, 5000, 3000, 5432, 6379, 8001, 8081)
     - 시스템 리소스 (상세 모드)
+    - Nginx 웹서버 상태 (--nginx 옵션)
+    - SSL 인증서 유효성 검사 (--ssl 옵션)
+    - 최근 배포 및 시스템 로그 (--logs 옵션)
+    - Kubernetes 클러스터 및 Pod 상태 (--k8s 옵션)
+    - 외부 서비스 연결 상태 (--services 옵션)
+
+외부 서비스 모니터링:
+    - Redis (localhost:6379)
+    - MongoDB (localhost:27017)
+    - HTTP Health 엔드포인트 (localhost:3000, localhost:8080)
+    - GitHub API 연결성
 
 환경 변수:
     CHECK_INTERVAL      모니터링 갱신 간격 (기본값: 5초)
@@ -550,6 +1161,26 @@ while [[ $# -gt 0 ]]; do
             ;;
         --watch)
             WATCH_MODE=true
+            shift
+            ;;
+        --k8s)
+            CHECK_K8S=true
+            shift
+            ;;
+        --services)
+            CHECK_SERVICES=true
+            shift
+            ;;
+        --nginx)
+            CHECK_NGINX=true
+            shift
+            ;;
+        --ssl)
+            CHECK_SSL=true
+            shift
+            ;;
+        --logs)
+            SHOW_LOGS=true
             shift
             ;;
         --help|-h)
