@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DST_US="$ROOT/data/universe/us_all.csv"
+DST_KR="$ROOT/data/universe/kr_all.csv"
+
+echo "[*] Universe sync start"
+
+# --- 미국/한국 전종목 목록 동기화 ---
+# ⚠️ 현재는 안전한 기본 시드(자리표시자). 이후 데이터 벤더/API 연결로 대체.
+#    - 미국: 전체 상장사(뉴욕/나스닥/아멕스) CSV 병합
+#    - 한국: KRX/KOSPI/KOSDAQ CSV 병합
+
+# 파일이 없을 경우 기본 시드 유지(초기 구동 보장)
+if [[ ! -s "$DST_US" ]]; then
+  mkdir -p "$(dirname "$DST_US")"
+  printf '%s\n' 'symbol,exchange,name' 'AAPL,NASDAQ,Apple Inc.' 'MSFT,NASDAQ,Microsoft Corporation' > "$DST_US"
+fi
+
+if [[ ! -s "$DST_KR" ]]; then
+  mkdir -p "$(dirname "$DST_KR")"
+  printf '%s\n' 'symbol,exchange,name' '005930,KRX,Samsung Electronics' '000660,KRX,SK hynix' > "$DST_KR"
+fi
+
+# 중복/정렬 정리(헤더 보존)
+tmp_us="$(mktemp)"; tmp_kr="$(mktemp)"
+{ head -1 "$DST_US"; tail -n +2 "$DST_US" | sort -u; } > "$tmp_us"
+{ head -1 "$DST_KR"; tail -n +2 "$DST_KR" | sort -u; } > "$tmp_kr"
+mv "$tmp_us" "$DST_US"
+mv "$tmp_kr" "$DST_KR"
+
+echo "[*] Universe sync done"

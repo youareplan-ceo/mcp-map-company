@@ -55,9 +55,6 @@ ABNB,NASDAQ,"Airbnb, Inc. - Class A Common Stock"
 ABNY,ARCA,Tidal Trust II YieldMax ABNB Option Income Strategy ETF
 ABOT,CBOE,Abacus FCF Innovation Leaders ETF
 ABP,NASDAQ,"Abpro Holdings, Inc - Common Stock"
-ABR$D,NASDAQ,"Arbor Realty Trust 6.375% Series D Cumulative Redeemable Preferred Stock, Liquidation Preference $25.00 per Share"
-ABR$E,NASDAQ,Arbor Realty Trust 6.25% Series E Cumulative Redeemable Preferred Stock
-ABR$F,NASDAQ,"Arbor Realty Trust 6.25% Series F Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock, Liquidation Preference $25.00 per share"
 ABSI,NASDAQ,Absci Corporation - Common Stock
 ABT,NASDAQ,Abbott Laboratories Common Stock
 ABT,NYSE,Abbott Laboratories Common Stock
@@ -100,9 +97,6 @@ ACOG,NASDAQ,Alpha Cognition Inc. - Common Stock
 ACON,NASDAQ,"Aclarion, Inc. - Common Stock"
 ACP,NASDAQ,abrdn Income Credit Strategies Fund Common Shares
 ACP,NYSE,abrdn Income Credit Strategies Fund Common Shares
-ACP$A,NASDAQ,abrdn Income Credit Strategies Fund 5.250% Series A Perpetual Preferred Stock
-ACR$C,NASDAQ,ACRES Commercial Realty Corp. 8.625% Fixed-to-Floating Series C Cumulative Redeemable Preferred Stock 
-ACR$D,NASDAQ,ACRES Commercial Realty Corp. 7.875% Series D Cumulative Redeemable Preferred Stock
 ACRE,NASDAQ,Ares Commercial Real Estate Corporation Common Stock
 ACRE,NYSE,Ares Commercial Real Estate Corporation Common Stock
 ACRV,NASDAQ,"Acrivon Therapeutics, Inc. - Common Stock"
@@ -133,7 +127,6 @@ ADAP,NASDAQ,Adaptimmune Therapeutics plc - American Depositary Shares
 ADBE,NASDAQ,Adobe Inc. - Common Stock
 ADC,NASDAQ,Agree Realty Corporation Common Stock
 ADC,NYSE,Agree Realty Corporation Common Stock
-ADC$A,NASDAQ,"Agree Realty Corporation Depositary Shares, each representing 1/1,000th of a 4.250% Series A Cumulative Redeemable Preferred Stock"
 ADCT,NASDAQ,ADC Therapeutics SA Common Shares
 ADCT,NYSE,ADC Therapeutics SA Common Shares
 ADEA,NASDAQ,Adeia Inc.  - Common Stock
@@ -240,11 +233,6 @@ AGM,NASDAQ,Federal Agricultural Mortgage Corporation Common Stock
 AGM,NYSE,Federal Agricultural Mortgage Corporation Common Stock
 AGM.A,NASDAQ,Federal Agricultural Mortgage Corporation Common Stock
 AGM.A,NYSE,Federal Agricultural Mortgage Corporation Common Stock
-AGM$D,NASDAQ,"Federal Agricultural Mortgage Corporation 5.700% Non-Cumulative Preferred Stock, Series D"
-AGM$E,NASDAQ,"Federal Agricultural Mortgage Corporation 5.750% Non-Cumulative Preferred Stock, Series E"
-AGM$F,NASDAQ,"Federal Agricultural Mortgage Corporation 5.250% Non-Cumulative Preferred Stock, Series F"
-AGM$G,NASDAQ,"Federal Agricultural Mortgage Corporation 4.875% Non-Cumulative Preferred Stock, Series G"
-AGM$H,NASDAQ,"Federal Agricultural Mortgage Corporation 6.500% Non-Cumulative Preferred Stock, Series H"
 AGMH,NASDAQ,AGM Group Holdings Inc. - Class A Ordinary Shares
 AGNC,NASDAQ,AGNC Investment Corp. - Common Stock
 AGNCL,NASDAQ,"AGNC Investment Corp. - Depositary Shares Each Representing a 1/1,000th Interest in a Share of 7.75% Series G Fixed-Rate Reset Cumulative Redeemable Preferred Stock"
@@ -269,20 +257,11 @@ AHCO,NASDAQ,AdaptHealth Corp.  - Common Stock
 AHG,NASDAQ,Akso Health Group - American Depositary Shares
 AHH,NASDAQ,"Armada Hoffler Properties, Inc. Common Stock"
 AHH,NYSE,"Armada Hoffler Properties, Inc. Common Stock"
-AHH$A,NASDAQ,"Armada Hoffler Properties, Inc. 6.75% Series A Cumulative Redeemable Perpetual Preferred Stock"
 AHL,NASDAQ,Aspen Insurance Holdings Limited Class A Ordinary Shares
 AHL,NYSE,Aspen Insurance Holdings Limited Class A Ordinary Shares
-AHL$D,NASDAQ,Aspen Insurance Holdings Limited 5.625% Perpetual Non-Cumulative Preference Shares
-AHL$E,NASDAQ,"Aspen Insurance Holdings Limited Depositary Shares, each representing a 1/1000th interest in a share of 5.625% Perpetual Non-Cumulative Preference Shares"
-AHL$F,NASDAQ,"Aspen Insurance Holdings Limited Depositary Shares, each representing a 1/1,000th Interest in a 7.00% Perpetual Non-Cumulative Preference Share"
 AHLT,ARCA,American Beacon Select Funds American Beacon AHL Trend ETF
 AHT,NASDAQ,Ashford Hospitality Trust Inc Common Stock
 AHT,NYSE,Ashford Hospitality Trust Inc Common Stock
-AHT$D,NASDAQ,Ashford Hospitality Trust Inc 8.45% Series D Cumulative Preferred Stock
-AHT$F,NASDAQ,Ashford Hospitality Trust Inc 7.375% Series F Cumulative Preferred Stock
-AHT$G,NASDAQ,Ashford Hospitality Trust Inc 7.375% Series G Cumulative Preferred Stock
-AHT$H,NASDAQ,Ashford Hospitality Trust Inc 7.50% Series H Cumulative Preferred Stock
-AHT$I,NASDAQ,Ashford Hospitality Trust Inc 7.50% Series I Cumulative Preferred Stock
 AHYB,ARCA,American Century Select High Yield ETF
 AI,NASDAQ,"C3.ai, Inc. Class A Common Stock"
 AI,NYSE,"C3.ai, Inc. Class A Common Stock"
@@ -349,7 +328,6 @@ ALAB,NASDAQ,"Astera Labs, Inc. - Common Stock"
 ALAI,ARCA,The Alger ETF Trust Alger AI Enablers & Adopters ETF
 ALB,NASDAQ,Albemarle Corporation Common Stock
 ALB,NYSE,Albemarle Corporation Common Stock
-ALB$A,NASDAQ,Albemarle Corporation Depositary Shares each representing a 1/20th of 7.25% Series A Mandatory Convertible Preferred Stock
 ALBT,NASDAQ,Avalon GloboCare Corp. - Common Stock
 ALC,NASDAQ,Alcon Inc. Ordinary Shares
 ALC,NYSE,Alcon Inc. Ordinary Shares
@@ -376,10 +354,6 @@ ALK,NYSE,"Alaska Air Group, Inc. Common Stock"
 ALKT,NASDAQ,"Alkami Technology, Inc. - Common Stock"
 ALL,NASDAQ,Allstate Corporation (The) Common Stock
 ALL,NYSE,Allstate Corporation (The) Common Stock
-ALL$B,NASDAQ,Allstate Corporation (The) 5.100% Fixed-to-Floating Rate Subordinated Debentures due 2053
-ALL$H,NASDAQ,"Allstate Corporation (The) Depositary Shares each representing a 1/1,000th interest in a share of Fixed Rate Noncumulative Perpetual Preferred Stock, Series H"
-ALL$I,NASDAQ,"Allstate Corporation (The) Depositary Shares each representing a 1/1,000th interest in a share of Fixed Rate Noncumulative Perpetual Preferred Stock, Series I"
-ALL$J,NASDAQ,"Allstate Corporation (The) Depositary Shares each representing a 1/1,000th interest in a share of Fixed Rate Noncumulative Perpetual Preferred Stock, Series J"
 ALLE,NASDAQ,Allegion plc Ordinary Shares
 ALLE,NYSE,Allegion plc Ordinary Shares
 ALLO,NASDAQ,"Allogene Therapeutics, Inc. - Common Stock"
@@ -397,7 +371,6 @@ ALSN,NYSE,"Allison Transmission Holdings, Inc. Common Stock"
 ALT,NASDAQ,"Altimmune, Inc. - Common Stock"
 ALTG,NASDAQ,Alta Equipment Group Inc. Class A Common Stock
 ALTG,NYSE,Alta Equipment Group Inc. Class A Common Stock
-ALTG$A,NASDAQ,Alta Equipment Group Inc. Depositary Shares (each representing 1/1000th in a share of 10% Series A Cumulative Perpetual Preferred Stock)
 ALTI,NASDAQ,"AlTi Global, Inc. - Class A Common Stock"
 ALTL,ARCA,Pacer Lunt Large Cap Alternator ETF
 ALTO,NASDAQ,"Alto Ingredients, Inc. - Common Stock"
@@ -436,8 +409,6 @@ AMG,NYSE,"Affiliated Managers Group, Inc. Common Stock"
 AMGN,NASDAQ,Amgen Inc. - Common Stock
 AMH,NASDAQ,American Homes 4 Rent Common Shares of Beneficial Interest
 AMH,NYSE,American Homes 4 Rent Common Shares of Beneficial Interest
-AMH$G,NASDAQ,American Homes 4 Rent Series G cumulative redeemable perpetual preferred shares of beneficial interest
-AMH$H,NASDAQ,American Homes 4 Rent Series H cumulative redeemable perpetual Preferred Shares of Beneficial Interest
 AMIX,NASDAQ,"Autonomix Medical, Inc. - Common Stock"
 AMJB,ARCA,"JPMorgan Chase & Co. Alerian MLP Index ETNs due January 28, 2044"
 AMLP,ARCA,Alerian MLP ETF
@@ -496,8 +467,6 @@ ANET,NASDAQ,"Arista Networks, Inc. Common Stock"
 ANET,NYSE,"Arista Networks, Inc. Common Stock"
 ANF,NASDAQ,Abercrombie & Fitch Company Common Stock
 ANF,NYSE,Abercrombie & Fitch Company Common Stock
-ANG$B,NASDAQ,"American National Group Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 6.625% Fixed-Rate Reset Non-Cumulative Preferred Stock, Series B"
-ANG$D,NASDAQ,"American National Group Inc. Depositary Shares, each representing a 1/1000th interest in a share of 7.375% Fixed-Rate Non-Cumulative Preferred Stock, Series D"
 ANGH,NASDAQ,Anghami Inc. - Ordinary Shares
 ANGI,NASDAQ,Angi Inc. - Class A Common Stock
 ANGO,NASDAQ,"AngioDynamics, Inc. - Common Stock"
@@ -560,7 +529,6 @@ APLY,ARCA,Tidal ETF Trust II YieldMax AAPL Option Income Strategy ETF
 APM,NASDAQ,Aptorum Group Limited - Class A Ordinary Shares
 APO,NASDAQ,"Apollo Global Management, Inc. (New) Common Stock"
 APO,NYSE,"Apollo Global Management, Inc. (New) Common Stock"
-APO$A,NASDAQ,"Apollo Global Management, Inc. 6.75% Series A Mandatory Convertible Preferred Stock"
 APOC,CBOE,Innovator Equity Defined Protection ETF - 6mo Apr/Oct
 APOG,NASDAQ,"Apogee Enterprises, Inc. - Common Stock"
 APP,NASDAQ,Applovin Corporation - Class A Common Stock
@@ -614,7 +582,6 @@ AREB,NASDAQ,"American Rebel Holdings, Inc. - Common Stock"
 AREC,NASDAQ,American Resources Corporation - Class A Common Stock
 AREN,AMEX,"The Arena Group Holdings, Inc. Common Stock"
 AREN,NASDAQ,"The Arena Group Holdings, Inc. Common Stock"
-ARES$B,NASDAQ,Ares Management Corporation 6.75% Series B Mandatory Convertible Preferred Stock
 ARGT,ARCA,Global X MSCI Argentina ETF
 ARGX,NASDAQ,argenx SE - American Depositary Shares
 ARI,NASDAQ,"Apollo Commercial Real Estate Finance, Inc"
@@ -648,7 +615,6 @@ ARP,ARCA,The Advisors Inner Circle Fund II PMV Adaptive Risk Parity ETF
 ARQ,NASDAQ,"Arq, Inc. - Common Stock"
 ARQQ,NASDAQ,Arqit Quantum Inc. - Ordinary Shares
 ARQT,NASDAQ,"Arcutis Biotherapeutics, Inc. - Common stock"
-ARR$C,NASDAQ,"ARMOUR Residential REIT, Inc. 7% Series C Cumulative Redeemable Preferred Stock (liquidation preference $25.00 per share)"
 ARRY,NASDAQ,"Array Technologies, Inc. - Common Stock"
 ARTL,NASDAQ,"Artelo Biosciences, Inc. - Common Stock"
 ARTNA,NASDAQ,Artesian Resources Corporation - Class A Non-Voting Common Stock
@@ -663,8 +629,6 @@ ASAN,NASDAQ,"Asana, Inc. Class A Common Stock"
 ASAN,NYSE,"Asana, Inc. Class A Common Stock"
 ASB,NASDAQ,Associated Banc-Corp Common Stock
 ASB,NYSE,Associated Banc-Corp Common Stock
-ASB$E,NASDAQ,"Associated Banc-Corp Depositary Shares, each representing a 1/40th interest in a share of 5.875% Non-Cumulative Perpetual Preferred Stock, Series E"
-ASB$F,NASDAQ,"Associated Banc-Corp Depositary Shares, each representing a 1/40th interest in a share of Associated Banc-Corp 5.625% Non-Cumulative Perpetual Preferred Stock, Series F"
 ASBA,NASDAQ,Associated Banc-Corp 6.625% Fixed-Rate Reset Subordinated Notes due 2033
 ASBA,NYSE,Associated Banc-Corp 6.625% Fixed-Rate Reset Subordinated Notes due 2033
 ASBP,NASDAQ,"Aspire Biopharma Holdings, Inc.  - Common Stock"
@@ -716,7 +680,6 @@ ATAI,NASDAQ,ATAI Life Sciences N.V. - Common Shares
 ATAT,NASDAQ,Atour Lifestyle Holdings Limited - American Depositary Shares
 ATCH,AMEX,"AtlasClear Holdings, Inc. Common Stock"
 ATCH,NASDAQ,"AtlasClear Holdings, Inc. Common Stock"
-ATCO$H,NASDAQ,Atlas Corp. 7.875% Series H
 ATEC,NASDAQ,"Alphatec Holdings, Inc. - Common Stock"
 ATEN,NASDAQ,"A10 Networks, Inc. Common Stock"
 ATEN,NYSE,"A10 Networks, Inc. Common Stock"
@@ -725,10 +688,6 @@ ATFV,ARCA,Alger 35 ETF
 ATGE,NASDAQ,Adtalem Global Education Inc. Common Stock
 ATGE,NYSE,Adtalem Global Education Inc. Common Stock
 ATGL,NASDAQ,Alpha Technology Group Limited - Class A Ordinary Shares
-ATH$A,NASDAQ,"Athene Holding Ltd. Depositary Shares, Each Representing a 1/1,000th Interest in a 6.35% Fixed-to-Floating Rate Perpetual Non-Cumulative Preference Share, Series A"
-ATH$B,NASDAQ,"Athene Holding Ltd. Depositary Shares, Each Representing a 1/1,000th Interest in a 5.625% Fixed Rate Perpetual Non- Cumulative Preference Share, Series B, par value $1.00 per share"
-ATH$D,NASDAQ,"Athene Holding Ltd. Depositary Shares, Each Representing a 1/1,000th Interest in a 4.875% Fixed-Rate Perpetual Non-Cumulative Preference Share, Series D"
-ATH$E,NASDAQ,"Athene Holding Ltd. Depositary Shares, Each Representing a 1/1,000th Interest in a 7.750% Fixed-Rate Reset Perpetual Non-Cumulative Preference Share, Series E"
 ATHA,NASDAQ,"Athira Pharma, Inc. - Common Stock"
 ATHE,NASDAQ,Alterity Therapeutics Limited - American Depositary Shares
 ATHM,NASDAQ,"Autohome Inc. American Depositary Shares, each representing four class A ordinary shares."
@@ -761,7 +720,6 @@ ATRO,NASDAQ,Astronics Corporation - Common Stock
 ATXG,NASDAQ,Addentax Group Corp. - Common Stock
 AUB,NASDAQ,Atlantic Union Bankshares Corporation Common Stock
 AUB,NYSE,Atlantic Union Bankshares Corporation Common Stock
-AUB$A,NASDAQ,"Atlantic Union Bankshares Corporation Depositary Shares each representing a 1/400th ownership interest in a share of 6.875% Perpetual Non-Cumulative Preferred Stock, Series A"
 AUBN,NASDAQ,"Auburn National Bancorporation, Inc. - Common Stock"
 AUDC,NASDAQ,AudioCodes Ltd. - Ordinary Shares
 AUGM,CBOE,First Trust Exchange-Traded Fund VIII FT Vest U.S. Equity Max Buffer ETF - August
@@ -854,7 +812,6 @@ AXL,NYSE,"American Axle & Manufacturing Holdings, Inc. Common Stock"
 AXON,NASDAQ,"Axon Enterprise, Inc. - Common Stock"
 AXP,NASDAQ,American Express Company Common Stock
 AXP,NYSE,American Express Company Common Stock
-AXS$E,NASDAQ,"Axis Capital Holdings Limited Depositary Shares, each representing 1/100th interest in a share of a 5.50% Series E Preferred Shares"
 AXSM,NASDAQ,"Axsome Therapeutics, Inc. - Common Stock"
 AXTA,NASDAQ,Axalta Coating Systems Ltd. Common Shares
 AXTA,NYSE,Axalta Coating Systems Ltd. Common Shares
@@ -876,23 +833,12 @@ B,NASDAQ,Barrick Mining Corporation Common Shares
 B,NYSE,Barrick Mining Corporation Common Shares
 BA,NASDAQ,Boeing Company (The) Common Stock
 BA,NYSE,Boeing Company (The) Common Stock
-BA$A,NASDAQ,"Boeing Company (The) Depositary Shares, each representing a 1/20th interest in a share of 6.00% Series A Mandatory Convertible Preferred Stock, par value $1.00"
 BAB,ARCA,Invesco Taxable Municipal Bond ETF
 BABA,NASDAQ,Alibaba Group Holding Limited American Depositary Shares each representing eight Ordinary share
 BABA,NYSE,Alibaba Group Holding Limited American Depositary Shares each representing eight Ordinary share
 BABO,ARCA,Tidal Trust II YieldMax BABA Option Income Strategy ETF
 BAC,NASDAQ,Bank of America Corporation Common Stock
 BAC,NYSE,Bank of America Corporation Common Stock
-BAC$B,NASDAQ,"Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 6.000% Non-Cumulative Preferred Stock, Series GG"
-BAC$E,NASDAQ,Bank of America Corporation Depositary Sh repstg 1/1000th Perp Pfd Ser E
-BAC$K,NASDAQ,"Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.875% Non- Cumulative Preferred Stock, Series HH"
-BAC$L,NASDAQ,Bank of America Corporation Non Cumulative Perpetual Conv Pfd Ser L
-BAC$M,NASDAQ,"Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.375% Non-Cumulative Preferred Stock, Series KK"
-BAC$N,NASDAQ,"Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 5.000% Non-Cumulative Preferred Stock, Series LL"
-BAC$O,NASDAQ,"Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.375% Non-Cumulative Preferred Stock, Series NN"
-BAC$P,NASDAQ,"Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 4.125% Non-Cumulative Preferred Stock, Series PP"
-BAC$Q,NASDAQ,"Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.250% Non-Cumulative Preferred Stock, Series QQ"
-BAC$S,NASDAQ,"Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.750% Non-Cumulative Preferred Stock, Series SS"
 BACC,NASDAQ,Blue Acquisition Corp. - Class A Ordinary Shares
 BACQ,NASDAQ,Bleichroeder Acquisition Corp. I - Class A Ordinary Shares
 BAFN,NASDAQ,BayFirst Financial Corp. - Common Stock
@@ -919,7 +865,6 @@ BAMV,CBOE,Brookstone Value Stock ETF
 BAMY,CBOE,Brookstone Yield ETF
 BANC,NASDAQ,"Banc of California, Inc. Common Stock"
 BANC,NYSE,"Banc of California, Inc. Common Stock"
-BANC$F,NASDAQ,"Banc of California, Inc. Depositary Shares, each representing a 1/40th interest in a share of 7.75% non-cumulative perpetual preferred stock, Series F"
 BAND,NASDAQ,Bandwidth Inc. - Class A Common Stock
 BANF,NASDAQ,BancFirst Corporation - Common Stock
 BANFP,NASDAQ,BancFirst Corporation - 7.2% Cumulative Trust Preferred Securities
@@ -990,8 +935,6 @@ BBY,NASDAQ,"Best Buy Co., Inc. Common Stock"
 BBY,NYSE,"Best Buy Co., Inc. Common Stock"
 BC,NASDAQ,Brunswick Corporation Common Stock
 BC,NYSE,Brunswick Corporation Common Stock
-BC$A,NASDAQ,Brunswick Corporation 6.500% Senior Notes due 2048
-BC$C,NASDAQ,Brunswick Corporation 6.375% Notes due 2049
 BCAB,NASDAQ,"BioAtla, Inc. - Common Stock"
 BCAL,NASDAQ,California BanCorp - Common Stock
 BCAT,NASDAQ,BlackRock Capital Allocation Term Trust Common Shares of Beneficial Interest
@@ -1026,7 +969,6 @@ BCTX,NASDAQ,BriaCell Therapeutics Corp. - Common Shares
 BCTXZ,NASDAQ,BriaCell Therapeutics Corp. - Warrant
 BCV,AMEX,"Bancroft Fund, Ltd."
 BCV,NASDAQ,"Bancroft Fund, Ltd."
-BCV$A,NASDAQ,Bancroft Fund Limited 5.375% Series A Cumulative Preferred Shares
 BCX,NASDAQ,BlackRock Resources Common Shares of Beneficial Interest
 BCX,NYSE,BlackRock Resources Common Shares of Beneficial Interest
 BCYC,NASDAQ,Bicycle Therapeutics plc - American Depositary Shares
@@ -1071,7 +1013,6 @@ BENF,NASDAQ,Beneficient - Class A Common Stock
 BENJ,ARCA,Horizon Funds Horizon Landmark ETF
 BEP,NASDAQ,Brookfield Renewable Partners L.P. Limited Partnership Units
 BEP,NYSE,Brookfield Renewable Partners L.P. Limited Partnership Units
-BEP$A,NASDAQ,"Brookfield Renewable Partners L.P. 5.25% Class A Preferred Limited Partnership Units, Series 17"
 BEPC,NASDAQ,Brookfield Renewable Corporation Brookfield Renewable Corporation Class A Subordinate Voting Shares
 BEPC,NYSE,Brookfield Renewable Corporation Brookfield Renewable Corporation Class A Subordinate Voting Shares
 BEPH,NASDAQ,Brookfield BRP Holdings (Canada) Inc. 4.625% Perpetual Subordinated Notes
@@ -1107,8 +1048,6 @@ BFRE,ARCA,Ultimus Managers Trust Westwood LBRTY Global Equity ETF
 BFRG,NASDAQ,"Bullfrog AI Holdings, Inc. - Common Stock"
 BFRI,NASDAQ,Biofrontera Inc. - Common Stock
 BFRZ,ARCA,Innovator ETFs Trust Innovator Equity Managed 100 Buffer ETF
-BFS$D,NASDAQ,"Saul Centers, Inc. Depositary Shares, each representing 1/100th of a share of 6.125% Series D Cumulative Redeemable Preferred Stock"
-BFS$E,NASDAQ,"Saul Centers, Inc. Depositary shares, each representing a 1/100th fractional interest in a share of 6.000% Series E Cumulative Redeemable Preferred Stock"
 BFST,NASDAQ,"Business First Bancshares, Inc. - Common Stock"
 BFZ,NASDAQ,BlackRock California Municipal Income Trust
 BFZ,NYSE,BlackRock California Municipal Income Trust
@@ -1160,8 +1099,6 @@ BHM,AMEX,"Bluerock Homes Trust, Inc. Class A Common Stock"
 BHM,NASDAQ,"Bluerock Homes Trust, Inc. Class A Common Stock"
 BHP,NASDAQ,BHP Group Limited American Depositary Shares (Each representing two Ordinary Shares)
 BHP,NYSE,BHP Group Limited American Depositary Shares (Each representing two Ordinary Shares)
-BHR$B,NASDAQ,"Braemar Hotels & Resorts Inc. 5.50% Series B Cumulative Convertible Preferred Stock, par value $0.01 per share"
-BHR$D,NASDAQ,"Braemar Hotels & Resorts Inc. 8.25% Series D Cumulative Preferred Stock,  par value $0.01 per share"
 BHRB,NASDAQ,Burke & Herbert Financial Services Corp. - Common Stock
 BHST,NASDAQ,BioHarvest Sciences Inc. - Common Stock
 BHV,NASDAQ,BlackRock Virginia Municipal Bond Trust
@@ -1193,8 +1130,6 @@ BIOA,NASDAQ,"BioAge Labs, Inc. - Common Stock"
 BIOX,NASDAQ,Bioceres Crop Solutions Corp. - Ordinary Shares
 BIP,NASDAQ,Brookfield Infrastructure Partners LP Limited Partnership Units
 BIP,NYSE,Brookfield Infrastructure Partners LP Limited Partnership Units
-BIP$A,NASDAQ,"Brookfield Infrastructure Partners LP 5.125% Class A Preferred Limited Partnership Units, Series 13"
-BIP$B,NASDAQ,"Brookfield Infrastructure Partners LP 5.000% Class A Preferred Limited Partnership Units, Series 14"
 BIPC,NASDAQ,Brookfield Infrastructure Corporation Brookfield Infrastructure Corporation
 BIPC,NYSE,Brookfield Infrastructure Corporation Brookfield Infrastructure Corporation
 BIPH,NASDAQ,Brookfield Infrastructure Corporation 5.000% Subordinated Notes due 2081
@@ -1229,7 +1164,6 @@ BJUL,CBOE,Innovator U.S. Equity Buffer ETF - July
 BJUN,CBOE,Innovator U.S. Equity Buffer ETF - June
 BK,NASDAQ,The Bank of New York Mellon Corporation Common Stock
 BK,NYSE,The Bank of New York Mellon Corporation Common Stock
-BK$K,NASDAQ,"The Bank Of New York Mellon Corporation  Depositary Shares, each representing a 1/4,000th interest in a share of Series K Noncumulative Perpetual Preferred Stock"
 BKAG,ARCA,BNY Mellon Core Bond ETF
 BKCG,ARCA,BNY Mellon ETF Trust II BNY Mellon Concentrated Growth ETF
 BKCI,ARCA,BNY Mellon ETF Trust BNY Mellon Concentrated International ETF
@@ -1319,10 +1253,6 @@ BMGL,NASDAQ,Basel Medical Group Ltd - ordinary shares
 BMHL,NASDAQ,Bluemount Holdings Limited - Class B Ordinary Shares
 BMI,NASDAQ,"Badger Meter, Inc. Common Stock"
 BMI,NYSE,"Badger Meter, Inc. Common Stock"
-BML$G,NASDAQ,"Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a share of Floating Rate Non-Cumulative Preferred Stock , Series 1)"
-BML$H,NASDAQ,"Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a Share of Floating Rate Non-Cumulative Preferred Stock, Series 2)"
-BML$J,NASDAQ,"Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a Share of Floating Rate Non-Cumulative Preferred Stock, Series 4)"
-BML$L,NASDAQ,"Bank of America Corporation Depositary Shares (Each representing a 1/1200th Interest in a Share of Floating Rate Non-Cumulative Preferred Stock, Series 5)"
 BMN,NASDAQ,BlackRock 2037 Municipal Target Term Trust Common Shares of Beneficial Interest
 BMN,NYSE,BlackRock 2037 Municipal Target Term Trust Common Shares of Beneficial Interest
 BMO,NASDAQ,Bank Of Montreal Common Stock
@@ -1373,8 +1303,6 @@ BOE,NYSE,Blackrock Enhanced Global Dividend Trust Common Shares of Beneficial In
 BOF,NASDAQ,BranchOut Food Inc. - Common Stock
 BOH,NASDAQ,Bank of Hawaii Corporation Common Stock
 BOH,NYSE,Bank of Hawaii Corporation Common Stock
-BOH$A,NASDAQ,"Bank of Hawaii Corporation Depositary Shares Each Representing a 1/40th Interest in a Share of 4.375% Fixed Rate Non-Cumulative Perpetual Preferred Stock, Series A"
-BOH$B,NASDAQ,"Bank of Hawaii Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of 8.000% Fixed Rate Non-Cumulative Perpetual Preferred Stock, Series B"
 BOIL,ARCA,ProShares Ultra Bloomberg Natural Gas
 BOKF,NASDAQ,BOK Financial Corporation - Common Stock
 BOLD,NASDAQ,"Boundless Bio, Inc. - Common Stock"
@@ -1536,7 +1464,6 @@ BVAL,ARCA,Exchange Traded Concepts Trust Bluemonte Large Cap Value ETF
 BVFL,NASDAQ,"BV Financial, Inc. - Common Stock"
 BVN,NASDAQ,Buenaventura Mining Company Inc.
 BVN,NYSE,Buenaventura Mining Company Inc.
-BW$A,NASDAQ,"Babcock & Wilcox Enterprises, Inc. 7.75% Series A Cumulative Perpetual Preferred Stock"
 BWA,NASDAQ,BorgWarner Inc. Common Stock
 BWA,NYSE,BorgWarner Inc. Common Stock
 BWAY,NASDAQ,BrainsWay Ltd. - American Depositary Shares
@@ -1596,7 +1523,6 @@ BZQ,ARCA,ProShares UltraShort MSCI Brazil Capped
 BZUN,NASDAQ,Baozun Inc. - American Depositary Shares
 C,NASDAQ,"Citigroup, Inc. Common Stock"
 C,NYSE,"Citigroup, Inc. Common Stock"
-C$N,NASDAQ,Citigroup Capital XIII 7.875% Fixed rate Floating Rate trust Preferred Securities (TruPS)
 CAAA,ARCA,First Trust AAA CMBS ETF
 CAAP,NASDAQ,Corporacion America Airports SA Common Shares
 CAAP,NYSE,Corporacion America Airports SA Common Shares
@@ -1609,7 +1535,6 @@ CACI,NASDAQ,"CACI International, Inc. Class A Common Stock"
 CACI,NYSE,"CACI International, Inc. Class A Common Stock"
 CADE,NASDAQ,Cadence Bank Common Stock
 CADE,NYSE,Cadence Bank Common Stock
-CADE$A,NASDAQ,Cadence Bank 5.50% Series A 
 CADL,NASDAQ,"Candel Therapeutics, Inc. - Common Stock"
 CAE,NASDAQ,CAE Inc. Ordinary Shares
 CAE,NYSE,CAE Inc. Ordinary Shares
@@ -1756,8 +1681,6 @@ CDLX,NASDAQ,"Cardlytics, Inc. - Common Stock"
 CDNA,NASDAQ,"CareDx, Inc. - Common Stock"
 CDP,NASDAQ,COPT Defense Properties Common Shares of Beneficial Interest
 CDP,NYSE,COPT Defense Properties Common Shares of Beneficial Interest
-CDR$B,NASDAQ,"Cedar Realty Trust, Inc. 7.25% Series B Cumulative Redeemable Preferred Stock"
-CDR$C,NASDAQ,"Cedar Realty Trust, Inc. 6.50% Series C Cumulative Redeemable Preferred Stock"
 CDRE,NASDAQ,"Cadre Holdings, Inc. Common Stock"
 CDRE,NYSE,"Cadre Holdings, Inc. Common Stock"
 CDRO,NASDAQ,"Codere Online Luxembourg, S.A. - Ordinary Shares"
@@ -1806,14 +1729,10 @@ CFFI,NASDAQ,C&F Financial Corporation - Common Stock
 CFFN,NASDAQ,"Capitol Federal Financial, Inc. - Common Stock"
 CFG,NASDAQ,"Citizens Financial Group, Inc. Common Stock"
 CFG,NYSE,"Citizens Financial Group, Inc. Common Stock"
-CFG$E,NASDAQ,"Citizens Financial Group, Inc. Depositary Shares Each Representing 1/40th Interest in a Share of 5.000% Fixed-Rate Non-Cumulative Perpetual Preferred Stock, Series E"
-CFG$H,NASDAQ,"Citizens Financial Group, Inc. Depositary Shares Each Representing a 1/40th Interest in a Share of 7.375% Fixed-Rate Non-Cumulative Perpetual Preferred Stock, Series H"
-CFG$I,NASDAQ,"Citizens Financial Group, Inc. Depositary Shares, Each Representing a 1/40th Interest in a Share of 6.500% Fixed-Rate Reset Non-Cumulative Perpetual Preferred Stock, Series I"
 CFIT,CBOE,Cambria ETF Trust Cambria Fixed Income Trend ETF
 CFLT,NASDAQ,"Confluent, Inc. - Class A Common Stock"
 CFND,NASDAQ,C1 Fund Inc. Common Stock
 CFND,NYSE,C1 Fund Inc. Common Stock
-CFR$B,NASDAQ,"Cullen/Frost Bankers, Inc. Depositary Shares, each representing a 1/40th ownership interest in a share of 4.450% non-cumulative perpetual preferred stock, Series B"
 CFSB,NASDAQ,"CFSB Bancorp, Inc. - Common Stock"
 CG,NASDAQ,The Carlyle Group Inc. - Common Stock
 CGABL,NASDAQ,The Carlyle Group Inc. - 4.625% Subordinated Notes due 2061
@@ -1875,8 +1794,6 @@ CHKP,NASDAQ,Check Point Software Technologies Ltd. - Ordinary Shares
 CHMG,NASDAQ,Chemung Financial Corp  - Common Stock
 CHMI,NASDAQ,Cherry Hill Mortgage Investment Corporation Common Stock
 CHMI,NYSE,Cherry Hill Mortgage Investment Corporation Common Stock
-CHMI$A,NASDAQ,Cherry Hill Mortgage Investment Corporation 8.20% Series A Cumulative Redeemable Preferred Stock
-CHMI$B,NASDAQ,Cherry Hill Mortgage Investment Corporation 8.250% Series B Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
 CHN,NASDAQ,"China Fund, Inc. (The) Common Stock"
 CHN,NYSE,"China Fund, Inc. (The) Common Stock"
 CHPG,NASDAQ,ChampionsGate Acquisition Corporation - Class A Ordinary Share
@@ -1921,10 +1838,6 @@ CIK,AMEX,"Credit Suisse Asset Management Income Fund, Inc. Common Stock"
 CIK,NASDAQ,"Credit Suisse Asset Management Income Fund, Inc. Common Stock"
 CIM,NASDAQ,Chimera Investment Corporation Common Stock
 CIM,NYSE,Chimera Investment Corporation Common Stock
-CIM$A,NASDAQ,Chimera Investment Corporation 8.00% Series A Cumulative Redeemable Preferred Stock
-CIM$B,NASDAQ,Chimera Investment Corporation 8.00% Series B Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
-CIM$C,NASDAQ,Chimera Investment Corporation 7.75% Series C Fixed-to-Floating Rate  Cumulative Redeemable  Preferred Stock
-CIM$D,NASDAQ,Chimera Investment Corporation 8.00% Series D Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
 CIMN,NASDAQ,Chimera Investment Corporation 9.000% Senior Notes due 2029
 CIMN,NYSE,Chimera Investment Corporation 9.000% Senior Notes due 2029
 CIMO,NASDAQ,Chimera Investment Corporation 9.250% Senior Notes due 2029
@@ -1937,7 +1850,6 @@ CINT,NASDAQ,CI&T Inc Class A Common Shares
 CINT,NYSE,CI&T Inc Class A Common Shares
 CIO,NASDAQ,"City Office REIT, Inc. Common Stock"
 CIO,NYSE,"City Office REIT, Inc. Common Stock"
-CIO$A,NASDAQ,"City Office REIT, Inc. 6.625% Series A Cumulative Redeemable Preferred Stock"
 CION,NASDAQ,CION Investment Corporation Common Stock
 CION,NYSE,CION Investment Corporation Common Stock
 CISO,NASDAQ,"CISO Global, Inc. - Common Stock"
@@ -1964,7 +1876,6 @@ CLDI,AMEX,"Calidi Biotherapeutics, Inc. Common Stock"
 CLDI,NASDAQ,"Calidi Biotherapeutics, Inc. Common Stock"
 CLDT,NASDAQ,Chatham Lodging Trust (REIT) Common Shares of Beneficial Interest
 CLDT,NYSE,Chatham Lodging Trust (REIT) Common Shares of Beneficial Interest
-CLDT$A,NASDAQ,Chatham Lodging Trust (REIT) 6.625% Series A Cumulative Redeemable Preferred Shares of Beneficial Interest
 CLDX,NASDAQ,"Celldex Therapeutics, Inc. - Common Stock"
 CLF,NASDAQ,Cleveland-Cliffs Inc. Common Stock
 CLF,NYSE,Cleveland-Cliffs Inc. Common Stock
@@ -2004,7 +1915,6 @@ CM,NASDAQ,Canadian Imperial Bank of Commerce Common Stock
 CM,NYSE,Canadian Imperial Bank of Commerce Common Stock
 CMA,NASDAQ,Comerica Incorporated Common Stock
 CMA,NYSE,Comerica Incorporated Common Stock
-CMA$B,NASDAQ,"Comerica Incorporated Depositary Shares, each representing a 1/40th interest in a share of 6.875% Fixed-Rate Reset Non-Cumulative Perpetual Preferred Stock, Series B"
 CMBM,NASDAQ,Cambium Networks Corporation - Ordinary Shares
 CMBT,NASDAQ,CMB.TECH NV Ordinary Shares
 CMBT,NYSE,CMB.TECH NV Ordinary Shares
@@ -2037,11 +1947,6 @@ CMPX,NASDAQ,"Compass Therapeutics, Inc. - Common Stock"
 CMRC,NASDAQ,"Commerce.com, Inc. - Series 1 Common Stock"
 CMRE,NASDAQ,Costamare Inc. Common Stock $0.0001 par value
 CMRE,NYSE,Costamare Inc. Common Stock $0.0001 par value
-CMRE$B,NASDAQ,Costamare Inc. Perpetual Preferred Stock Series B (Marshall Islands)
-CMRE$C,NASDAQ,Costamare Inc. Perpetual Preferred Series C (Marshall Islands)
-CMRE$D,NASDAQ,Costamare Inc. 8.75% Series D Cumulative Redeemable Perpetual Preferred Stock
-CMS$B,NASDAQ,CMS Energy Corporation Preferred Stock
-CMS$C,NASDAQ,"CMS Energy Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 4.200% Cumulative Redeemable Perpetual Preferred Stock, Series C"
 CMSA,NASDAQ,CMS Energy Corporation 5.625% Junior Subordinated Notes due 2078
 CMSA,NYSE,CMS Energy Corporation 5.625% Junior Subordinated Notes due 2078
 CMSC,NASDAQ,CMS Energy Corporation 5.875% Junior Subordinated Notes due 2078
@@ -2082,7 +1987,6 @@ CNNE,NASDAQ,"Cannae Holdings, Inc. Common Stock"
 CNNE,NYSE,"Cannae Holdings, Inc. Common Stock"
 CNO,NASDAQ,"CNO Financial Group, Inc. Common Stock"
 CNO,NYSE,"CNO Financial Group, Inc. Common Stock"
-CNO$A,NASDAQ,"CNO Financial Group, Inc. 5.125% Subordinated Debentures due 2060"
 CNOB,NASDAQ,"ConnectOne Bancorp, Inc. - Common Stock"
 CNOBP,NASDAQ,"ConnectOne Bancorp, Inc. - Depositary Shares (each representing a 1/40th interest in a share of 5.25% Fixed-Rate Reset Non-Cumulative Perpetual Preferred Stock, Series A, par value $0.00 per share)"
 CNP,NASDAQ,"CenterPoint Energy, Inc (Holding Co) Common Stock"
@@ -2108,20 +2012,12 @@ COCP,NASDAQ,"Cocrystal Pharma, Inc. - Common Stock"
 CODA,NASDAQ,"Coda Octopus Group, Inc. - Common stock"
 CODI,NASDAQ,D/B/A Compass Diversified Holdings Shares of Beneficial Interest
 CODI,NYSE,D/B/A Compass Diversified Holdings Shares of Beneficial Interest
-CODI$A,NASDAQ,Compass Diversified Holdings 7.250% Series A Preferred Shares representing beneficial interest in Compass Diversified Holdings
-CODI$B,NASDAQ,Compass Diversified Holdings 7.875% Series B Fixed-to-Floating Rate Cumulative Preferred Shares representing beneficial interests in Compass Diversified Holdings
-CODI$C,NASDAQ,Compass Diversified Holdings 7.875% Series C Cumulative Preferred Shares
 CODX,NASDAQ,"Co-Diagnostics, Inc. - Common Stock"
 COE,AMEX,"51Talk Online Education Group American depositary shares, each representing 60 Class A ordinary shares"
 COE,NASDAQ,"51Talk Online Education Group American depositary shares, each representing 60 Class A ordinary shares"
 COEP,NASDAQ,"Coeptis Therapeutics Holdings, Inc. - Common Stock"
 COF,NASDAQ,Capital One Financial Corporation Common Stock
 COF,NYSE,Capital One Financial Corporation Common Stock
-COF$I,NASDAQ,"Capital One Financial Corporation Depositary shares each representing a 1/40th interest in a share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Series I of the Issuer"
-COF$J,NASDAQ,"Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of Fixed Rate Non- Cumulative Perpetual Preferred Stock, Series J"
-COF$K,NASDAQ,"Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Series K"
-COF$L,NASDAQ,"Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Series L"
-COF$N,NASDAQ,"Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Series N"
 COGT,NASDAQ,"Cogent Biosciences, Inc. - Common Stock"
 COHN,AMEX,Cohen & Company Inc.
 COHN,NASDAQ,Cohen & Company Inc.
@@ -2315,8 +2211,6 @@ CSWC,NASDAQ,Capital Southwest Corporation - Common Stock
 CSWCZ,NASDAQ,Capital Southwest Corporation - 7.75% Notes due 2028
 CSX,NASDAQ,CSX Corporation - Common Stock
 CTA,ARCA,Simplify Exchange Traded Funds Simplify Managed Futures Strategy ETF
-CTA$A,NASDAQ,"EIDP, Inc. Preferred Stock $3.50 Series"
-CTA$B,NASDAQ,"EIDP, Inc. Preferred Stock $4.50 Series"
 CTBB,NASDAQ,Qwest Corporation 6.5% Notes due 2056
 CTBB,NYSE,Qwest Corporation 6.5% Notes due 2056
 CTBI,NASDAQ,"Community Trust Bancorp, Inc. - Common Stock"
@@ -2338,7 +2232,6 @@ CTNM,NASDAQ,"Contineum Therapeutics, Inc. - Common stock"
 CTNT,NASDAQ,Cheetah Net Supply Chain Service Inc. - Class A Common Stock
 CTO,NASDAQ,"CTO Realty Growth, Inc. Common Stock"
 CTO,NYSE,"CTO Realty Growth, Inc. Common Stock"
-CTO$A,NASDAQ,"CTO Realty Growth, Inc. 6.375% Series A Cumulative Redeemable Preferred Stock"
 CTRA,NASDAQ,Coterra Energy Inc. Common Stock
 CTRA,NYSE,Coterra Energy Inc. Common Stock
 CTRE,NASDAQ,"CareTrust REIT, Inc. Common Stock"
@@ -2359,7 +2252,6 @@ CUBE,NASDAQ,CubeSmart Common Shares
 CUBE,NYSE,CubeSmart Common Shares
 CUBI,NASDAQ,"Customers Bancorp, Inc Common Stock"
 CUBI,NYSE,"Customers Bancorp, Inc Common Stock"
-CUBI$F,NASDAQ,"Customers Bancorp, Inc Fixed-to-Floating Rate Non-Cumulative Perpetual Preferred Stock, Series F"
 CUE,NASDAQ,"Cue Biopharma, Inc. - Common Stock"
 CUK,NASDAQ,Carnival Plc ADS ADS
 CUK,NYSE,Carnival Plc ADS ADS
@@ -2502,9 +2394,6 @@ DBO,ARCA,Invesco DB Oil Fund
 DBP,ARCA,Invesco DB Precious Metals Fund
 DBRG,NASDAQ,"DigitalBridge Group, Inc."
 DBRG,NYSE,"DigitalBridge Group, Inc."
-DBRG$H,NASDAQ,"DigitalBridge Group, Inc. 7.125% Series H "
-DBRG$I,NASDAQ,"DigitalBridge Group, Inc. 7.15% Series I "
-DBRG$J,NASDAQ,"DigitalBridge Group, Inc. 7.125% Series J "
 DBVT,NASDAQ,DBV Technologies S.A. - American Depositary Shares
 DBX,NASDAQ,"Dropbox, Inc. - Class A Common Stock"
 DC,AMEX,Dakota Gold Corp. Common Stock
@@ -2691,12 +2580,8 @@ DLHC,NASDAQ,DLH Holdings Corp. - Common Stock
 DLN,ARCA,WisdomTree U.S. LargeCap Dividend Fund
 DLNG,NASDAQ,Dynagas LNG Partners LP Common Units
 DLNG,NYSE,Dynagas LNG Partners LP Common Units
-DLNG$A,NASDAQ,Dynagas LNG Partners LP 9.00% Series A Cumulative Redeemable Preferred Units
 DLO,NASDAQ,DLocal Limited - Class A Common Shares
 DLPN,NASDAQ,"Dolphin Entertainment, Inc. - Common Stock"
-DLR$J,NASDAQ,"Digital Realty Trust, Inc. 5.250% Series J Cumulative Redeemable Preferred Stock"
-DLR$K,NASDAQ,"Digital Realty Trust, Inc. 5.850% Series K Cumulative Redeemable Preferred Stock, par value $0.01 per share"
-DLR$L,NASDAQ,"Digital Realty Trust, Inc. 5.200% Series L Cumulative Redeemable Preferred Stock"
 DLTH,NASDAQ,Duluth Holdings Inc. - Class B Common Stock
 DLX,NASDAQ,Deluxe Corporation Common Stock
 DLX,NYSE,Deluxe Corporation Common Stock
@@ -2770,7 +2655,6 @@ DRDB,NASDAQ,Roman DBDR Acquisition Corp. II - Ordinary shares
 DRGN,CBOE,Themes ETF Trust Themes China Generative Artificial Intelligence ETF
 DRH,NASDAQ,Diamondrock Hospitality Company Common Stock
 DRH,NYSE,Diamondrock Hospitality Company Common Stock
-DRH$A,NASDAQ,Diamondrock Hospitality Company 8.250% Series A Cumulative Redeemable Preferred Stock
 DRI,NASDAQ,"Darden Restaurants, Inc. Common Stock"
 DRI,NYSE,"Darden Restaurants, Inc. Common Stock"
 DRIO,NASDAQ,DarioHealth Corp. - Common Stock
@@ -2800,7 +2684,6 @@ DSTX,NYSE,Distillate International Fundamental Stability & Value ETF
 DSWL,NASDAQ,"Deswell Industries, Inc. - Common Shares"
 DSX,NASDAQ,Diana Shipping inc. common stock
 DSX,NYSE,Diana Shipping inc. common stock
-DSX$B,NASDAQ,Diana Shipping Inc. Perpetual Preferred Shares Series B (Marshall Islands)
 DSY,NASDAQ,Big Tree Cloud Holdings Limited - Ordinary Shares
 DT,NASDAQ,"Dynatrace, Inc. Common Stock"
 DT,NYSE,"Dynatrace, Inc. Common Stock"
@@ -2828,7 +2711,6 @@ DUG,ARCA,ProShares UltraShort Energy
 DUHP,ARCA,Dimensional ETF Trust Dimensional US High Profitability ETF
 DUK,NASDAQ,Duke Energy Corporation (Holding Company) Common Stock
 DUK,NYSE,Duke Energy Corporation (Holding Company) Common Stock
-DUK$A,NASDAQ,"Duke Energy Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.75% Series A Cumulative Redeemable Perpetual Preferred Stock"
 DUKB,NASDAQ,Duke Energy Corporation 5.625% Junior Subordinated Debentures due 2078
 DUKB,NYSE,Duke Energy Corporation 5.625% Junior Subordinated Debentures due 2078
 DUKQ,ARCA,Northern Lights Fund Trust Ocean Park Domestic ETF
@@ -2863,7 +2745,6 @@ DWTX,NASDAQ,"Dogwood Therapeutics, Inc.  - Common Stock"
 DWX,ARCA,SPDR S&P International Dividend ETF
 DX,NASDAQ,"Dynex Capital, Inc. Common Stock"
 DX,NYSE,"Dynex Capital, Inc. Common Stock"
-DX$C,NASDAQ,"Dynex Capital, Inc. 6.900% Series C Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock"
 DXC,NASDAQ,DXC Technology Company Common Stock 
 DXC,NYSE,DXC Technology Company Common Stock 
 DXCM,NASDAQ,"DexCom, Inc. - Common Stock"
@@ -2930,7 +2811,6 @@ ECAT,NYSE,BlackRock ESG Capital Allocation Term Trust Common Shares of Beneficia
 ECBK,NASDAQ,"ECB Bancorp, Inc. - Common Stock"
 ECC,NASDAQ,Eagle Point Credit Company Inc. Common Stock
 ECC,NYSE,Eagle Point Credit Company Inc. Common Stock
-ECC$D,NASDAQ,Eagle Point Credit Company Inc. 6.75% Series D Preferred Stock
 ECCC,NASDAQ,Eagle Point Credit Company Inc. 6.50% Series C Term Preferred Stock due 2031
 ECCC,NYSE,Eagle Point Credit Company Inc. 6.50% Series C Term Preferred Stock due 2031
 ECCF,NASDAQ,Eagle Point Credit Company Inc. 8.00% Series F Term Preferred Stock due 2029
@@ -2942,7 +2822,6 @@ ECCX,NYSE,Eagle Point Credit Company Inc. 6.6875% Notes due 2028
 ECDA,NASDAQ,"ECD Automotive Design, Inc. - Common Stock"
 ECF,AMEX,Ellsworth Growth and Income Fund Ltd.
 ECF,NASDAQ,Ellsworth Growth and Income Fund Ltd.
-ECF$A,NASDAQ,Ellsworth Growth and Income Fund Ltd. 5.25% Series A Cumulative Preferred Shares (Liquidation Preference $25.00 per share)
 ECG,NASDAQ,"Everus Construction Group, Inc. Common Stock"
 ECG,NYSE,"Everus Construction Group, Inc. Common Stock"
 ECH,CBOE,iShares Inc. iShares MSCI Chile ETF
@@ -3005,10 +2884,6 @@ EFAV,CBOE,iShares MSCI EAFE Min Vol Factor ETF
 EFAX,ARCA,SPDR MSCI EAFE Fossil Fuel Reserves Free ETF
 EFC,NASDAQ,Ellington Financial Inc. Common Stock 
 EFC,NYSE,Ellington Financial Inc. Common Stock 
-EFC$A,NASDAQ,Ellington Financial Inc. 6.750% Series A Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
-EFC$B,NASDAQ,Ellington Financial Inc. 6.250% Series B Fixed-Rate Reset Cumulative Redeemable Preferred Stock
-EFC$C,NASDAQ,Ellington Financial Inc. 8.625% Series C Fixed-Rate Reset Cumulative Redeemable Preferred Stock
-EFC$D,NASDAQ,Ellington Financial Inc. 7.00% Series D Cumulative Perpetual Redeemable Preferred Stock
 EFFE,ARCA,Harbor ETF Trust Harbor Osmosis Emerging Markets Resource Efficient ETF
 EFFI,ARCA,Harbor ETF Trust Harbor Osmosis International Resource Efficient ETF
 EFG,CBOE,iShares MSCI EAFE Growth ETF
@@ -3196,7 +3071,6 @@ EOT,NASDAQ,Eaton Vance Municipal Income Trust EATON VANCE NATIONAL MUNICIPAL OPP
 EOT,NYSE,Eaton Vance Municipal Income Trust EATON VANCE NATIONAL MUNICIPAL OPPORTUNITIES TRUST
 EP,AMEX,Empire Petroleum Corporation Common Stock
 EP,NASDAQ,Empire Petroleum Corporation Common Stock
-EP$C,NASDAQ,El Paso Corporation Preferred Stock
 EPAC,NASDAQ,Enerpac Tool Group Corp. Common Stock
 EPAC,NYSE,Enerpac Tool Group Corp. Common Stock
 EPAM,NASDAQ,"EPAM Systems, Inc. Common Stock"
@@ -3216,9 +3090,6 @@ EPMB,ARCA,Harbor ETF Trust Harbor Mid Cap Core ETF
 EPMV,ARCA,Harbor ETF Trust Harbor Mid Cap Value ETF
 EPOL,ARCA,iShares Trust iShares MSCI Poland ETF
 EPP,ARCA,iShares MSCI Pacific Ex-Japan Index Fund
-EPR$C,NASDAQ,EPR Properties 5.75% Series C Cumulative Convertible Preferred Shares
-EPR$E,NASDAQ,EPR Properties Series E Cumulative Conv Pfd Shs Ser E
-EPR$G,NASDAQ,EPR Properties 5.750% Series G Cumulative Redeemable Preferred Shares
 EPRF,CBOE,Innovator S&P Investment Grade Preferred ETF
 EPRT,NASDAQ,"Essential Properties Realty Trust, Inc. Common Stock"
 EPRT,NYSE,"Essential Properties Realty Trust, Inc. Common Stock"
@@ -3235,8 +3106,6 @@ EQBK,NASDAQ,"Equity Bancshares, Inc. Class A Common Stock"
 EQBK,NYSE,"Equity Bancshares, Inc. Class A Common Stock"
 EQH,NASDAQ,"Equitable Holdings, Inc. Common Stock"
 EQH,NYSE,"Equitable Holdings, Inc. Common Stock"
-EQH$A,NASDAQ,"Equitable Holdings, Inc. Depositary Shares"
-EQH$C,NASDAQ,"Equitable Holdings, Inc. Depositary Shares, each representing a 1/1,000th interest in a share of Fixed Rate Noncumulative Perpetual Preferred Stock, Series C"
 EQIN,ARCA,Columbia U.S. Equity Income ETF
 EQIX,NASDAQ,"Equinix, Inc. - Common Stock"
 EQL,ARCA,ALPS Equal Sector Weight ETF
@@ -3297,7 +3166,6 @@ ESTC,NYSE,Elastic N.V. Ordinary Shares
 ESUM,ARCA,Strategy Shares Eventide US Market ETF
 ET,NASDAQ,Energy Transfer LP Common Units 
 ET,NYSE,Energy Transfer LP Common Units 
-ET$I,NASDAQ,Energy Transfer L.P. Series I Fixed Rate Perpetual Preferred Units
 ETB,NASDAQ,Eaton Vance Tax-Managed Buy-Write Income Fund Eaton Vance Tax-Managed Buy-Write Income Fund Common Shares of Beneficial Interest
 ETB,NYSE,Eaton Vance Tax-Managed Buy-Write Income Fund Eaton Vance Tax-Managed Buy-Write Income Fund Common Shares of Beneficial Interest
 ETCO,ARCA,Grayscale Funds Trust Grayscale Ethereum Covered Call ETF
@@ -3314,7 +3182,6 @@ ETHO,ARCA,Amplify ETF Trust Amplify Etho Climate Leadership U.S. ETF
 ETHT,ARCA,ProShares Trust ProShares Ultra Ether ETF
 ETHV,CBOE,VanEck Ethereum ETF VanEck Ethereum ETF
 ETHZ,NASDAQ,ETHZilla Corporation - Common Stock
-ETI$,NASDAQ,"Entergy Texas Inc 5.375% Series A Preferred Stock, Cumulative, No Par Value"
 ETJ,NASDAQ,Eaton Vance Risk-Managed Diversified Equity Income Fund Common Shares of Beneficial Interest
 ETJ,NYSE,Eaton Vance Risk-Managed Diversified Equity Income Fund Common Shares of Beneficial Interest
 ETN,NASDAQ,"Eaton Corporation, PLC Ordinary Shares"
@@ -3440,9 +3307,6 @@ EZM,ARCA,WisdomTree U.S. MidCap Fund
 EZPZ,CBOE,Franklin Crypto Index ETF Franklin Crypto Index ETF
 F,NASDAQ,Ford Motor Company Common Stock
 F,NYSE,Ford Motor Company Common Stock
-F$B,NASDAQ,"Ford Motor Company 6.20% Notes due June 1, 2059"
-F$C,NASDAQ,"Ford Motor Company 6% Notes due December 1, 2059"
-F$D,NASDAQ,"Ford Motor Company 6.500% Notes due August 15, 2062"
 FA,NASDAQ,First Advantage Corporation - Common Stock
 FACT,NASDAQ,FACT II Acquisition Corp. - Class A Ordinary Shares
 FAF,NASDAQ,First American Corporation (New) Common Stock
@@ -3483,7 +3347,6 @@ FBP,NASDAQ,First BanCorp. New Common Stock
 FBP,NYSE,First BanCorp. New Common Stock
 FBRT,NASDAQ,"Franklin BSP Realty Trust, Inc. Common Stock"
 FBRT,NYSE,"Franklin BSP Realty Trust, Inc. Common Stock"
-FBRT$E,NASDAQ,"Franklin BSP Realty Trust, Inc. 7.50% Series E Cumulative Redeemable Preferred Stock"
 FBRX,NASDAQ,"Forte Biosciences, Inc.  - Common Stock"
 FBT,ARCA,First Trust Amex Biotech Index Fund
 FBTC,CBOE,Fidelity Wise Origin Bitcoin Fund Common Shares of Beneficial Interest
@@ -3629,9 +3492,6 @@ FHI,NYSE,"Federated Hermes, Inc. Common Stock"
 FHLC,ARCA,Fidelity MSCI Health Care Index ETF
 FHN,NASDAQ,First Horizon Corporation Common Stock
 FHN,NYSE,First Horizon Corporation Common Stock
-FHN$C,NASDAQ,"First Horizon Corporation Depositary Shares, each representing a 1/400th interest in a share of Non-Cumulative Perpetual Preferred Stock, Series C"
-FHN$E,NASDAQ,"First Horizon Corporation Depositary Shares, each representing a 1/4,000th interest in a share of Non-Cumulative Perpetual Preferred Stock, Series E"
-FHN$F,NASDAQ,"First Horizon Corporation Depositary Shares, each representing 1/4000th Interest in a Share of Non-Cumulative Perpetual Preferred Stock, Series F"
 FHTX,NASDAQ,Foghorn Therapeutics Inc. - Common Stock
 FI,NASDAQ,"Fiserv, Inc. Common Stock"
 FI,NYSE,"Fiserv, Inc. Common Stock"
@@ -3695,8 +3555,6 @@ FLEE,ARCA,Franklin FTSE Europe ETF
 FLEX,NASDAQ,Flex Ltd. - Ordinary Shares
 FLG,NASDAQ,"Flagstar Financial, Inc. Common Stock"
 FLG,NYSE,"Flagstar Financial, Inc. Common Stock"
-FLG$A,NASDAQ,"Flagstar Financial, Inc. Depositary shares, each representing a 1/40th interest in a share of Fixed-to-Floating Rate Series A Noncumulative Perpetual Preferred Stock"
-FLG$U,NASDAQ,"Flagstar Financial, Inc. Bifurcated Option Note Unit SecuritiES"
 FLGB,ARCA,Franklin FTSE United Kingdom ETF
 FLGC,NASDAQ,Flora Growth Corp. - Common Stock
 FLGT,NASDAQ,"Fulgent Genetics, Inc. - Common Stock"
@@ -3807,7 +3665,6 @@ FORM,NASDAQ,"FormFactor, Inc. - Common Stock"
 FORTY,NASDAQ,Formula Systems (1985) Ltd. - American Depositary Shares
 FOSL,NASDAQ,"Fossil Group, Inc. - Common Stock"
 FOSLL,NASDAQ,"Fossil Group, Inc. - 7% Senior Notes due 2026"
-FOUR$A,NASDAQ,"Shift4 Payments, Inc. 6.00% Series A Mandatory Convertible Preferred Stock"
 FOWF,CBOE,Pacer Funds Trust Pacer Solactive Whitney Future of Warfare ETF
 FOX,NASDAQ,Fox Corporation - Class B Common Stock
 FOXA,NASDAQ,Fox Corporation - Class A Common Stock
@@ -3853,7 +3710,6 @@ FRST,NASDAQ,Primis Financial Corp. - Common Stock
 FRSX,NASDAQ,Foresight Autonomous Holdings Ltd. - American Depositary Shares
 FRT,NASDAQ,Federal Realty Investment Trust Common Stock
 FRT,NYSE,Federal Realty Investment Trust Common Stock
-FRT$C,NASDAQ,"Federal Realty Investment Trust Depositary Shares, each representing a 1/1000th interest in a 5.000% Series C Cumulative Redeemable Preferred Share"
 FRTY,ARCA,Alger Mid Cap 40 ETF
 FSBC,NASDAQ,Five Star Bancorp - Common Stock
 FSBD,ARCA,Fidelity Merrimack Street Trust Fidelity Sustainable Core Plus Bond ETF
@@ -3970,9 +3826,6 @@ G,NYSE,Genpact Limited Common Stock
 GAA,CBOE,Cambria Global Asset Allocation ETF
 GAB,NASDAQ,"Gabelli Equity Trust, Inc. (The) Common Stock"
 GAB,NYSE,"Gabelli Equity Trust, Inc. (The) Common Stock"
-GAB$G,NASDAQ,"Gabelli Equity Trust, Inc. (The) Series G Cumulative Preferred Stock"
-GAB$H,NASDAQ,"Gabelli Equity Trust, Inc. (The) Pfd Ser H"
-GAB$K,NASDAQ,"Gabelli Equity Trust, Inc. (The) 5.00% Series K Cumulative Preferred Stock"
 GABC,NASDAQ,"German American Bancorp, Inc. - Common Stock"
 GABF,ARCA,Gabelli ETFs Trust Gabelli Financial Services Opportunities ETF
 GAEM,ARCA,Simplify Exchange Traded Funds Simplify Gamma Emerging Market Bond ETF
@@ -3986,7 +3839,6 @@ GAL,ARCA,SPDR SSgA Global Allocation ETF
 GALT,NASDAQ,Galectin Therapeutics Inc. - Common Stock
 GAM,NASDAQ,"General American Investors, Inc. Common Stock"
 GAM,NYSE,"General American Investors, Inc. Common Stock"
-GAM$B,NASDAQ,"General American Investors Company, Inc. Cumulative Preferred Stock"
 GAMB,NASDAQ,Gambling.com Group Limited - Ordinary Shares
 GAME,NASDAQ,"GameSquare Holdings, Inc. - Common stock"
 GANX,NASDAQ,"Gain Therapeutics, Inc. - Common Stock"
@@ -4058,8 +3910,6 @@ GDRX,NASDAQ,"GoodRx Holdings, Inc. - Class A Common Stock"
 GDTC,NASDAQ,CytoMed Therapeutics Limited - Ordinary Shares
 GDV,NASDAQ,Gabelli Dividend & Income Trust Common Shares of Beneficial Interest
 GDV,NYSE,Gabelli Dividend & Income Trust Common Shares of Beneficial Interest
-GDV$H,NASDAQ,The Gabelli Dividend & Income Trust 5.375% Series H Cumulative Preferred Shares
-GDV$K,NASDAQ,The Gabelli Dividend & Income Trust 4.250% Series K Cumulative Preferred Shares
 GDX,ARCA,VanEck Gold Miners ETF 
 GDXD,ARCA,MicroSectors Gold Miners -3X Inverse Leveraged ETNs
 GDXJ,ARCA,VanEck Junior Gold Miners ETF
@@ -4123,12 +3973,9 @@ GGM,ARCA,Northern Lights Fund Trust II GGM Macro Alignment ETF
 GGME,ARCA,Invesco Next Gen Media and Gaming ETF
 GGN,AMEX,"GAMCO Global Gold, Natural Resources & Income Trust"
 GGN,NASDAQ,"GAMCO Global Gold, Natural Resources & Income Trust"
-GGN$B,NASDAQ,"GAMCO Global Gold, Natural Reources & Income Trust 5.00% Series B Cumulative 25.00 Liquidation Preference"
 GGOV,ARCA,BlackRock ETF Trust II iShares Global Government Bond USD Hedged Active ETF
 GGT,NASDAQ,"Gabelli Multi-Media Trust, Inc. (The) Common Stock"
 GGT,NYSE,"Gabelli Multi-Media Trust, Inc. (The) Common Stock"
-GGT$E,NASDAQ,Gabelli Multi-Media Trust Inc. (The) 5.125% Series E Cumulative Preferred Stock
-GGT$G,NASDAQ,Gabelli Multi-Media Trust Inc. (The) 5.125% Series G Cumulative Preferred Shares
 GGZ,NASDAQ,Gabelli Global Small and Mid Cap Value Trust (The) Common Shares of Beneficial Interest
 GGZ,NYSE,Gabelli Global Small and Mid Cap Value Trust (The) Common Shares of Beneficial Interest
 GH,NASDAQ,"Guardant Health, Inc. - Common Stock"
@@ -4180,7 +4027,6 @@ GJUN,CBOE,FT Vest U.S. Equity Moderate Buffer ETF - June
 GK,ARCA,AdvisorShares Gerber Kawasaki ETF
 GL,NASDAQ,Globe Life Inc. Common Stock
 GL,NYSE,Globe Life Inc. Common Stock
-GL$D,NASDAQ,Globe Life Inc. 4.25% Junior Subordinated Debentures due 2061
 GLAD,NASDAQ,Gladstone Capital Corporation - Closed End Fund
 GLADZ,NASDAQ,Gladstone Capital Corporation - 7.75% Notes due 2028
 GLBE,NASDAQ,Global-E Online Ltd. - ordinary shares
@@ -4204,13 +4050,9 @@ GLO,NASDAQ,Clough Global Opportunities Fund Common Stock
 GLOB,NASDAQ,Globant S.A. Common Shares
 GLOB,NYSE,Globant S.A. Common Shares
 GLOF,ARCA,iShares Global Equity Factor ETF
-GLOP$A,NASDAQ,GasLog Partners LP 8.625% Series A Cumulative Redeemable Perpetual Fixed to Floating Rate Preference Units
-GLOP$B,NASDAQ,GasLog Partners LP 8.200% Series B Cumulative Redeemable Perpetual Fixed to Floating Rate Preference Units
-GLOP$C,NASDAQ,GasLog Partners LP 8.500% Series C Cumulative Redeemable Perpetual Fixed to Floating Rate Preference Units
 GLOV,CBOE,Goldman Sachs ETF Trust Goldman Sachs ActiveBeta World Low Vol Plus Equity ETF
 GLP,NASDAQ,Global Partners LP Common Units representing Limited Partner Interests
 GLP,NYSE,Global Partners LP Common Units representing Limited Partner Interests
-GLP$B,NASDAQ,Global Partners LP 9.50% Series B Fixed Rate Cumulative Redeemable Perpetual Preferred Units representing limited partner interests
 GLPG,NASDAQ,Galapagos NV - American Depositary Shares
 GLPI,NASDAQ,"Gaming and Leisure Properties, Inc. - Common Stock"
 GLQ,AMEX,Clough Global Equity Fund Clough Global Equity Fund Common Shares of Beneficial Interest
@@ -4219,8 +4061,6 @@ GLRE,NASDAQ,"Greenlight Reinsurance, Ltd. - Class A Ordinary Shares"
 GLRY,ARCA,Northern Lights Fund Trust IV Inspire Momentum ETF
 GLSI,NASDAQ,"Greenwich LifeSciences, Inc. - Common stock"
 GLTO,NASDAQ,"Galecto, Inc. - Common Stock"
-GLU$A,NASDAQ,The Gabelli Global Utility and Income Trust Series A Cumulative Puttable and Callable Preferred Shares
-GLU$B,NASDAQ,The Gabelli Global Utility and Income Trust Series B Cumulative Puttable and Callable Preferred Shares
 GLUE,NASDAQ,"Monte Rosa Therapeutics, Inc. - Common Stock"
 GLV,AMEX,Clough Global Dividend and Income Fund Common Shares of beneficial interest
 GLV,NASDAQ,Clough Global Dividend and Income Fund Common Shares of beneficial interest
@@ -4247,7 +4087,6 @@ GMOM,CBOE,Cambria Global Momentum ETF
 GMOV,ARCA,The 2023 ETF Series Trust II GMO US Value ETF
 GMRE,NASDAQ,Global Medical REIT Inc. Common Stock
 GMRE,NYSE,Global Medical REIT Inc. Common Stock
-GMRE$A,NASDAQ,Global Medical REIT Inc. Series A Cumulative Redeemable Preferred Stock
 GMUB,ARCA,Goldman Sachs ETF Trust Goldman Sachs Municipal Income ETF
 GMUN,ARCA,Goldman Sachs Access Municipal Bond ETF
 GNE,NASDAQ,Genie Energy Ltd. Class B Common Stock Stock
@@ -4257,10 +4096,6 @@ GNK,NASDAQ,Genco Shipping & Trading Limited Ordinary Shares New (Marshall Island
 GNK,NYSE,Genco Shipping & Trading Limited Ordinary Shares New (Marshall Islands)
 GNL,NASDAQ,"Global Net Lease, Inc. Common Stock"
 GNL,NYSE,"Global Net Lease, Inc. Common Stock"
-GNL$A,NASDAQ,"Global Net Lease, Inc. 7.25% Series A Cumulative Redeemable Preferred Stock, $0.01 par value per share"
-GNL$B,NASDAQ,"Global Net Lease, Inc. 6.875% Series B Cumulative Redeemable Perpetual Preferred Stock"
-GNL$D,NASDAQ,"Global Net Lease, Inc. 7.50% Series D Cumulative Redeemable Perpetual Preferred Stock"
-GNL$E,NASDAQ,"Global Net Lease, Inc. 7.375% Series E Cumulative Redeemable Perpetual Preferred Stock"
 GNLN,NASDAQ,"Greenlane Holdings, Inc. - Class A Common Stock"
 GNLX,NASDAQ,Genelux Corporation - Common Stock
 GNOV,CBOE,FT Vest U.S. Equity Moderate Buffer ETF - November
@@ -4269,7 +4104,6 @@ GNRC,NASDAQ,Generac Holdlings Inc. Common Stock
 GNRC,NYSE,Generac Holdlings Inc. Common Stock
 GNT,NASDAQ,"GAMCO Natural Resources, Gold & Income Trust"
 GNT,NYSE,"GAMCO Natural Resources, Gold & Income Trust"
-GNT$A,NASDAQ,"GAMCO Natural Resources, Gold & Income Tust  5.20% Series A Cumulative Preferred Shares (Liquidation Preference $25.00 per share)"
 GNTA,NASDAQ,Genenta Science S.p.A. - American Depositary Shares
 GNTX,NASDAQ,Gentex Corporation - Common Stock
 GNTY,NASDAQ,"Guaranty Bancshares, Inc. Common Stock"
@@ -4311,7 +4145,6 @@ GPK,NASDAQ,Graphic Packaging Holding Company
 GPK,NYSE,Graphic Packaging Holding Company
 GPMT,NASDAQ,Granite Point Mortgage Trust Inc. Common Stock
 GPMT,NYSE,Granite Point Mortgage Trust Inc. Common Stock
-GPMT$A,NASDAQ,Granite Point Mortgage Trust Inc. 7.00% Series A Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
 GPN,NASDAQ,Global Payments Inc. Common Stock
 GPN,NYSE,Global Payments Inc. Common Stock
 GPRE,NASDAQ,"Green Plains, Inc. - Common Stock"
@@ -4319,7 +4152,6 @@ GPRK,NASDAQ,Geopark Ltd Common Shares
 GPRK,NYSE,Geopark Ltd Common Shares
 GPRO,NASDAQ,"GoPro, Inc. - Class A Common Stock"
 GPTY,ARCA,Tidal Trust II YieldMax AI & Tech Portfolio Option Income ETF
-GPUS$D,NASDAQ,"Hyperscale Data, Inc. 13.00% Series D Cumulative Redeemable Perpetual Preferred Stock"
 GPZ,ARCA,VanEck ETF Trust VanEck Alternative Asset Manager ETF
 GQI,ARCA,Natixis ETF Trust Natixis Gateway Quality Income ETF
 GQRE,ARCA,FlexShares Global Quality Real Estate Index Fund
@@ -4330,7 +4162,6 @@ GRAL,NASDAQ,"GRAIL, Inc. - Common Stock"
 GRAN,NASDAQ,Grande Group Limited - Class A Ordinary Shares
 GRBK,NASDAQ,"Green Brick Partners, Inc. Common Stock"
 GRBK,NYSE,"Green Brick Partners, Inc. Common Stock"
-GRBK$A,NASDAQ,"Green Brick Partners, Inc. Depositary Shares (each representing a 1/1000th fractional interest in a share of 5.75% Series A Cumulative Perpetual Preferred Stock)"
 GRC,NASDAQ,Gorman-Rupp Company (The) Common Stock
 GRC,NYSE,Gorman-Rupp Company (The) Common Stock
 GRCE,NASDAQ,"Grace Therapeutics, Inc. - Common Stock"
@@ -4367,9 +4198,6 @@ GRVY,NASDAQ,"GRAVITY Co., Ltd. - American depositary shares, each representing o
 GRWG,NASDAQ,GrowGeneration Corp. - Common Stock
 GRX,NASDAQ,The Gabelli Healthcare & Wellness Trust Common Shares of Beneficial Interest
 GRX,NYSE,The Gabelli Healthcare & Wellness Trust Common Shares of Beneficial Interest
-GS$A,NASDAQ,"Goldman Sachs Group, Inc. (The) Depositary Shares each representing 1/1000th Interest in a Share of Floating Rate Non-Cumulative Preferred Stock Series A"
-GS$C,NASDAQ,"Goldman Sachs Group, Inc. (The) Depositary Share repstg 1/1000th Preferred Series C"
-GS$D,NASDAQ,"Goldman Sachs Group, Inc. (The) Dep Shs repstg 1/1000 Pfd Ser D Fltg"
 GSAT,NASDAQ,"Globalstar, Inc. - Common Stock"
 GSBC,NASDAQ,"Great Southern Bancorp, Inc. - Common Stock"
 GSBD,NASDAQ,"Goldman Sachs BDC, Inc. Common Stock"
@@ -4389,7 +4217,6 @@ GSK,NYSE,GSK plc American Depositary Shares (Each representing two Ordinary Shar
 GSKH,ARCA,Precidian ETFs Trust GSK plc ADRhedged
 GSL,NASDAQ,Global Ship Lease Inc New Class A Common Shares
 GSL,NYSE,Global Ship Lease Inc New Class A Common Shares
-GSL$B,NASDAQ,"Global Ship Lease, Inc. Depository Shares Representing 1/100th Perpetual Preferred Series B% (Marshall Island)"
 GSLC,ARCA,Goldman Sachs ActiveBeta U.S. Large Cap Equity ETF
 GSM,NASDAQ,Ferroglobe PLC - Ordinary Shares
 GSPY,ARCA,Gotham Enhanced 500 ETF
@@ -4411,7 +4238,6 @@ GTI,NASDAQ,Graphjet Technology - Class A Ordinary Shares
 GTIM,NASDAQ,Good Times Restaurants Inc. - Common Stock
 GTIP,CBOE,Goldman Sachs Access Inflation Protected USD Bond ETF
 GTLB,NASDAQ,GitLab Inc. - Class A Common Stock
-GTLS$B,NASDAQ,"Chart Industries, Inc. Depositary Shares, each Representing a 1/20th Interest in a Share of 6.75% Series B Mandatory Convertible Preferred Stock"
 GTM,NASDAQ,ZoomInfo Technologies Inc. - Common Stock
 GTN,NASDAQ,"Gray Media, Inc. Common Stock"
 GTN,NYSE,"Gray Media, Inc. Common Stock"
@@ -4430,7 +4256,6 @@ GUSA,ARCA,Goldman Sachs ETF Trust II Goldman Sachs MarketBeta U.S. 1000 Equity E
 GUSH,ARCA,Direxion Daily S&P Oil & Gas Exp. & Prod. Bull 2X Shares
 GUT,NASDAQ,Gabelli Utility Trust (The) Common Stock
 GUT,NYSE,Gabelli Utility Trust (The) Common Stock
-GUT$C,NASDAQ,Gabelli Utility Trust (The) 5.375% Series C Cumulative Preferred Shares
 GV,NASDAQ,Visionary Holdings Inc. - Common Shares
 GVA,NASDAQ,Granite Construction Incorporated Common Stock
 GVA,NYSE,Granite Construction Incorporated Common Stock
@@ -4558,8 +4383,6 @@ HFMF,ARCA,Tidal Trust I Unlimited HFMF Managed Futures ETF
 HFND,NYSE,Unlimited HFND Multi-Strategy Return Tracker ETF
 HFRO,NASDAQ,Highland Opportunities and Income Fund Common Shares of Beneficial Interest
 HFRO,NYSE,Highland Opportunities and Income Fund Common Shares of Beneficial Interest
-HFRO$A,NASDAQ,Highland Opportunities and Income Fund 5.375% Series A Cumulative Preferred Shares
-HFRO$B,NASDAQ,Highland Opportunities and Income Fund 5.375% Series B Cumulative Preferred Shares
 HFSI,CBOE,Hartford Strategic Income ETF
 HFWA,NASDAQ,Heritage Financial Corporation - Common Stock
 HFXI,ARCA,NYLI FTSE International Equity Currency Neutral ETF
@@ -4581,7 +4404,6 @@ HIBL,ARCA,Direxion Daily S&P 500 High Beta Bull 3X Shares
 HIDV,ARCA,"AB Active ETFs, Inc. AB US High Dividend ETF"
 HIG,NASDAQ,"The Hartford Insurance Group, Inc. Common Stock"
 HIG,NYSE,"The Hartford Insurance Group, Inc. Common Stock"
-HIG$G,NASDAQ,"The Hartford Insurance Group, Inc. Depositary Shares each representing a 1/1000th interest in a share of 6.000% Non-Cumulative Preferred Stock, Series G"
 HIGH,ARCA,Simplify Exchange Traded Funds Simplify Enhanced Income ETF
 HIHO,NASDAQ,Highway Holdings Limited - Common Stock
 HII,NASDAQ,"Huntington Ingalls Industries, Inc. Common Stock"
@@ -4604,7 +4426,6 @@ HKND,ARCA,Humankind US Stock ETF
 HKPD,NASDAQ,Hong Kong Pharma Digital Technology Holdings Limited - Ordinary shares
 HL,NASDAQ,Hecla Mining Company Common Stock
 HL,NYSE,Hecla Mining Company Common Stock
-HL$B,NASDAQ,Hecla Mining Company Preferred Stock
 HLF,NASDAQ,Herbalife Ltd. Common Shares
 HLF,NYSE,Herbalife Ltd. Common Shares
 HLI,NASDAQ,"Houlihan Lokey, Inc. Class A Common Stock"
@@ -4666,7 +4487,6 @@ HP,NYSE,"Helmerich & Payne, Inc. Common Stock"
 HPAI,NASDAQ,Helport AI Limited - Ordinary Shares
 HPE,NASDAQ,Hewlett Packard Enterprise Company Common Stock
 HPE,NYSE,Hewlett Packard Enterprise Company Common Stock
-HPE$C,NASDAQ,Hewlett Packard Enterprise Company 7.625% Series C Mandatory Convertible Preferred Stock
 HPF,NASDAQ,John Hancock Pfd Income Fund II Pfd Income Fund II
 HPF,NYSE,John Hancock Pfd Income Fund II Pfd Income Fund II
 HPI,NASDAQ,John Hancock Preferred Income Fund Common Shares of Beneficial Interest
@@ -4674,7 +4494,6 @@ HPI,NYSE,John Hancock Preferred Income Fund Common Shares of Beneficial Interest
 HPK,NASDAQ,"HighPeak Energy, Inc. - Common Stock"
 HPP,NASDAQ,"Hudson Pacific Properties, Inc. Common Stock"
 HPP,NYSE,"Hudson Pacific Properties, Inc. Common Stock"
-HPP$C,NASDAQ,"Hudson Pacific Properties, Inc. 4.750% Series C Cumulative Redeemable Preferred Stock"
 HPQ,NASDAQ,HP Inc. Common Stock
 HPQ,NYSE,HP Inc. Common Stock
 HQH,NASDAQ,abrdn Healthcare Investors Shares of Beneficial Interest
@@ -4773,7 +4592,6 @@ HWH,NASDAQ,HWH International Inc. - Common Stock
 HWKN,NASDAQ,"Hawkins, Inc. - Common Stock"
 HWM,NASDAQ,Howmet Aerospace Inc. Common Stock
 HWM,NYSE,Howmet Aerospace Inc. Common Stock
-HWM$,NASDAQ,Howmet Aerospace Inc. $3.75 Preferred Stock
 HXHX,NASDAQ,Haoxin Holdings Limited - Class A Ordinary Shares
 HXL,NASDAQ,Hexcel Corporation Common Stock
 HXL,NYSE,Hexcel Corporation Common Stock
@@ -4901,7 +4719,6 @@ ICMB,NASDAQ,"Investcorp Credit Management BDC, Inc. - Common Stock"
 ICOI,ARCA,Bitwise Funds Trust Bitwise COIN Option Income Strategy ETF
 ICON,NASDAQ,Icon Energy Corp. - Common stock
 ICPY,ARCA,"The RBB Fund Trust Tweedy, Browne International Insider + Value ETF"
-ICR$A,NASDAQ,"InPoint Commercial Real Estate Income, Inc. 6.75% Series A Cumulative Redeemable Preferred Stock"
 ICSH,CBOE,iShares Ultra Short Duration Bond Active ETF
 ICUI,NASDAQ,"ICU Medical, Inc. - Common Stock"
 ICVT,CBOE,iShares Convertible Bond ETF
@@ -5002,7 +4819,6 @@ IIIV,NASDAQ,"i3 Verticals, Inc. - Common Stock"
 IIM,NASDAQ,Invesco Value Municipal Income Trust Common Stock
 IIM,NYSE,Invesco Value Municipal Income Trust Common Stock
 IINN,NASDAQ,Inspira Technologies Oxy B.H.N. Ltd. - Ordinary Shares
-IIPR$A,NASDAQ,"Innovative Industrial Properties, Inc. 9.00% Series A Cumulative Redeemable Preferred Stock"
 IJAN,ARCA,Innovator International Developed Power Buffer ETF January
 IJH,ARCA,iShares Core S&P Mid-Cap ETF
 IJJ,ARCA,iShares S&P Mid-Cap 400 Value ETF
@@ -5092,8 +4908,6 @@ INMB,NASDAQ,INmune Bio Inc. - Common stock
 INMD,NASDAQ,InMode Ltd.  - Ordinary Shares
 INN,NASDAQ,"Summit Hotel Properties, Inc. Common Stock"
 INN,NYSE,"Summit Hotel Properties, Inc. Common Stock"
-INN$E,NASDAQ,"Summit Hotel Properties, Inc. 6.250% Series E Cumulative Redeemable Preferred Stock"
-INN$F,NASDAQ,"Summit Hotel Properties, Inc. 5.875% Series F Cumulative Redeemable Preferred Stock, $0.01 par value per share"
 INNV,NASDAQ,InnovAge Holding Corp. - Common Stock
 INO,NASDAQ,"Inovio Pharmaceuticals, Inc. - Common Stock"
 INOD,NASDAQ,Innodata Inc. - Common Stock
@@ -5249,7 +5063,6 @@ IVOL,ARCA,Quadratic Interest Rate Volatility and Inflation Hedge ETF
 IVOO,ARCA,Vanguard S&P Mid-Cap 400 ETF
 IVOV,ARCA,Vanguard S&P Mid-Cap 400 Value ETF
 IVP,NASDAQ,"Inspire Veterinary Partners, Inc. - Class A Common Stock"
-IVR$C,NASDAQ,"INVESCO MORTGAGE CAPITAL INC 7.5% Fixed-to-Floating Series C Cumulative Redeemable Preferred Stock, Liquation Preference $25.00 per Share"
 IVRA,CBOE,Invesco Real Assets ESG ETF
 IVT,NASDAQ,InvenTrust Properties Corp. Common Stock
 IVT,NYSE,InvenTrust Properties Corp. Common Stock
@@ -5444,12 +5257,6 @@ JPIN,ARCA,JPMorgan Diversified Return International Equity ETF
 JPLD,CBOE,J.P. Morgan Exchange-Traded Fund Trust JPMorgan Limited Duration Bond ETF
 JPM,NASDAQ,JP Morgan Chase & Co. Common Stock
 JPM,NYSE,JP Morgan Chase & Co. Common Stock
-JPM$C,NASDAQ,"J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 6.00% Non-Cumulative  Preferred Stock, Series EE"
-JPM$D,NASDAQ,"J P Morgan Chase & Co Depositary Shares, each representing a 1/400th  interest in a share of 5.75% Non-Cumulative  Preferred Stock, Series DD"
-JPM$J,NASDAQ,"J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of JPMorgan Chase & Co. 4.75% Non-Cumulative Preferred Stock, Series GG"
-JPM$K,NASDAQ,"J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.55% Non-Cumulative Preferred Stock, Series JJ"
-JPM$L,NASDAQ,"J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.625% Non-Cumulative Preferred Stock, Series LL"
-JPM$M,NASDAQ,"J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.20% Non-Cumulative Preferred Stock, Series MM"
 JPMB,ARCA,JPMorgan USD Emerging Markets Sovereign Bond ETF
 JPME,ARCA,JPMorgan Diversified Return U.S. Mid Cap Equity ETF
 JPMO,ARCA,Tidal Trust II YieldMax JPM Option Income Strategy ETF
@@ -5490,7 +5297,6 @@ JXG,NASDAQ,JX Luxventure Group Inc. - Common Stock
 JXI,ARCA,iShares Global Utilities ETF
 JXN,NASDAQ,Jackson Financial Inc. Class A Common Stock 
 JXN,NYSE,Jackson Financial Inc. Class A Common Stock 
-JXN$A,NASDAQ,"Jackson Financial Inc. Depositary Shares, each representing a 1/1,000th interest in a share of Fixed-Rate Reset Noncumulative Perpetual Preferred Stock, Series A"
 JXX,CBOE,Janus Detroit Street Trust Janus Henderson Transformational Growth ETF
 JYD,NASDAQ,Jayud Global Logistics Limited - Class A Ordinary Shares
 JYNT,NASDAQ,The Joint Corp. - Common Stock
@@ -5543,10 +5349,6 @@ KEX,NASDAQ,Kirby Corporation Common Stock
 KEX,NYSE,Kirby Corporation Common Stock
 KEY,NASDAQ,KeyCorp Common Stock
 KEY,NYSE,KeyCorp Common Stock
-KEY$I,NASDAQ,"KeyCorp Depositary Shares Each Representing a 1/40th Ownership Interest in a Share of Fixed-to-Floating Rate Perpetual Non-Cumulative Preferred Stock, Series E"
-KEY$J,NASDAQ,"KeyCorp Depositary Shares each representing a 1/40th ownership interest in a share of Fixed Rate Perpetual Non-Cumulative Preferred Stock, Series F"
-KEY$K,NASDAQ,"KeyCorp Depositary Shares, each representing a 1/40th ownership interest in a share of Fixed Rate Perpetual Non-Cumulative Preferred Stock, Series G"
-KEY$L,NASDAQ,"KeyCorp Depositary Shares each representing a 1/40th ownership interest in a share of Fixed Rate Perpetual Non-Cumulative Preferred Stock, Series H"
 KF,NASDAQ,"Korea Fund, Inc. (The) New Common Stock"
 KF,NYSE,"Korea Fund, Inc. (The) New Common Stock"
 KFEB,CBOE,Innovator ETFs Trust Innovator U.S. Small Cap Power Buffer ETF - February
@@ -5569,16 +5371,12 @@ KIDZ,NASDAQ,"Classover Holdings, Inc. - Class B Common Stock"
 KIE,ARCA,SPDR S&P Insurance ETF
 KIM,NASDAQ,Kimco Realty Corporation (HC) Common Stock
 KIM,NYSE,Kimco Realty Corporation (HC) Common Stock
-KIM$L,NASDAQ,"Kimco Realty Corporation Class L Depositary Shares, each of which represents a one-one thousandth fractional interest in a share of 5.125% Class L Cumulative Redeemable Preferred Stock, liquidation preference $25,000.00 per share"
-KIM$M,NASDAQ,"Kimco Realty Corporation Class M Depositary Shares, each of which represents a one-one thousandth fractional interest in a share of 5.25% Class M Cumulative Redeemable Preferred Stock, liquidation preference $25,000.00 per share"
-KIM$N,NASDAQ,"Kimco Realty Corporation Depositary Shares, each representing 1/1,000th interest in a share of 7.25% Class N Cumulative Convertible Perpetual Preferred Stock"
 KIO,NASDAQ,KKR Income Opportunities Fund Common Shares
 KIO,NYSE,KKR Income Opportunities Fund Common Shares
 KITT,NASDAQ,"Nauticus Robotics, Inc. - Common stock"
 KJAN,CBOE,Innovator U.S. Small Cap Power Buffer ETF - January
 KJUL,CBOE,Innovator U.S. Small Cap Power Buffer ETF - July
 KJUN,CBOE,SHL Telemedicine Ltd Innovator U.S. Small Cap Power Buffer ETF - June
-KKR$D,NASDAQ,KKR & Co. Inc. 6.25% Series D Mandatory Convertible Preferred Stock
 KKRT,NASDAQ,KKR & Co. Inc. 6.875% Subordinated Notes due 2065
 KKRT,NYSE,KKR & Co. Inc. 6.875% Subordinated Notes due 2065
 KLAC,NASDAQ,KLA Corporation  - Common Stock
@@ -5655,7 +5453,6 @@ KRC,NYSE,Kilroy Realty Corporation Common Stock
 KRE,ARCA,SPDR S&P Regional Banking ETF
 KREF,NASDAQ,KKR Real Estate Finance Trust Inc. Common Stock
 KREF,NYSE,KKR Real Estate Finance Trust Inc. Common Stock
-KREF$A,NASDAQ,KKR Real Estate Finance Trust Inc. 6.50% Series A Cumulative Redeemable Preferred Stock
 KRG,NASDAQ,Kite Realty Group Trust Common Stock
 KRG,NYSE,Kite Realty Group Trust Common Stock
 KRMD,NASDAQ,"KORU Medical Systems, Inc. - Common Stock"
@@ -5803,7 +5600,6 @@ LFMDP,NASDAQ,"LifeMD, Inc. - 8.875% Series A Cumulative Perpetual Preferred Stoc
 LFST,NASDAQ,"LifeStance Health Group, Inc. - Common Stock"
 LFT,NASDAQ,"Lument Finance Trust, Inc. Common Stock"
 LFT,NYSE,"Lument Finance Trust, Inc. Common Stock"
-LFT$A,NASDAQ,"Lument Finance Trust, Inc. 7.875% Series A Cumulative Redeemable Preferred Stock"
 LFVN,NASDAQ,Lifevantage Corporation - Common Stock
 LFWD,NASDAQ,Lifeward Ltd. - Ordinary Shares
 LGCB,NASDAQ,Linkage Global Inc - Class A Ordinary Shares
@@ -5880,7 +5676,6 @@ LMT,NYSE,Lockheed Martin Corporation Common Stock
 LMUB,ARCA,iShares Trust iShares Long-Term National Muni Bond ETF
 LNC,NASDAQ,Lincoln National Corporation Common Stock
 LNC,NYSE,Lincoln National Corporation Common Stock
-LNC$D,NASDAQ,"Lincoln National Corporation Depositary Shares Each Representing a 1/1,000th Interest in a Share of 9.000% Non-Cumulative Preferred Stock, Series D"
 LND,NASDAQ,Brasilagro Brazilian Agric Real Estate Co Sponsored ADR (Brazil)
 LND,NYSE,Brasilagro Brazilian Agric Real Estate Co Sponsored ADR (Brazil)
 LNG,NASDAQ,"Cheniere Energy, Inc. Common Stock"
@@ -5894,7 +5689,6 @@ LNZA,NASDAQ,"LanzaTech Global, Inc. - Common Stock"
 LOAN,NASDAQ,"Manhattan Bridge Capital, Inc - Common Stock"
 LOB,NASDAQ,"Live Oak Bancshares, Inc. Common Stock"
 LOB,NYSE,"Live Oak Bancshares, Inc. Common Stock"
-LOB$A,NASDAQ,"Live Oak Bancshares, Inc. Depositary Shares, Each Representing a 1/40th Interest in a Share of 8.375% Fixed Rate Series A Non-Cumulative Perpetual Preferred Stock"
 LOBO,NASDAQ,LOBO EV TECHNOLOGIES LTD. - Ordinary shares
 LOCL,NASDAQ,Local Bounti Corporation Common Stock
 LOCL,NYSE,Local Bounti Corporation Common Stock
@@ -6003,7 +5797,6 @@ LXEH,NASDAQ,"Lixiang Education Holding Co., Ltd. - American Depositary Shares"
 LXEO,NASDAQ,"Lexeo Therapeutics, Inc. - Common Stock"
 LXP,NASDAQ,LXP Industrial Trust Common Stock (Maryland REIT)
 LXP,NYSE,LXP Industrial Trust Common Stock (Maryland REIT)
-LXP$C,NASDAQ,LXP Industrial Trust 6.5% Series C Cumulative Convertible Preferred Stock
 LXRX,NASDAQ,"Lexicon Pharmaceuticals, Inc. - Common Stock"
 LYB,NASDAQ,LyondellBasell Industries NV Ordinary Shares Class A (Netherlands)
 LYB,NYSE,LyondellBasell Industries NV Ordinary Shares Class A (Netherlands)
@@ -6027,7 +5820,6 @@ MA,NASDAQ,Mastercard Incorporated Common Stock
 MA,NYSE,Mastercard Incorporated Common Stock
 MAA,NASDAQ,"Mid-America Apartment Communities, Inc. Common Stock"
 MAA,NYSE,"Mid-America Apartment Communities, Inc. Common Stock"
-MAA$I,NASDAQ,"Mid-America Apartment Communities, Inc. 8.50% Series I Cumulative Redeemable Preferred Stock"
 MAC,NASDAQ,Macerich Company (The) Common Stock
 MAC,NYSE,Macerich Company (The) Common Stock
 MACI,NASDAQ,Melar Acquisition Corp. I - Class A Ordinary Shares
@@ -6150,7 +5942,6 @@ MDT,NASDAQ,Medtronic plc. Ordinary Shares
 MDT,NYSE,Medtronic plc. Ordinary Shares
 MDV,NASDAQ,"Modiv Industrial, Inc. Class C Common Stock"
 MDV,NYSE,"Modiv Industrial, Inc. Class C Common Stock"
-MDV$A,NASDAQ,"Modiv Industrial, Inc. 7.375% Series A Cumulative Redeemable Perpetual Preferred Stock"
 MDWD,NASDAQ,MediWound Ltd. - Ordinary Shares
 MDXG,NASDAQ,"MiMedx Group, Inc - Common Stock"
 MDXH,NASDAQ,MDxHealth SA - Ordinary Shares
@@ -6174,15 +5965,11 @@ MELI,NASDAQ,"MercadoLibre, Inc. - Common Stock"
 MEM,ARCA,Matthews International Funds Matthews Emerging Markets Equity Active ETF
 MEMX,ARCA,Matthews International Funds Matthews Emerging Markets ex China Active ETF
 MEOH,NASDAQ,Methanex Corporation - Common Stock
-MER$K,NASDAQ,"Bank of America Corporation Income Capital Obligation Notes initially due December 15, 2066"
 MERC,NASDAQ,Mercer International Inc. - Common Stock
 MESA,NASDAQ,"Mesa Air Group, Inc. - Common Stock"
 MESO,NASDAQ,Mesoblast Limited - American Depositary Shares
 MET,NASDAQ,"MetLife, Inc. Common Stock"
 MET,NYSE,"MetLife, Inc. Common Stock"
-MET$A,NASDAQ,"MetLife, Inc. Preferred Series A Floating Rate"
-MET$E,NASDAQ,"MetLife, Inc. Depositary Shares "
-MET$F,NASDAQ,"MetLife, Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 4.75% Non-Cumulative Preferred Stock, Series F"
 META,NASDAQ,"Meta Platforms, Inc. - Class A Common Stock"
 METC,NASDAQ,"Ramaco Resources, Inc. - Class A Common Stock"
 METCB,NASDAQ,"Ramaco Resources, Inc. - Class B Common Stock"
@@ -6192,8 +5979,6 @@ METV,ARCA,Roundhill Ball Metaverse ETF
 MEXX,ARCA,Direxion Daily MSCI Mexico Bull 3X Shares
 MFA,NASDAQ,"MFA Financial, Inc."
 MFA,NYSE,"MFA Financial, Inc."
-MFA$B,NASDAQ,"MFA Financial, Inc. Preferred Series B"
-MFA$C,NASDAQ,"MFA Financial, Inc. 6.50% Series C Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock"
 MFAN,NASDAQ,"MFA Financial, Inc. 8.875% Senior Notes due 2029"
 MFAN,NYSE,"MFA Financial, Inc. 8.875% Senior Notes due 2029"
 MFAO,NASDAQ,"MFA Financial, Inc. 9.000% Senior Notes due 2029"
@@ -6305,9 +6090,6 @@ MITQ,AMEX,"Moving iMage Technologies, Inc. Common Stock"
 MITQ,NASDAQ,"Moving iMage Technologies, Inc. Common Stock"
 MITT,NASDAQ,"AG Mortgage Investment Trust, Inc. Common Stock"
 MITT,NYSE,"AG Mortgage Investment Trust, Inc. Common Stock"
-MITT$A,NASDAQ,"AG Mortgage Investment Trust, Inc. 8.25% Preferred Series A"
-MITT$B,NASDAQ,"AG Mortgage Investment Trust, Inc. Preferred Series B"
-MITT$C,NASDAQ,"AG Mortgage Investment Trust, Inc. 8.00% Series C Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock, $0.01 par value per share"
 MIY,NASDAQ,"Blackrock MuniYield Michigan Quality Fund, Inc. Common Stock"
 MIY,NYSE,"Blackrock MuniYield Michigan Quality Fund, Inc. Common Stock"
 MJ,ARCA,Amplify ETF Trust Amplify Alternative Harvest ETF
@@ -6461,15 +6243,6 @@ MRTN,NASDAQ,"Marten Transport, Ltd. - Common Stock"
 MRVI,NASDAQ,"Maravai LifeSciences Holdings, Inc. - Class A common stock"
 MRVL,NASDAQ,"Marvell Technology, Inc. - Common Stock"
 MRX,NASDAQ,Marex Group plc - Ordinary Shares
-MS$A,NASDAQ,Morgan Stanley Dep Shs repstg 1/1000 Pfd Ser A
-MS$E,NASDAQ,Morgan Stanley DEPOSITARY SHARES REP 1/1000TH SHARES FIXED/FLTG PREFERRED STOCK SERIES E
-MS$F,NASDAQ,Morgan Stanley Dep Shs Rpstg 1/1000th Int Prd Ser F Fxd to Flag
-MS$I,NASDAQ,Morgan Stanley Depository Shares Representing 1/1000th Preferred Series 1 Fixed to Floating Non (Cum)
-MS$K,NASDAQ,"Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of Fixed-to-Floating Rate Non-Cumulative Preferred Stock,  Series K"
-MS$L,NASDAQ,"Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.875% Non-Cumulative Preferred Stock, Series L"
-MS$O,NASDAQ,"Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.250% Non-Cumulative Preferred Stock, Series O"
-MS$P,NASDAQ,"Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.500% Non-Cumulative Preferred Stock, Series P"
-MS$Q,NASDAQ,"Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.625% Non-Cumulative Preferred Stock, Series Q"
 MSA,NASDAQ,MSA Safety Incorporated Common Stock
 MSA,NYSE,MSA Safety Incorporated Common Stock
 MSAI,NASDAQ,"MultiSensor AI Holdings, Inc. - Common Stock"
@@ -6521,8 +6294,6 @@ MTAL,NASDAQ,MAC Copper Limited Ordinary Shares
 MTAL,NYSE,MAC Copper Limited Ordinary Shares
 MTB,NASDAQ,M&T Bank Corporation Common Stock
 MTB,NYSE,M&T Bank Corporation Common Stock
-MTB$H,NASDAQ,"M&T Bank Corporation Perpetual Fixed-to-Floating Rate Non-Cumulative Preferred Stock, Series H"
-MTB$J,NASDAQ,"M&T Bank Corporation Depositary Shares each representing a 1/400th ownership interest in a share of Perpetual 7.500% Non-Cumulative Preferred Stock, Series J"
 MTBA,ARCA,Simplify Exchange Traded Funds Simplify MBS ETF
 MTC,NASDAQ,"MMTec, Inc. - Common Shares"
 MTCH,NASDAQ,"Match Group, Inc. - Common Stock"
@@ -6707,10 +6478,8 @@ NCT,NASDAQ,Intercont (Cayman) Limited - Ordinary shares
 NCTY,NASDAQ,The9 Limited - American Depository Shares
 NCV,NASDAQ,Virtus Convertible & Income Fund Common Shares of Beneficial Interest
 NCV,NYSE,Virtus Convertible & Income Fund Common Shares of Beneficial Interest
-NCV$A,NASDAQ,Virtus Convertible & Income Fund 5.625% Series A Cumulative Preferred Shares
 NCZ,NASDAQ,Virtus Convertible & Income Fund II Common Shares of Beneficial Interest
 NCZ,NYSE,Virtus Convertible & Income Fund II Common Shares of Beneficial Interest
-NCZ$A,NASDAQ,Virtus Convertible & Income Fund II 5.50% Series A Cumulative Preferred Shares
 NDAQ,NASDAQ,"Nasdaq, Inc. - Common Stock"
 NDEC,CBOE,Innovator ETFs Trust Innovator Growth-100 Power Buffer ETF - December
 NDIA,ARCA,Global X Funds Global X India Active ETF
@@ -6730,10 +6499,6 @@ NEBX,CBOE,Tradr 2X Long NBIS Daily ETF
 NECB,NASDAQ,"NorthEast Community Bancorp, Inc. - Common Stock"
 NEE,NASDAQ,"NextEra Energy, Inc. Common Stock"
 NEE,NYSE,"NextEra Energy, Inc. Common Stock"
-NEE$N,NASDAQ,"NextEra Energy, Inc. Series N Junior Subordinated Debentures due March 1, 2079"
-NEE$S,NASDAQ,"NextEra Energy, Inc. 7.299% Corporate Units"
-NEE$T,NASDAQ,"NextEra Energy, Inc. 7.234% Corporate Units"
-NEE$U,NASDAQ,"NextEra Energy, Inc. Series U Junior Subordinated Debentures due June 1, 2085"
 NEGG,NASDAQ,"Newegg Commerce, Inc. - Common Shares"
 NEM,NASDAQ,Newmont Corporation
 NEM,NYSE,Newmont Corporation
@@ -6788,8 +6553,6 @@ NGG,NASDAQ,"National Grid Transco, PLC National Grid PLC (NEW) American Deposita
 NGG,NYSE,"National Grid Transco, PLC National Grid PLC (NEW) American Depositary Shares"
 NGL,NASDAQ,NGL ENERGY PARTNERS LP Common Units representing Limited Partner Interests
 NGL,NYSE,NGL ENERGY PARTNERS LP Common Units representing Limited Partner Interests
-NGL$B,NASDAQ,NGL ENERGY PARTNERS LP 9.00% Class B Fixed-to-Floating Rate Cumulative Redeemable Perpetual Preferred Units representing limited partnership interests
-NGL$C,NASDAQ,NGL ENERGY PARTNERS LP 9.625% Class C Fixed-to-Floating Rate Cumulative  Redeemable Perpetual Preferred Units representing  limited partner interests
 NGNE,NASDAQ,Neurogene Inc. - Common Stock
 NGVC,NASDAQ,"Natural Grocers by Vitamin Cottage, Inc. Common Stock"
 NGVC,NYSE,"Natural Grocers by Vitamin Cottage, Inc. Common Stock"
@@ -6843,10 +6606,6 @@ NLOP,NYSE,Net Lease Office Properties Common Shares of Beneficial Interest
 NLSP,NASDAQ,NLS Pharmaceutics Ltd. - Common Shares
 NLY,NASDAQ,Annaly Capital Management Inc. Common Stock
 NLY,NYSE,Annaly Capital Management Inc. Common Stock
-NLY$F,NASDAQ,Annaly Capital Management Inc 6.95% Series F
-NLY$G,NASDAQ,Annaly Capital Management Inc 6.50% Series G Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
-NLY$I,NASDAQ,Annaly Capital Management Inc 6.750% Series I Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
-NLY$J,NASDAQ,Annaly Capital Management Inc. 8.875% Series J Fixed-Rate Cumulative Redeemable Preferred Stock
 NMAI,NASDAQ,Nuveen Multi-Asset Income Fund Common Shares of Beneficial Interest
 NMAI,NYSE,Nuveen Multi-Asset Income Fund Common Shares of Beneficial Interest
 NMAX,NASDAQ,"Newsmax, Inc. Class B Common Stock"
@@ -6939,7 +6698,6 @@ NRDY,NASDAQ,Nerdy Inc. Class A Common Stock
 NRDY,NYSE,Nerdy Inc. Class A Common Stock
 NREF,NASDAQ,"NexPoint Real Estate Finance, Inc. Common Stock"
 NREF,NYSE,"NexPoint Real Estate Finance, Inc. Common Stock"
-NREF$A,NASDAQ,"NexPoint Real Estate Finance, Inc. 8.50% Series A Cumulative Redeemable Preferred Stock"
 NRG,NASDAQ,"NRG Energy, Inc. Common Stock"
 NRG,NYSE,"NRG Energy, Inc. Common Stock"
 NRGD,ARCA,"Bank Of Montreal MicroSectors  U.S. Big Oil -3  Inverse Leveraged ETNs due February 17, 2045"
@@ -6962,8 +6720,6 @@ NRUC,NYSE,National Rural Utilities Cooperative Finance Corporation 5.500% Subord
 NRXP,NASDAQ,"NRX Pharmaceuticals, Inc. - Common Stock"
 NSA,NASDAQ,National Storage Affiliates Trust Common Shares of Beneficial Interest
 NSA,NYSE,National Storage Affiliates Trust Common Shares of Beneficial Interest
-NSA$A,NASDAQ,National Storage Affiliates Trust 6.000% Series A Cumulative Redeemable Preferred Shares of Beneficial Interest (Liquidation Preference $25.00 per share)
-NSA$B,NASDAQ,National Storage Affiliates Trust 6.000% Series B Cumulative Redeemable Preferred Shares of Beneficial Interest
 NSC,NASDAQ,Norfolk Southern Corporation Common Stock
 NSC,NYSE,Norfolk Southern Corporation Common Stock
 NSEP,CBOE,Innovator U.S. Small Cap Power Buffer ETF - September Innovator Growth-100 Power Buffer ETF - September
@@ -7077,7 +6833,6 @@ NXC,NASDAQ,Nuveen California Select Tax-Free Income Portfolio Common Stock
 NXC,NYSE,Nuveen California Select Tax-Free Income Portfolio Common Stock
 NXDT,NASDAQ,NexPoint Diversified Real Estate Trust Common Stock
 NXDT,NYSE,NexPoint Diversified Real Estate Trust Common Stock
-NXDT$A,NASDAQ,NexPoint Diversified Real Estate Trust 5.50% Series A Cumulative Preferred Shares ($25.00 liquidation preference per share)
 NXE,NASDAQ,Nexgen Energy Ltd. Common Shares
 NXE,NYSE,Nexgen Energy Ltd. Common Shares
 NXG,NASDAQ,NXG NextGen Infrastructure Income Fund Common Shares of Beneficial Interest
@@ -7117,8 +6872,6 @@ OACC,NASDAQ,Oaktree Acquisition Corp. III Life Sciences - Class A Ordinary Share
 OACP,ARCA,Unified Series Trust OneAscent Core Plus Bond ETF
 OAEM,ARCA,Unified Series Trust OneAscent Emerging Markets ETF
 OAIM,ARCA,Unified Series Trust OneAscent International Equity ETF
-OAK$A,NASDAQ,"Brookfield Oaktree Holdings, LLC 6.625% Series A Preferred Units"
-OAK$B,NASDAQ,"Brookfield Oaktree Holdings, LLC 6.550% Series B Preferred Units"
 OAKM,ARCA,Harris Oakmark ETF Trust Oakmark U.S. Large Cap ETF
 OALC,ARCA,Unified Series Trust OneAscent Large Cap Core ETF
 OARK,ARCA,YieldMax Innovation Option Income Strategy ETF
@@ -7278,9 +7031,6 @@ OPINL,NASDAQ,Office Properties Income Trust - 6.375% Senior Notes due 2050
 OPK,NASDAQ,"Opko Health, Inc. - Common Stock"
 OPP,NASDAQ,"RiverNorth/DoubleLine Strategic Opportunity Fund, Inc. Common Stock"
 OPP,NYSE,"RiverNorth/DoubleLine Strategic Opportunity Fund, Inc. Common Stock"
-OPP$A,NASDAQ,"RiverNorth/DoubleLine Strategic Opportunity Fund, Inc. 4.375% Series A Cumulative Preferred Stock"
-OPP$B,NASDAQ,"RiverNorth/DoubleLine Strategic Opportunity Fund, Inc. 4.75% Series B Cumulative Preferred Stock"
-OPP$C,NASDAQ,"RiverNorth/DoubleLine Strategic Opportunity Fund, Inc. 6.00% Series C Term Preferred Stock (Liquidation Preference $10.00 per share)"
 OPPE,ARCA,WisdomTree European Opportunities Fund
 OPRA,NASDAQ,Opera Limited - American Depositary Shares
 OPRT,NASDAQ,Oportun Financial Corporation - common stock
@@ -7432,7 +7182,6 @@ PBH,NYSE,Prestige Consumer Healthcare Inc. Common Stock
 PBHC,NASDAQ,"Pathfinder Bancorp, Inc. - Common Stock"
 PBI,NASDAQ,Pitney Bowes Inc. Common Stock
 PBI,NYSE,Pitney Bowes Inc. Common Stock
-PBI$B,NASDAQ,Pitney Bowes Inc 6.70% Notes Due 2043
 PBJ,ARCA,Invesco Food & Beverage ETF
 PBJA,CBOE,PGIM S&P 500 Buffer 20 ETF - January
 PBJL,CBOE,PGIM S&P 500 Buffer 20 ETF - July
@@ -7462,15 +7211,6 @@ PCF,NYSE,High Income Securities Fund Common Stock
 PCFI,ARCA,FundVantage Trust Polen Floating Rate Income ETF
 PCG,NASDAQ,Pacific Gas & Electric Co. Common Stock
 PCG,NYSE,Pacific Gas & Electric Co. Common Stock
-PCG$A,NASDAQ,Pacific Gas & Electric Co. 6% Preferred Stock
-PCG$B,NASDAQ,Pacific Gas & Electric Co. 5 1/2% Preferred Stock
-PCG$C,NASDAQ,Pacific Gas & Electric Co. 5% 1st Preferred Stock
-PCG$D,NASDAQ,Pacific Gas & Electric Co. 5% 1st  Red. Preferred Stock
-PCG$E,NASDAQ,Pacific Gas & Electric Co. 5% 1st A Preferred Stock
-PCG$G,NASDAQ,Pacific Gas & Electric Co. 4.80% 1st Preferred Stock
-PCG$H,NASDAQ,Pacific Gas & Electric Co. 4.50% 1st Preferred Stock
-PCG$I,NASDAQ,Pacific Gas & Electric Co. 4.36% 1st Preferred Stock
-PCG$X,NASDAQ,PG&E Corp 6.000% Series A Mandatory Convertible Preferred Stock
 PCGG,ARCA,Litman Gregory Funds Trust Polen Capital Global Growth ETF
 PCH,NASDAQ,PotlatchDeltic Corporation - Common Stock
 PCHI,ARCA,FundVantage Trust Polen High Income ETF
@@ -7519,10 +7259,6 @@ PDX,NYSE,PIMCO Dynamic Income Strategy Fund Common Shares of Beneficial Interest
 PDYN,NASDAQ,Palladyne AI Corp. - Common stock
 PEB,NASDAQ,Pebblebrook Hotel Trust Common Shares of Beneficial Interest
 PEB,NYSE,Pebblebrook Hotel Trust Common Shares of Beneficial Interest
-PEB$E,NASDAQ,Pebblebrook Hotel Trust 6.375% Series E Cumulative Redeemable Preferred Shares of Beneficial Interest
-PEB$F,NASDAQ,Pebblebrook Hotel Trust 6.3% Series F Cumulative Redeemable Preferred Shares of Beneficial Interest
-PEB$G,NASDAQ,Pebblebrook Hotel Trust 6.375% Series G Cumulative Redeemable Preferred Shares of Beneficial Interest
-PEB$H,NASDAQ,Pebblebrook Hotel Trust 5.700% Series H Cumulative Redeemable Preferred Shares of Beneficial Interest
 PEBK,NASDAQ,"Peoples Bancorp of North Carolina, Inc. - Common Stock"
 PEBO,NASDAQ,Peoples Bancorp Inc. - Common Stock
 PECO,NASDAQ,"Phillips Edison & Company, Inc. - Common Stock"
@@ -7734,9 +7470,6 @@ PMO,NYSE,Putnam Municipal Opportunities Trust Common Stock
 PMSE,CBOE,PGIM Rock ETF Trust PGIM S&P 500 Max Buffer ETF - September
 PMT,NASDAQ,PennyMac Mortgage Investment Trust Common Shares of Beneficial Interest
 PMT,NYSE,PennyMac Mortgage Investment Trust Common Shares of Beneficial Interest
-PMT$A,NASDAQ,PennyMac Mortgage Investment Trust 8.125% Series A Fixed-to-Floating Rate Cumulative Redeemable Preferred Shares of Beneficial Interest
-PMT$B,NASDAQ,PennyMac Mortgage Investment Trust 8.00% Series B Fixed-to-Floating Rate Cumulative Redeemable Preferred Shares of Beneficial Interest
-PMT$C,NASDAQ,PennyMac Mortgage Investment Trust 6.75% Series C Cumulative Redeemable Preferred Shares of Beneficial Interest
 PMTV,NASDAQ,PennyMac Mortgage Investment Trust 9.00% Senior Notes due 2030
 PMTV,NYSE,PennyMac Mortgage Investment Trust 9.00% Senior Notes due 2030
 PMVP,NASDAQ,"PMV Pharmaceuticals, Inc. - Common Stock"
@@ -7810,10 +7543,6 @@ PRH,NASDAQ,"Prudential Financial, Inc. 5.950% Junior Subordinated Notes due 2062
 PRH,NYSE,"Prudential Financial, Inc. 5.950% Junior Subordinated Notes due 2062"
 PRI,NASDAQ,"Primerica, Inc. Common Stock"
 PRI,NYSE,"Primerica, Inc. Common Stock"
-PRIF$D,NASDAQ,"Priority Income Fund, Inc. 7.00% Series D Term Preferred Stock due 2029"
-PRIF$J,NASDAQ,"Priority Income Fund, Inc. 6.000% Series J Term Preferred Stock due 2028"
-PRIF$K,NASDAQ,"Priority Income Fund, Inc. 7.000% Series K Cumulative Preferred Stock"
-PRIF$L,NASDAQ,"Priority Income Fund, Inc. 6.375% Series L Term Preferred Stock Due 2029"
 PRIM,NASDAQ,Primoris Services Corporation Common Stock
 PRIM,NYSE,Primoris Services Corporation Common Stock
 PRIV,ARCA,SPDR SSGA IG Public & Private Credit ETF
@@ -7850,20 +7579,6 @@ PRXV,ARCA,Praxis Funds Praxis Impact Large Cap Value ETF
 PRZO,NASDAQ,ParaZero Technologies Ltd. - Ordinary Shares
 PSA,NASDAQ,Public Storage Common Stock
 PSA,NYSE,Public Storage Common Stock
-PSA$F,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 5.15% Cumulative Preferred Share of Beneficial Interest, Series F, par value $0.01 per share"
-PSA$G,NASDAQ,"Public Storage Depositary Shares, Each Representing 1/1,000 of a 5.05% Cumulative Preferred Share of Beneficial Interest, Series G"
-PSA$H,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a  5.60% Cumulative Preferred  Share of Beneficial Interest, Series H"
-PSA$I,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 4.875% Cumulative Preferred Share of Beneficial Interest, Series I, par value $0.01 per share"
-PSA$J,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 4.700% Cumulative Preferred Share of Beneficial Interest, Series J, par value $0.01 per share"
-PSA$K,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 4.75% Cumulative Preferred Share of Beneficial Interest, Series K"
-PSA$L,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 4.625% Cumulative Preferred Share of Beneficial Interest, Series L, par value $0.01 per share"
-PSA$M,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 4.125% Cumulative Preferred Share of Beneficial Interest, Series M"
-PSA$N,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 3.875% Cumulative Preferred Share of Beneficial Interest, Series N"
-PSA$O,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 3.900% Cumulative Preferred Share of Beneficial Interest, Series O"
-PSA$P,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 4.000% Cumulative Preferred Share of Bene cial Interest, Series P"
-PSA$Q,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 3.950% Cumulative Preferred Share of Beneficial Interest, Series Q, par value $0.01 per share"
-PSA$R,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 4.00% Cumulative Preferred Share of Bene cial Interest, Series R"
-PSA$S,NASDAQ,"Public Storage Depositary Shares Each Representing 1/1,000 of a 4.100% Cumulative Preferred Share of Beneficial Interest, Series S"
 PSBD,NASDAQ,Palmer Square Capital BDC Inc. Common Stock
 PSBD,NYSE,Palmer Square Capital BDC Inc. Common Stock
 PSCJ,CBOE,Pacer Swan SOS Conservative (July) ETF
@@ -7871,7 +7586,6 @@ PSCQ,CBOE,Pacer Swan SOS Conservative (October) ETF
 PSCX,CBOE,Pacer Swan SOS Conservative (January) ETF
 PSDM,CBOE,PGIM ETF Trust PGIM Short Duration Multi-Sector Bond ETF
 PSEC,NASDAQ,Prospect Capital Corporation - Closed End Fund
-PSEC$A,NASDAQ,Prospect Capital Corporation 5.35% Series A Fixed Rate Cumulative Perpetual Preferred Stock
 PSEP,CBOE,Innovator U.S. Equity Power Buffer ETF - September
 PSF,NASDAQ,"Cohen & Steers Select Preferred and Income Fund, Inc. Common Stock"
 PSF,NYSE,"Cohen & Steers Select Preferred and Income Fund, Inc. Common Stock"
@@ -7956,7 +7670,6 @@ PVI,ARCA,Invesco Floating Rate Municipal Income ETF
 PVL,NASDAQ,Permianville Royalty Trust Trust Units 
 PVL,NYSE,Permianville Royalty Trust Trust Units 
 PVLA,NASDAQ,"Palvella Therapeutics, Inc. - Common Stock"
-PW$A,NASDAQ,Power REIT 7.75% Series A Cumulative Perpetual Preferred Stock
 PWB,ARCA,Invesco Large Cap Growth ETF
 PWM,NASDAQ,Prestige Wealth Inc. - Class A Ordinary Shares
 PWP,NASDAQ,Perella Weinberg Partners - Class A Common Stock
@@ -8081,7 +7794,6 @@ QVOY,CBOE,Q3 All-Season Active Rotation ETF Q3 All-Season Active Rotation ETF
 QWLD,ARCA,SPDR MSCI World StrategicFactors ETF
 QXO,NASDAQ,"QXO, Inc. Common Stock"
 QXO,NYSE,"QXO, Inc. Common Stock"
-QXO$B,NASDAQ,"QXO, Inc.  Depositary Shares, each representing a 1/20th interest in a share of 5.50% Series B Mandatory Convertible Preferred Stock"
 R,NASDAQ,"Ryder System, Inc. Common Stock"
 R,NYSE,"Ryder System, Inc. Common Stock"
 RA,NASDAQ,Brookfield Real Assets Income Fund Inc. Common Stock
@@ -8136,8 +7848,6 @@ RBRK,NYSE,"Rubrik, Inc. Class A Common Stock"
 RBUF,CBOE,SHL Telemedicine Ltd Innovator U.S. Small Cap 10 Buffer ETF - Quarterly
 RC,NASDAQ,Ready Capital Corporation Common Stock
 RC,NYSE,Ready Capital Corporation Common Stock
-RC$C,NASDAQ,Ready Capital Corporation 6.25% Series C Cumulative Convertible Preferred Stock
-RC$E,NASDAQ,Ready Capital Corporation 6.50% Series E Cumulative Redeemable Preferred Stock
 RCAT,NASDAQ,"Red Cat Holdings, Inc. - Common Stock"
 RCB,NASDAQ,Ready Capital Corporation 6.20% Senior Notes due 2026
 RCB,NYSE,Ready Capital Corporation 6.20% Senior Notes due 2026
@@ -8216,17 +7926,12 @@ REVG,NASDAQ,"REV Group, Inc. Common Stock"
 REVG,NYSE,"REV Group, Inc. Common Stock"
 REX,NASDAQ,REX American Resources Corporation
 REX,NYSE,REX American Resources Corporation
-REXR$B,NASDAQ,"Rexford Industrial Realty, Inc. 5.875% Series B Cumulative Redeemable Preferred Stock"
-REXR$C,NASDAQ,"Rexford Industrial Realty, Inc. 5.625% Series C Cumulative Redeemable Preferred Stock, par value $0.01 per share"
 REYN,NASDAQ,Reynolds Consumer Products Inc. - Common Stock
 REZ,ARCA,iShares Residential and Multisector Real Estate ETF
 REZI,NASDAQ,"Resideo Technologies, Inc. Common Stock "
 REZI,NYSE,"Resideo Technologies, Inc. Common Stock "
 RF,NASDAQ,Regions Financial Corporation Common Stock
 RF,NYSE,Regions Financial Corporation Common Stock
-RF$C,NASDAQ,"Regions Financial Corporation Depositary Shares, each Representing a 1/40th Interest in a  Share of 5.700% Fixed-to-Floating Rate Non-Cumulative  Perpetual Preferred Stock, Series C"
-RF$E,NASDAQ,"Regions Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of 4.45% Non-Cumulative Perpetual Preferred Stock, Series E"
-RF$F,NASDAQ,"Regions Financial Corporation Depositary Shares Each Representing a 1/40th Interest in a Share of Non-Cumulative Perpetual Preferred Stock, Series F"
 RFAI,NASDAQ,RF Acquisition Corp II - Ordinary Shares
 RFCI,ARCA,RiverFront Dynamic Core Income ETF
 RFDA,ARCA,RiverFront Dynamic US Dividend Advantage ETF
@@ -8289,17 +7994,11 @@ RISN,ARCA,Inspire Tactical Balanced ETF
 RITA,ARCA,ETF Series Solutions ETFB Green SRI REITs ETF
 RITM,NASDAQ,Rithm Capital Corp. Common Stock
 RITM,NYSE,Rithm Capital Corp. Common Stock
-RITM$A,NASDAQ,Rithm Capital Corp. 7.50% Series A Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
-RITM$B,NASDAQ,Rithm Capital Corp. 7.125% Series B Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
-RITM$C,NASDAQ,Rithm Capital Corp. 6.375% Series C Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
-RITM$D,NASDAQ,Rithm Capital Corp. 7.00% Fixed-Rate Reset Series D Cumulative Redeemable Preferred Stock
 RIV,NASDAQ,"RiverNorth Opportunities Fund, Inc. Common Stock"
 RIV,NYSE,"RiverNorth Opportunities Fund, Inc. Common Stock"
-RIV$A,NASDAQ,"RiverNorth Opportunities Fund, Inc. 6.00% Series A Perpetual Preferred Stock"
 RIVN,NASDAQ,"Rivian Automotive, Inc. - Class A Common Stock"
 RJF,NASDAQ,"Raymond James Financial, Inc. Common Stock"
 RJF,NYSE,"Raymond James Financial, Inc. Common Stock"
-RJF$B,NASDAQ,"Raymond James Financial, Inc. Depositary Shares, each representing a 1/40th interest in a share of 6.375% Fixed-to-Floating Rate Series B Non-Cumulative Perpetual Preferred Stock"
 RJMG,ARCA,First Trust Exchange-Traded Fund VIII FT Raymond James Multicap Growth Equity ETF
 RKDA,NASDAQ,"Arcadia Biosciences, Inc. - Common Stock"
 RKLB,NASDAQ,Rocket Lab Corporation - Common Stock
@@ -8314,7 +8013,6 @@ RLI,NASDAQ,RLI Corp. Common Stock (DE)
 RLI,NYSE,RLI Corp. Common Stock (DE)
 RLJ,NASDAQ,RLJ Lodging Trust Common Shares of Beneficial Interest $0.01 par value
 RLJ,NYSE,RLJ Lodging Trust Common Shares of Beneficial Interest $0.01 par value
-RLJ$A,NASDAQ,RLJ Lodging Trust $1.95 Series A Cumulative Convertible  Preferred Shares
 RLMD,NASDAQ,"Relmada Therapeutics, Inc. - Common Stock"
 RLTY,NASDAQ,Cohen & Steers Real Estate Opportunities and Income Fund Common Shares of Beneficial Interest
 RLTY,NYSE,Cohen & Steers Real Estate Opportunities and Income Fund Common Shares of Beneficial Interest
@@ -8354,8 +8052,6 @@ RNG,NASDAQ,"RingCentral, Inc. Class A Common Stock"
 RNG,NYSE,"RingCentral, Inc. Class A Common Stock"
 RNP,NASDAQ,"Cohen & Steers REIT and Preferred and Income Fund, Inc. Common Shares"
 RNP,NYSE,"Cohen & Steers REIT and Preferred and Income Fund, Inc. Common Shares"
-RNR$F,NASDAQ,"RenaissanceRe Holdings Ltd. Depositary Shares, each Representing a 1/1,000th Interest in a 5.750% Series F Preference Share"
-RNR$G,NASDAQ,"RenaissanceRe Holdings Ltd. Depositary Shares, each representing a 1/1,000th interest in a share of 4.20% Series G Preference Shares"
 RNST,NASDAQ,Renasant Corporation Common Stock
 RNST,NYSE,Renasant Corporation Common Stock
 RNTX,NASDAQ,"Rein Therapeutics, Inc. - Common Stock"
@@ -8394,7 +8090,6 @@ RPM,NYSE,RPM International Inc. Common Stock
 RPRX,NASDAQ,Royalty Pharma plc - Class A Ordinary Shares
 RPT,NASDAQ,Rithm Property Trust Inc. Common stock
 RPT,NYSE,Rithm Property Trust Inc. Common stock
-RPT$C,NASDAQ,Rithm Property Trust Inc. 9.875% Series C Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
 RPTX,NASDAQ,Repare Therapeutics Inc. - Common Shares
 RPV,ARCA,Invesco S&P 500 Pure Value ETF
 RQI,NASDAQ,Cohen & Steers Quality Income Realty Fund Inc Common Shares
@@ -8476,7 +8171,6 @@ RWM,ARCA,ProShares Short Russell2000
 RWO,ARCA,SPDR DJ Wilshire Global Real Estate ETF
 RWT,NASDAQ,"Redwood Trust, Inc. Common Stock"
 RWT,NYSE,"Redwood Trust, Inc. Common Stock"
-RWT$A,NASDAQ,"Redwood Trust, Inc. 10.00% Series A Fixed-Rate Reset Cumulative Redeemable Preferred Stock"
 RWTN,NASDAQ,"Redwood Trust, Inc. 9.125% Senior Notes Due 2029"
 RWTN,NYSE,"Redwood Trust, Inc. 9.125% Senior Notes Due 2029"
 RWTO,NASDAQ,"Redwood Trust, Inc. 9.00% Senior Notes Due 2029"
@@ -8529,7 +8223,6 @@ SABA,NASDAQ,Saba Capital Income & Opportunities Fund II Shares of Beneficial Int
 SABA,NYSE,Saba Capital Income & Opportunities Fund II Shares of Beneficial Interest
 SACH,AMEX,Sachem Capital Corp. Common Shares
 SACH,NASDAQ,Sachem Capital Corp. Common Shares
-SACH$A,NASDAQ,Sachem Capital Corp. 7.75% Series A Cumulative Redeemable Preferred Stock
 SAEF,ARCA,Schwab Ariel Opportunities ETF
 SAFE,NASDAQ,Safehold Inc. New Common Stock 
 SAFE,NYSE,Safehold Inc. New Common Stock 
@@ -8575,8 +8268,6 @@ SAZ,NASDAQ,Saratoga Investment Corp 8.50% Notes due 2028
 SAZ,NYSE,Saratoga Investment Corp 8.50% Notes due 2028
 SB,NASDAQ,"Safe Bulkers, Inc Common Stock ($0.001 par value)"
 SB,NYSE,"Safe Bulkers, Inc Common Stock ($0.001 par value)"
-SB$C,NASDAQ,"Safe Bulkers, Inc Cumulative Redeemable Perpetual Preferred Series C (Marshall Islands)"
-SB$D,NASDAQ,"Safe Bulkers, Inc Perpetual Preferred Series D (Marshall Islands)"
 SBAC,NASDAQ,SBA Communications Corporation - Class A Common Stock
 SBB,ARCA,ProShares Short SmallCap600
 SBC,NASDAQ,SBC Medical Group Holdings Incorporated - Common Stock
@@ -8622,12 +8313,6 @@ SCD,NASDAQ,LMP Capital and Income Fund Inc. Common Stock
 SCD,NYSE,LMP Capital and Income Fund Inc. Common Stock
 SCDL,ARCA,ETRACS 2x Leveraged US Dividend Factor TR ETN
 SCDV,ARCA,ETF Series Solutions Bahl & Gaynor Small Cap Dividend ETF
-SCE$G,NASDAQ,SCE Trust II Trust Preferred Securities
-SCE$J,NASDAQ,Southern California Edison Company 5.375% Fixed-to-Floating Rate Trust Preference Securities
-SCE$K,NASDAQ,Southern California Edison Company 5.45% Fixed-to-Floating Rate Trust Preference Securities
-SCE$L,NASDAQ,SCE TRUST VI
-SCE$M,NASDAQ,SCE Trust VII 7.50% Trust Preference Securities
-SCE$N,NASDAQ,SCE Trust VIII 6.95% Trust Preference Securities
 SCEC,CBOE,Capitol Series Trust Sterling Capital Enhanced Core Bond ETF
 SCHA,ARCA,Schwab U.S. Small-Cap ETF
 SCHB,ARCA,Schwab U.S. Broad Market ETF
@@ -8646,8 +8331,6 @@ SCHO,ARCA,Schwab Short-Term U.S. Treasury ETF
 SCHP,ARCA,Schwab U.S. TIPs ETF
 SCHQ,ARCA,Schwab Long-Term U.S. Treasury ETF
 SCHV,ARCA,Schwab U.S. Large-Cap Value ETF
-SCHW$D,NASDAQ,"The Charles Schwab Corporation Depositary Shares each representing 1/40th interest in a share of 5.95% Non-Cumulative Perpetual Preferred Stock, Series D"
-SCHW$J,NASDAQ,"The Charles Schwab Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of 4.450% Non-Cumulative Perpetual Preferred Stock, Series J"
 SCHX,ARCA,Schwab U.S. Large-Cap ETF
 SCHY,ARCA,Schwab International Dividend Equity ETF
 SCHZ,ARCA,Schwab US Aggregate Bond ETF
@@ -8698,8 +8381,6 @@ SDY,ARCA,SPDR S&P Dividend ETF
 SE,NASDAQ,"Sea Limited American Depositary Shares, each representing one Class A Ordinary Share"
 SE,NYSE,"Sea Limited American Depositary Shares, each representing one Class A Ordinary Share"
 SEA,ARCA,ETF Series Solutions U.S. Global Sea to Sky Cargo ETF
-SEAL$A,NASDAQ,Seapeak LLC 9.00% Series A Cumulative Redeemable Perpetual Preferred Units
-SEAL$B,NASDAQ,Seapeak LLC 8.50% Series B Fixed-to-Floating Rate Cumulative Redeemable Perpetual Preferred Units
 SEAT,NASDAQ,Vivid Seats Inc. - Class A common stock
 SEB,AMEX,Seaboard Corporation Common Stock
 SEB,NASDAQ,Seaboard Corporation Common Stock
@@ -8741,9 +8422,6 @@ SEVN,NASDAQ,Seven Hills Realty Trust  - Common Stock
 SEZL,NASDAQ,Sezzle Inc. - Common Stock
 SF,NASDAQ,Stifel Financial Corporation Common Stock
 SF,NYSE,Stifel Financial Corporation Common Stock
-SF$B,NASDAQ,"Stifel Financial Corporation Depositary Shares, Each Representing 1/1,000th  Interest in a Share of 6.25% Non-Cumulative  Preferred Stock, Series B"
-SF$C,NASDAQ,"Stifel Financial Corporation Depositary Shares, Each Representing 1/1,000th Interest in a Share of 6.125% Non Cumulative Preferred Stock, Series C"
-SF$D,NASDAQ,"Stifel Financial Corporation Depositary Shares, Each Representing 1/1,000th Interest in a Share of 4.50% Non-Cumulative Preferred Stock, Series D"
 SFB,NASDAQ,Stifel Financial Corporation 5.20% Senior Notes due 2047
 SFB,NYSE,Stifel Financial Corporation 5.20% Senior Notes due 2047
 SFBC,NASDAQ,"Sound Financial Bancorp, Inc. - Common Stock"
@@ -8811,8 +8489,6 @@ SHMD,NASDAQ,SCHMID Group N.V. - Class A Ordinary Shares
 SHNY,ARCA,"Bank Of Montreal MicroSectors Gold 3X Leveraged ETNs due January 29, 2043"
 SHO,NASDAQ,"Sunstone Hotel Investors, Inc. Sunstone Hotel Investors, Inc. Common Shares"
 SHO,NYSE,"Sunstone Hotel Investors, Inc. Sunstone Hotel Investors, Inc. Common Shares"
-SHO$H,NASDAQ,"Sunstone Hotel Investors, Inc. 6.125% Series H Cumulative Redeemable Preferred Stock"
-SHO$I,NASDAQ,"Sunstone Hotel Investors, Inc. 5.70% Series I Cumulative Redeemable Preferred Stock"
 SHOC,NYSE,EA Series Trust Strive U.S. Semiconductor ETF
 SHOO,NASDAQ,"Steven Madden, Ltd. - Common Stock"
 SHOP,NASDAQ,Shopify Inc. - Class A Subordinate Voting Shares
@@ -8914,7 +8590,6 @@ SLF,NASDAQ,Sun Life Financial Inc. Common Stock
 SLF,NYSE,Sun Life Financial Inc. Common Stock
 SLG,NASDAQ,SL Green Realty Corp Common Stock
 SLG,NYSE,SL Green Realty Corp Common Stock
-SLG$I,NASDAQ,SL Green Realty Corporation Preferred Series I
 SLGL,NASDAQ,Sol-Gel Technologies Ltd. - Ordinary Shares
 SLGN,NASDAQ,Silgan Holdings Inc. Common Stock
 SLGN,NYSE,Silgan Holdings Inc. Common Stock
@@ -9036,8 +8711,6 @@ SNTH,ARCA,Tidal Trust III MRP SynthEquity ETF
 SNTI,NASDAQ,"Senti Biosciences, Inc.  - Common Stock"
 SNV,NASDAQ,Synovus Financial Corp. Common Stock
 SNV,NYSE,Synovus Financial Corp. Common Stock
-SNV$D,NASDAQ,"Synovus Financial Corp. Fixed-to-Floating Rate Non-Cumulative Perpetual Preferred Stock, Series D Liquation Preference $25.00 per Share"
-SNV$E,NASDAQ,"Synovus Financial Corp. 5.875% Fixed-Rate Reset Non-Cumulative Perpetual Preferred Stock, Series E"
 SNWV,NASDAQ,"SANUWAVE Health, Inc. - Common Stock"
 SNX,NASDAQ,TD SYNNEX Corporation Common Stock
 SNX,NYSE,TD SYNNEX Corporation Common Stock
@@ -9104,14 +8777,12 @@ SPDN,ARCA,Direxion Daily S&P 500 Bear 1X Shares
 SPDV,ARCA,AAM S&P 500 High Dividend Value ETF
 SPE,NASDAQ,"Special Opportunities Fund, Inc Common Stock"
 SPE,NYSE,"Special Opportunities Fund, Inc Common Stock"
-SPE$C,NASDAQ,"Special Opportunities Fund Inc. 2.75% Convertible Preferred Stock, Series C"
 SPEG,NASDAQ,Silver Pegasus Acquisition Corp - Class A Ordinary Shares
 SPEM,ARCA,SPDR Index Shares Fund SPDR Portfolio Emerging Markets ETF
 SPFF,ARCA,Global X SuperIncome Preferred ETF
 SPFI,NASDAQ,"South Plains Financial, Inc. - Common Stock"
 SPG,NASDAQ,"Simon Property Group, Inc. Common Stock"
 SPG,NYSE,"Simon Property Group, Inc. Common Stock"
-SPG$J,NASDAQ,"Simon Property Group, Inc. Simon Property Group 8 3/8% Series J Cumulative Redeemable Preferred Stock"
 SPGI,NASDAQ,S&P Global Inc. Common Stock
 SPGI,NYSE,S&P Global Inc. Common Stock
 SPGM,ARCA,SPDR Portfolio MSCI Global Stock Market ETF
@@ -9142,7 +8813,6 @@ SPMO,ARCA,Invesco S&P 500 Momentum ETF
 SPMV,CBOE,Invesco S&P 500 Minimum Variance ETF
 SPNT,NASDAQ,SiriusPoint Ltd. Common Shares
 SPNT,NYSE,SiriusPoint Ltd. Common Shares
-SPNT$B,NASDAQ,"SiriusPoint Ltd. 8.00% Resettable Fixed Rate Preference Shares, Series B, $25.00 liquidation preference per share"
 SPOK,NASDAQ,"Spok Holdings, Inc. - Common Stock"
 SPOT,NASDAQ,Spotify Technology S.A. Ordinary Shares
 SPOT,NYSE,Spotify Technology S.A. Ordinary Shares
@@ -9194,7 +8864,6 @@ SQFTP,NASDAQ,"Presidio Property Trust, Inc. - 9.375% Series D Cumulative Redeema
 SQM,NASDAQ,Sociedad Quimica y Minera S.A. Common Stock
 SQM,NYSE,Sociedad Quimica y Minera S.A. Common Stock
 SQMX,CBOE,First Trust Exchange-Traded Fund VIII FT Vest U.S. Equity Quarterly Max Buffer ETF
-SR$A,NASDAQ,"Spire Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 5.90% Series A Cumulative Redeemable Perpetual Preferred Stock"
 SRAD,NASDAQ,Sportradar Group AG - Class A Ordinary Shares
 SRBK,NASDAQ,"SR Bancorp, Inc. - Common stock"
 SRCE,NASDAQ,1st Source Corporation - Common Stock
@@ -9207,7 +8876,6 @@ SRFM,NASDAQ,Surf Air Mobility Inc. Common Stock
 SRFM,NYSE,Surf Air Mobility Inc. Common Stock
 SRG,NASDAQ,Seritage Growth Properties Class A Common Stock
 SRG,NYSE,Seritage Growth Properties Class A Common Stock
-SRG$A,NASDAQ,Seritage Growth Properties 7.00% Series A Cumulative Redeemable Preferred Shares of Beneficial Interest
 SRHQ,ARCA,SRH U.S. Quality GARP ETF
 SRI,NASDAQ,"Stoneridge, Inc. Common Stock"
 SRI,NYSE,"Stoneridge, Inc. Common Stock"
@@ -9311,7 +8979,6 @@ STRV,NYSE,EA Series Trust Strive 500 ETF
 STRZ,NASDAQ,Starz Entertainment Corp. - Common Shares
 STT,NASDAQ,State Street Corporation Common Stock
 STT,NYSE,State Street Corporation Common Stock
-STT$G,NASDAQ,"State Street Corporation Depositary shares, each representing a 1/4,000th ownership interest in a share of Fixed-to-Floating Rate Non-Cumulative"
 STTK,NASDAQ,"Shattuck Labs, Inc. - Common Stock"
 STUB,NASDAQ,"StubHub Holdings, Inc. Class A Common Stock"
 STUB,NYSE,"StubHub Holdings, Inc. Class A Common Stock"
@@ -9393,8 +9060,6 @@ SYBT,NASDAQ,"Stock Yards Bancorp, Inc. - Common Stock"
 SYBX,NASDAQ,"Synlogic, Inc. - Common Stock"
 SYF,NASDAQ,Synchrony Financial Common Stock
 SYF,NYSE,Synchrony Financial Common Stock
-SYF$A,NASDAQ,"Synchrony Financial Depositary Shares, each Representing a 1/40th Interest in a Share of 5.625% Fixed Rate Non-Cumulative Perpetual Preferred Stock, Series A"
-SYF$B,NASDAQ,"Synchrony Financial Depositary Shares Each Representing a 1/40th Interest in a Share of 8.250% Fixed Rate Reset Non-Cumulative Perpetual Preferred Stock, Series B"
 SYFI,ARCA,"AB Active ETFs, Inc. AB Short Duration High Yield ETF"
 SYK,NASDAQ,Stryker Corporation Common Stock
 SYK,NYSE,Stryker Corporation Common Stock
@@ -9414,8 +9079,6 @@ SZNE,ARCA,Pacer CFRA-Stovall Equal Weight Seasonal Rotation ETF
 SZZL,NASDAQ,Sizzle Acquisition Corp. II - Class A ordinary shares
 T,NASDAQ,AT&T Inc.
 T,NYSE,AT&T Inc.
-T$A,NASDAQ,"AT&T Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 5.000% Perpetual Preferred Stock, Series A"
-T$C,NASDAQ,"AT&T Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 4.750% Perpetual Preferred Stock, Series C"
 TAC,NASDAQ,TransAlta Corporation Ordinary Shares
 TAC,NYSE,TransAlta Corporation Ordinary Shares
 TACH,NASDAQ,Titan Acquisition Corp. - Class A Ordinary Shares
@@ -9510,8 +9173,6 @@ TDG,NYSE,Transdigm Group Incorporated Common Stock
 TDIC,NASDAQ,Dreamland Limited - Class A Ordinary Shares
 TDOC,NASDAQ,"Teladoc Health, Inc. Common Stock"
 TDOC,NYSE,"Teladoc Health, Inc. Common Stock"
-TDS$U,NASDAQ,"Telephone and Data Systems, Inc. Depositary Shares, Each Representing a 1/1,000th Interest in a 6.625% Series UU Cumulative Redeemable Perpetual Preferred Stock"
-TDS$V,NASDAQ,"Telephone and Data Systems, Inc. Depositary Shares, Each Representing a 1/1,000th Interest in a 6.000% Series VV Cumulative Redeemable Perpetual Preferred Stock"
 TDTF,ARCA,FlexShares iBoxx 5 Year Target Duration TIPS Index Fund
 TDTH,NASDAQ,Trident Digital Tech Holdings Ltd - American Depository Shares
 TDTT,ARCA,FlexShares iBoxx 3 Year Target Duration TIPS Index Fund
@@ -9550,8 +9211,6 @@ TEMT,CBOE,Tradr 2X Long TEM Daily ETF
 TEMX,CBOE,Touchstone ETF Trust Touchstone Sands Capital Emerging Markets ex-China Growth ETF
 TEN,NASDAQ,Tsakos Energy Navigation Ltd Common Shares
 TEN,NYSE,Tsakos Energy Navigation Ltd Common Shares
-TEN$E,NASDAQ,"Tsakos Energy Navigation Ltd Series E Fixed-to-Floating Rate Cumulative Redeemable Perpetual Preferred Shares, par value $1.00"
-TEN$F,NASDAQ,"Tsakos Energy Navigation Ltd Series F Fixed-to-Floating Rate Cumulative Redeemable Perpetual Preferred Shares, par value $1.00"
 TENB,NASDAQ,"Tenable Holdings, Inc. - Common Stock"
 TENX,NASDAQ,"Tenax Therapeutics, Inc. - Common Stock"
 TEO,NASDAQ,Telecom Argentina SA
@@ -9566,15 +9225,11 @@ TEX,NASDAQ,Terex Corporation Common Stock
 TEX,NYSE,Terex Corporation Common Stock
 TFC,NASDAQ,Truist Financial Corporation Common Stock
 TFC,NYSE,Truist Financial Corporation Common Stock
-TFC$I,NASDAQ,Truist Financial Corporation Depositary Shares
-TFC$O,NASDAQ,"Truist Financial Corporation Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series O Non-Cumulative Perpetual Preferred Stock"
-TFC$R,NASDAQ,"Truist Financial Corporation Depositary Shares, each representing 1/1,000th interest in a share of Series R Non-Cumulative Perpetual Preferred Stock"
 TFI,ARCA,SPDR Nuveen ICE Municipal Bond ETF
 TFII,NASDAQ,TFI International Inc. Common Shares
 TFII,NYSE,TFI International Inc. Common Shares
 TFIN,NASDAQ,"Triumph Financial, Inc. Common Stock"
 TFIN,NYSE,"Triumph Financial, Inc. Common Stock"
-TFIN$,NASDAQ,"Triumph Financial, Inc. Depositary Shares, Each Representing a 1/40th Interest in a Share of 7.125% Series C Fixed-Rate Non-Cumulative Perpetual Preferred Stock"
 TFJL,CBOE,Innovator 20  Year Treasury Bond 5 Floor ETF - July
 TFLO,ARCA,iShares Treasury Floating Rate Bond ETF
 TFPM,NASDAQ,Triple Flag Precious Metals Corp. Common Shares
@@ -9826,15 +9481,8 @@ TRST,NASDAQ,TrustCo Bank Corp NY - Common Stock
 TRSY,CBOE,DBX ETF Trust Xtrackers US 0-1 Year Treasury ETF
 TRT,AMEX,Trio-Tech International Common Stock
 TRT,NASDAQ,Trio-Tech International Common Stock
-TRTN$A,NASDAQ,Triton International Limited 8.50% Series A Cumulative Redeemable Perpetual  Preference Shares
-TRTN$B,NASDAQ,Triton International Limited 8.00% Series B Cumulative Redeemable Perpetual Preference Shares
-TRTN$C,NASDAQ,Triton International Limited 7.375% Series C Cumulative Redeemable Perpetual Preference Shares
-TRTN$D,NASDAQ,Triton International Limited 6.875% Series D Cumulative Redeemable Perpetual Preference Shares
-TRTN$E,NASDAQ,Triton International Limited 5.75% Series E Cumulative Redeemable Perpetual Preference Shares
-TRTN$F,NASDAQ,Triton International Limited 7.625% Series F Cumulative Redeemable Perpetual Preference Shares
 TRTX,NASDAQ,"TPG RE Finance Trust, Inc. Common Stock"
 TRTX,NYSE,"TPG RE Finance Trust, Inc. Common Stock"
-TRTX$C,NASDAQ,"TPG RE Finance Trust, Inc. 6.25% Series C Cumulative Redeemable Preferred Stock, $0.001 par value per share"
 TRTY,CBOE,Cambria Trinity ETF
 TRUE,NASDAQ,"TrueCar, Inc. - Common Stock"
 TRUG,NASDAQ,"TruGolf Holdings, Inc. - Class A Common Stock"
@@ -9929,9 +9577,6 @@ TWN,NYSE,"Taiwan Fund, Inc. (The) Common Stock"
 TWNP,NASDAQ,Twin Hospitality Group Inc. - Class A Common Stock
 TWO,NASDAQ,Two Harbors Investment Corp
 TWO,NYSE,Two Harbors Investment Corp
-TWO$A,NASDAQ,Two Harbors Investments Corp 8.125% Series A Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock ($25.00 liquidation preference per share)
-TWO$B,NASDAQ,Two Harbors Investments Corp 7.625% Series B Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
-TWO$C,NASDAQ,Two Harbors Investments Corp 7.25% Series C Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock
 TWOD,NASDAQ,Two Harbors Investments Corp 9.375% Senior Notes due 2030
 TWOD,NYSE,Two Harbors Investments Corp 9.375% Senior Notes due 2030
 TWOX,CBOE,iShares Large Cap Accelerated Outcome ETF
@@ -9951,7 +9596,6 @@ TXT,NYSE,Textron Inc. Common Stock
 TXXI,ARCA,BondBloxx ETF Trust BondBloxx IR+M Tax-Aware Intermediate Duration ETF
 TY,NASDAQ,Tri Continental Corporation Common Stock
 TY,NYSE,Tri Continental Corporation Common Stock
-TY$,NASDAQ,Tri Continental Corporation Preferred Stock
 TYA,CBOE,Simplify Intermediate Term Treasury Futures Strategy ETF
 TYD,ARCA,Direxion Daily 10-Yr Treasury Bull 3x Shrs
 TYG,NASDAQ,Tortoise Energy Infrastructure Corporation Common Stock
@@ -10052,7 +9696,6 @@ UMC,NYSE,United Microelectronics Corporation (NEW) Common Stock
 UMDD,ARCA,UltraPro MidCap400
 UMH,NASDAQ,"UMH Properties, Inc. Common Stock"
 UMH,NYSE,"UMH Properties, Inc. Common Stock"
-UMH$D,NASDAQ,"UMH Properties, Inc. 6.375% Series D Cumulative Redeemable Preferred Stock, Liquidation Preference $25 per share"
 UMI,ARCA,USCF Midstream Energy Income Fund ETF
 UNB,NASDAQ,"Union Bankshares, Inc. - Common Stock"
 UNCY,NASDAQ,"Unicycive Therapeutics, Inc. - Common Stock"
@@ -10114,12 +9757,6 @@ USAC,NYSE,"USA Compression Partners, LP Common Units Representing Limited Partne
 USAI,ARCA,Pacer American Energy Independence ETF
 USB,NASDAQ,U.S. Bancorp Common Stock
 USB,NYSE,U.S. Bancorp Common Stock
-USB$A,NASDAQ,"U.S. Bancorp Depositary Shares, Each representing a 1/100th interest in a share of Series A Non-CumulativePerpetual Pfd Stock"
-USB$H,NASDAQ,U.S. Bancorp Depositary Shares repstg 1/1000th Pfd Ser B
-USB$P,NASDAQ,"U.S. Bancorp Depositary Shares each representing a 1/1,000th interest in a share of Series K Non-Cumulative Perpetual Preferred Stock"
-USB$Q,NASDAQ,"U.S. Bancorp Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series L Non-Cumulative Perpetual Preferred Stock"
-USB$R,NASDAQ,"U.S. Bancorp Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series M Non-Cumulative Perpetual Preferred Stock"
-USB$S,NASDAQ,"U.S. Bancorp Depositary Shares, each representing a 1/1,000th interest in a share of Series O Non-Cumulative Perpetual Preferred Stock"
 USBC,AMEX,"USBC, Inc. Common Stock"
 USBC,NASDAQ,"USBC, Inc. Common Stock"
 USCA,ARCA,DBX ETF Trust Xtrackers MSCI USA Climate Action Equity ETF
@@ -10348,10 +9985,6 @@ VNM,CBOE,VanEck Vietnam ETF
 VNME,NASDAQ,Vendome Acquisition Corporation I - Class A Ordinary Shares
 VNO,NASDAQ,Vornado Realty Trust Common Stock
 VNO,NYSE,Vornado Realty Trust Common Stock
-VNO$L,NASDAQ,Vornado Realty Trust Pfd Ser L %
-VNO$M,NASDAQ,"Vornado Realty Trust 5.25% Series M Cumulative Redeemable Preferred Shares of Beneficial Interest, liquidation preference $25.00 per share, no par value per share"
-VNO$N,NASDAQ,"Vornado Realty Trust 5.25% Series N Cumulative Redeemable Preferred Shares of Beneficial Interest, liquidation preference $25.00 per share"
-VNO$O,NASDAQ,"Vornado Realty Trust 4.45% Series O Cumulative Redeemable Preferred Shares, Liquidation Preference $25.00 Per Share"
 VNOM,NASDAQ,"Viper Energy, Inc.  - Class A Common Stock"
 VNQ,ARCA,Vanguard Real Estate ETF
 VNRX,AMEX,VolitionRX Limited Common Stock
@@ -10373,7 +10006,6 @@ VOT,ARCA,Vanguard Mid-Cap Growth ETF
 VOX,ARCA,Vanguard Communication Services  ETF
 VOYA,NASDAQ,"Voya Financial, Inc. Common Stock"
 VOYA,NYSE,"Voya Financial, Inc. Common Stock"
-VOYA$B,NASDAQ,"Voya Financial, Inc. Depositary Shares, each representing a 1/40th interest in a share of 5.35% Fixed-Rate Reset Non-Cumulative Preferred Stock, Series B"
 VOYG,NASDAQ,"Voyager Technologies, Inc. Class A Common Stock"
 VOYG,NYSE,"Voyager Technologies, Inc. Class A Common Stock"
 VOYX,CBOE,Tradr 2X Long VOYG Daily ETF
@@ -10481,7 +10113,6 @@ WAFDP,NASDAQ,"WaFd, Inc. - Depositary Shares"
 WAI,NASDAQ,Top KingWin Ltd - Class A Ordinary Shares
 WAL,NASDAQ,Western Alliance Bancorporation Common Stock (DE)
 WAL,NYSE,Western Alliance Bancorporation Common Stock (DE)
-WAL$A,NASDAQ,"Western Alliance Bancorporation Depositary Shares, Each Representing a 1/400th Interest in a Share of 4.250% Fixed-Rate Non-Cumulative Perpetual Preferred Stock, Series A"
 WALD,NASDAQ,Waldencast plc - Class A Ordinary Share
 WANT,ARCA,Direxion Daily Consumer Discretionary Bull 3X Shares
 WASH,NASDAQ,"Washington Trust Bancorp, Inc. - Common Stock"
@@ -10498,8 +10129,6 @@ WBIF,ARCA,WBI BullBear Value 3000 ETF
 WBIG,ARCA,WBI BullBear Yield 3000 ETF
 WBIL,ARCA,WBI BullBear Quality 3000 ETF
 WBIY,ARCA,WBI Power Factor High Dividend ETF
-WBS$F,NASDAQ,"Webster Financial Corporation Depositary Shares, Each Representing 1/1,000th Interest in a Share of 5.25% Series F Non-Cumulative Perpetual Preferred Stock"
-WBS$G,NASDAQ,"Webster Financial Corporation Depositary Shares, each representing a 1/40th interest in a share of 6.50% Series G non-cumulative perpetual preferred stock"
 WBTN,NASDAQ,WEBTOON Entertainment Inc. - Common stock
 WBUY,NASDAQ,WEBUY GLOBAL LTD. - Class A Ordinary Shares
 WBX,NASDAQ,Wallbox N.V. Class A Ordinary Shares
@@ -10552,12 +10181,6 @@ WF,NASDAQ,Woori Financial Group Inc. American Depositary Shares (each representi
 WF,NYSE,Woori Financial Group Inc. American Depositary Shares (each representing three (3) shares of Common Stock)
 WFC,NASDAQ,Wells Fargo & Company Common Stock
 WFC,NYSE,Wells Fargo & Company Common Stock
-WFC$A,NASDAQ,"Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual Class A Preferred Stock, Series AA"
-WFC$C,NASDAQ,"Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual Class A Preferred Stock, Series CC"
-WFC$D,NASDAQ,"Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in  a share of Non-Cumulative Perpetual Class A Preferred Stock, Series DD"
-WFC$L,NASDAQ,"Wells Fargo & Company 7.50% Non-Cumulative Perpetual Convertible Class A Preferred Stock, Series L"
-WFC$Y,NASDAQ,"Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual Class A Preferred Stock, Series Y"
-WFC$Z,NASDAQ,"Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual Class A Preferred Stock, Series Z"
 WFCF,NASDAQ,"Where Food Comes From, Inc. - Common Stock"
 WFF,NASDAQ,WF Holding Limited - Ordinary Shares
 WFG,NASDAQ,West Fraser Timber Co. Ltd Common stock
@@ -10639,10 +10262,6 @@ WPRT,NASDAQ,Westport Fuel Systems Inc - Common Shares
 WRAP,NASDAQ,"Wrap Technologies, Inc. - Common Stock"
 WRB,NASDAQ,W.R. Berkley Corporation Common Stock
 WRB,NYSE,W.R. Berkley Corporation Common Stock
-WRB$E,NASDAQ,W.R. Berkley Corporation 5.70% Subordinated Debentures due 2058
-WRB$F,NASDAQ,W.R. Berkley Corporation 5.10% Subordinated Debentures due 2059
-WRB$G,NASDAQ,W.R. Berkley Corporation 4.25% Subordinated Debentures due 2060
-WRB$H,NASDAQ,W.R. Berkley Corporation 4.125% Subordinated Debentures due 2061
 WRBY,NASDAQ,Warby Parker Inc. Class A Common Stock
 WRBY,NYSE,Warby Parker Inc. Class A Common Stock
 WRD,NASDAQ,WeRide Inc. - American Depositary Shares
@@ -10729,7 +10348,6 @@ XFEB,CBOE,First Trust Exchange-Traded Fund VIII FT Vest U.S. Equity Enhance & Mo
 XFIV,ARCA,BondBloxx ETF Trust BondBloxx Bloomberg Five Year Target Duration US Treasury ETF
 XFLT,NASDAQ,XAI Octagon Floating Rate & Alternative Income Trust Common Shares of Beneficial Interest
 XFLT,NYSE,XAI Octagon Floating Rate & Alternative Income Trust Common Shares of Beneficial Interest
-XFLT$A,NASDAQ,"XAI Octagon Floating Rate & Alternative Income Trust 6.50% Series 2026 Term Preferred Shares, (Liquidation Preference $25.00)"
 XFLX,ARCA,FundX Investment Trust FundX Flexible ETF
 XGN,NASDAQ,Exagen Inc. - Common Stock
 XHB,ARCA,SPDR Series Trust SPDR Homebuilders ETF

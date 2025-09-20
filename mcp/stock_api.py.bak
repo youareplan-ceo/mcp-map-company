@@ -1,0 +1,93 @@
+import os, csv, re
+from fastapi import FastAPI, Query
+from pathlib import Path
+
+app = FastAPI()
+ROOT = Path(__file__).resolve().parents[1]
+UDIR = ROOT / "data/universe"
+SYMR = re.compile(r'^[A-Z0-9.\-]+$')
+
+def norm(s: str) -> str:
+    return (s or "").strip().upper()
+
+def norm_exchange(ex: str) -> str:
+    e = norm(ex)
+    if e in {"NAS", "NASDAQ", "NMS"}: return "NASDAQ"
+    if e in {"N", "NYSE"}: return "NYSE"
+    if e in {"A", "AMEX"}: return "AMEX"
+    if e in {"P", "ARCA"}: return "ARCA"
+    if e in {"Z", "CBOE"}: return "CBOE"
+    if e in {"KOSPI", "KOSDAQ", "KONEX", "KRX"}: return "KRX"
+    return e
+
+def load_csv(path: Path):
+    rows = []
+    with open(path, newline='') as f:
+        r = csv.reader(f)
+        header = next(r, None)
+        for row in r:
+            if len(row) != 3:
+                continue
+            sym, ex, name = row[0].strip(), row[1].strip(), row[2].strip()
+            ex = norm_exchange(ex)
+            if not sym or not ex or not SYMR.match(sym):
+                continue
+            rows.append([sym, ex, name])
+    return rows
+
+def resolve_universe(universe: str):
+    toks = [t.strip() for t in (universe or "").split(",") if t.strip()]
+    out, seen = [], set()
+    for t in toks:
+        T = t.upper()
+        if T == "ALL:US" and (UDIR / "us_all.csv").exists():
+            src = load_csv(UDIR / "us_all.csv")
+        elif T == "ALL:KR" and (UDIR / "kr_all.csv").exists():
+            src = load_csv(UDIR / "kr_all.csv")
+        else:
+            src = [[t, "", ""]]
+        for sym, ex, name in src:
+            if sym in seen:
+                continue
+            seen.add(sym)
+            out.append([sym, ex, name])
+    return out
+
+def apply_filters(rows, exchange: str | None):
+    if exchange:
+        ex_norm = norm_exchange(exchange)
+        rows = [r for r in rows if r[1] == ex_norm]
+    return rows
+
+@app.get("/health")
+def health():
+    return {"ok": True}
+
+@app.get("/api/v1/stock/universe")
+def get_universe(
+    universe: str = Query(default=os.getenv("STOCK_UNIVERSE", "ALL:US,ALL:KR")),
+    limit: int = 50,
+    exchange: str | None = None
+):
+    rows = resolve_universe(universe)
+    rows = apply_filters(rows, exchange)
+    total = len(rows)
+    data = rows[:max(0, limit)]
+    return {"ok": True, "data": data, "total": total, "processed": len(data), "batch_size": batch_size}
+
+@app.get("/api/v1/stock/signals")
+def get_signals(
+    universe: str = Query(default=os.getenv("STOCK_UNIVERSE", "ALL:US,ALL:KR")),
+    limit: int = 1000,
+    horizon: str = "D",
+    exchange: str | None = None,
+    batch_size: int = 500
+):
+    from mcp.modules.stock.signal_engine import make_signals_chunked
+    rows = resolve_universe(universe)
+    rows = apply_filters(rows, exchange)
+    total = len(rows)
+    sliced = rows[:max(0, limit)]
+sigs = make_signals_chunked(sliced, horizon=horizon, batch_size=max(1, batch_size))
+    data = [s.__dict__ for s in sigs]
+    return {"ok": True, "data": data, "total": total, "processed": len(data), "batch_size": batch_size}
