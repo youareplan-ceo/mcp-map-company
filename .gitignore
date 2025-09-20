@@ -23,3 +23,6 @@ docs/out/*
 config/.env
 apps/stockpilot/passwords.txt
 .env
+
+# Backup files
+backup/
