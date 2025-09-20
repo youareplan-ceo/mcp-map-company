@@ -342,15 +342,96 @@
                 </div>
             </div>
 
+            <!-- Alert Controls -->
+            <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4 mb-4">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <!-- Search Box -->
+                    <div class="flex-1">
+                        <input
+                            type="text"
+                            id="alertSearch"
+                            placeholder="알림 제목이나 메시지 검색..."
+                            class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <!-- Level Filter -->
+                    <div>
+                        <select
+                            id="alertLevelFilter"
+                            class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="all">모든 레벨</option>
+                            <option value="critical">🚨 Critical</option>
+                            <option value="error">❌ Error</option>
+                            <option value="warning">⚠️ Warning</option>
+                            <option value="info">ℹ️ Info</option>
+                        </select>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    <div>
+                        <button
+                            id="clearFiltersBtn"
+                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
+                        >
+                            필터 초기화
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Recent Alerts List -->
             <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg overflow-hidden">
-                <div class="p-4 border-b border-white/10 dark:border-gray-700">
-                    <h3 class="text-white dark:text-gray-100 font-semibold">최근 알림 (20개)</h3>
+                <div class="p-4 border-b border-white/10 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-white dark:text-gray-100 font-semibold">
+                        <span id="alertsListTitle">최근 알림</span>
+                        <span id="alertsCount" class="ml-2 text-sm text-white/60">(0개)</span>
+                    </h3>
+                    <div class="text-sm text-white/60">
+                        <span id="currentPageInfo">페이지 1 / 1</span>
+                    </div>
                 </div>
                 <div id="alertsList" class="max-h-80 overflow-y-auto">
                     <!-- Alert items will be populated here -->
                     <div class="p-4 text-center text-white/60 dark:text-gray-400">
                         알림을 불러오는 중...
+                    </div>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div id="alertsPagination" class="p-4 border-t border-white/10 dark:border-gray-700 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-white/60 text-sm">페이지당 표시:</span>
+                        <select
+                            id="alertsPerPageSelect"
+                            class="px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="10">10개</option>
+                            <option value="20" selected>20개</option>
+                            <option value="50">50개</option>
+                            <option value="100">100개</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button
+                            id="prevPageBtn"
+                            class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled
+                        >
+                            ← 이전
+                        </button>
+                        <span id="pageNumbers" class="flex gap-1">
+                            <!-- Page numbers will be populated here -->
+                        </span>
+                        <button
+                            id="nextPageBtn"
+                            class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled
+                        >
+                            다음 →
+                        </button>
                     </div>
                 </div>
             </div>
@@ -367,6 +448,14 @@
                     <button id="refreshSecurityBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                         <span class="mr-2">🔄</span>
                         새로고침
+                    </button>
+                    <button id="testSecurityAlertBtn" class="bg-yellow-600 hover:bg-yellow-700 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔔</span>
+                        테스트 알림
+                    </button>
+                    <button id="exportSecurityLogBtn" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📁</span>
+                        로그 내보내기
                     </button>
                 </div>
             </div>
@@ -444,6 +533,89 @@
                     </button>
                 </div>
                 <div id="whitelistResult" class="mt-3 text-sm hidden"></div>
+            </div>
+
+            <!-- Security Alerts and Trends -->
+            <div class="mt-6 bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                    <span class="mr-2">🔔</span>
+                    실시간 보안 알림 설정
+                </h3>
+
+                <!-- Alert Settings -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="space-y-3">
+                        <h4 class="text-white dark:text-gray-200 text-sm font-medium">알림 채널 설정</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="enableSlackAlerts" class="rounded border-gray-300">
+                                <span class="text-white dark:text-gray-300 text-sm">🔔 Slack 알림</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="enableDiscordAlerts" class="rounded border-gray-300">
+                                <span class="text-white dark:text-gray-300 text-sm">🎮 Discord 알림</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="enableEmailAlerts" class="rounded border-gray-300">
+                                <span class="text-white dark:text-gray-300 text-sm">📧 이메일 알림</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h4 class="text-white dark:text-gray-200 text-sm font-medium">알림 임계값 설정</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center justify-between">
+                                <span class="text-white dark:text-gray-300 text-sm">차단 임계값:</span>
+                                <input type="number" id="blockThreshold" value="100" min="1" max="1000"
+                                       class="w-20 px-2 py-1 bg-white/10 border border-white/30 rounded text-white text-sm">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-white dark:text-gray-300 text-sm">알림 간격(분):</span>
+                                <input type="number" id="alertInterval" value="5" min="1" max="60"
+                                       class="w-20 px-2 py-1 bg-white/10 border border-white/30 rounded text-white text-sm">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Security Events -->
+                <div class="border-t border-white/10 pt-4">
+                    <h4 class="text-white dark:text-gray-200 text-sm font-medium mb-3">최근 보안 이벤트</h4>
+                    <div id="recentSecurityEvents" class="space-y-2 max-h-32 overflow-y-auto">
+                        <div class="text-center text-white/60 dark:text-gray-400 py-4">
+                            보안 이벤트가 없습니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Metrics Summary -->
+            <div class="mt-6 bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                    <span class="mr-2">📊</span>
+                    보안 지표 요약
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Today's Stats -->
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-400" id="todayBlocked">0</div>
+                        <div class="text-white/60 text-sm">오늘 차단된 IP</div>
+                    </div>
+
+                    <!-- Average Response Time -->
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-400" id="avgResponseTime">0ms</div>
+                        <div class="text-white/60 text-sm">평균 응답시간</div>
+                    </div>
+
+                    <!-- Security Score -->
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-yellow-400" id="securityScore">95</div>
+                        <div class="text-white/60 text-sm">보안 점수</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1020,12 +1192,17 @@
         }
 
         // =============================================
-        // Alerts Panel Functions
+        // Enhanced Alerts Panel Functions
         // =============================================
 
-        // Mock alerts data for testing
-        let alertsData = [];
+        // Alerts data and state management
+        let allAlertsData = [];
+        let filteredAlertsData = [];
         let alertsStats = { critical: 0, error: 0, warning: 0, info: 0 };
+        let currentPage = 1;
+        let alertsPerPage = 20;
+        let searchTerm = '';
+        let levelFilter = 'all';
 
         function generateMockAlerts() {
             const alertTypes = ['critical', 'error', 'warning', 'info'];
@@ -1044,22 +1221,29 @@
                 'Disk Space Warning',
                 'Network Latency High',
                 'Scheduled Maintenance',
-                'Data Sync Complete'
+                'Data Sync Complete',
+                'Login Failure Detected',
+                'File Upload Error',
+                'Payment Processing Issue',
+                'Email Service Down',
+                'CDN Response Slow'
             ];
 
             const alerts = [];
-            for (let i = 0; i < 20; i++) {
+            // Generate 100 alerts for better pagination testing
+            for (let i = 0; i < 100; i++) {
                 const type = alertTypes[Math.floor(Math.random() * alertTypes.length)];
                 const title = alertTitles[Math.floor(Math.random() * alertTitles.length)];
-                const timestamp = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000); // Last 7 days
+                const timestamp = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000); // Last 30 days
 
                 alerts.push({
-                    id: `alert-${i}`,
+                    id: `alert-${i + 1}`,
                     type: type,
                     title: title,
                     message: getAlertMessage(type, title),
                     timestamp: timestamp,
-                    resolved: Math.random() > 0.7
+                    resolved: Math.random() > 0.7,
+                    source: ['API', 'Database', 'Security', 'System', 'Network'][Math.floor(Math.random() * 5)]
                 });
             }
 
@@ -1135,10 +1319,34 @@
             return colors[type] || colors.info;
         }
 
+        function filterAlerts() {
+            // Start with all alerts
+            let filtered = [...allAlertsData];
+
+            // Apply level filter
+            if (levelFilter !== 'all') {
+                filtered = filtered.filter(alert => alert.type === levelFilter);
+            }
+
+            // Apply search filter
+            if (searchTerm) {
+                const searchLower = searchTerm.toLowerCase();
+                filtered = filtered.filter(alert =>
+                    alert.title.toLowerCase().includes(searchLower) ||
+                    alert.message.toLowerCase().includes(searchLower) ||
+                    alert.source.toLowerCase().includes(searchLower)
+                );
+            }
+
+            filteredAlertsData = filtered;
+            currentPage = 1; // Reset to first page after filtering
+            updateAlertsDisplay();
+        }
+
         function updateAlertsStats() {
             alertsStats = { critical: 0, error: 0, warning: 0, info: 0 };
 
-            alertsData.forEach(alert => {
+            allAlertsData.forEach(alert => {
                 if (!alert.resolved && alertsStats.hasOwnProperty(alert.type)) {
                     alertsStats[alert.type]++;
                 }
@@ -1151,19 +1359,38 @@
             document.getElementById('infoCount').textContent = alertsStats.info;
         }
 
+        function updateAlertsDisplay() {
+            renderAlertsList();
+            renderPagination();
+            updateAlertsCounter();
+        }
+
+        function updateAlertsCounter() {
+            const totalFiltered = filteredAlertsData.length;
+            const totalPages = Math.ceil(totalFiltered / alertsPerPage);
+
+            document.getElementById('alertsCount').textContent = `(${totalFiltered}개)`;
+            document.getElementById('currentPageInfo').textContent = `페이지 ${currentPage} / ${totalPages}`;
+        }
+
         function renderAlertsList() {
             const alertsList = document.getElementById('alertsList');
 
-            if (alertsData.length === 0) {
+            if (filteredAlertsData.length === 0) {
                 alertsList.innerHTML = `
                     <div class="p-4 text-center text-white/60 dark:text-gray-400">
-                        현재 표시할 알림이 없습니다.
+                        ${searchTerm || levelFilter !== 'all' ? '검색 조건에 맞는 알림이 없습니다.' : '현재 표시할 알림이 없습니다.'}
                     </div>
                 `;
                 return;
             }
 
-            const alertsHtml = alertsData.map(alert => {
+            // Calculate pagination
+            const startIndex = (currentPage - 1) * alertsPerPage;
+            const endIndex = startIndex + alertsPerPage;
+            const pageAlerts = filteredAlertsData.slice(startIndex, endIndex);
+
+            const alertsHtml = pageAlerts.map(alert => {
                 const colors = getAlertColorClasses(alert.type);
                 const icon = getAlertIcon(alert.type);
                 const timeStr = alert.timestamp.toLocaleDateString('ko-KR', {
@@ -1201,15 +1428,134 @@
             alertsList.innerHTML = alertsHtml;
         }
 
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredAlertsData.length / alertsPerPage);
+
+            // Update pagination buttons
+            const prevBtn = document.getElementById('prevPageBtn');
+            const nextBtn = document.getElementById('nextPageBtn');
+            const pageNumbers = document.getElementById('pageNumbers');
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+
+            // Generate page numbers
+            let pageNumbersHtml = '';
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const isActive = i === currentPage;
+                pageNumbersHtml += `
+                    <button
+                        onclick="goToPage(${i})"
+                        class="px-2 py-1 text-sm rounded transition-colors duration-200 ${isActive
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white/10 text-white/70 hover:bg-white/20'
+                        }"
+                    >
+                        ${i}
+                    </button>
+                `;
+            }
+
+            pageNumbers.innerHTML = pageNumbersHtml;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredAlertsData.length / alertsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                updateAlertsDisplay();
+            }
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredAlertsData.length / alertsPerPage);
+            let newPage = currentPage + direction;
+
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                updateAlertsDisplay();
+            }
+        }
+
+        function changeAlertsPerPage(newPerPage) {
+            alertsPerPage = newPerPage;
+            currentPage = 1; // Reset to first page
+            updateAlertsDisplay();
+        }
+
         async function initializeAlerts() {
             try {
                 // For now, use mock data. In production, this would fetch from API
-                alertsData = generateMockAlerts();
+                allAlertsData = generateMockAlerts();
+                filteredAlertsData = [...allAlertsData];
                 updateAlertsStats();
-                renderAlertsList();
+                updateAlertsDisplay();
+
+                // Set up event listeners for filtering and pagination
+                setupAlertsEventListeners();
+
                 addLog('알림 패널 초기화 완료', 'info');
             } catch (error) {
                 addLog(`알림 초기화 오류: ${error.message}`, 'error');
+            }
+        }
+
+        function setupAlertsEventListeners() {
+            // Search input
+            const searchInput = document.getElementById('alertSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    searchTerm = e.target.value.trim();
+                    filterAlerts();
+                });
+            }
+
+            // Level filter
+            const levelFilterSelect = document.getElementById('alertLevelFilter');
+            if (levelFilterSelect) {
+                levelFilterSelect.addEventListener('change', function(e) {
+                    levelFilter = e.target.value;
+                    filterAlerts();
+                });
+            }
+
+            // Clear filters button
+            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function() {
+                    searchTerm = '';
+                    levelFilter = 'all';
+                    searchInput.value = '';
+                    levelFilterSelect.value = 'all';
+                    filterAlerts();
+                });
+            }
+
+            // Pagination controls
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+            const alertsPerPageSelect = document.getElementById('alertsPerPageSelect');
+
+            if (prevPageBtn) {
+                prevPageBtn.addEventListener('click', () => changePage(-1));
+            }
+
+            if (nextPageBtn) {
+                nextPageBtn.addEventListener('click', () => changePage(1));
+            }
+
+            if (alertsPerPageSelect) {
+                alertsPerPageSelect.addEventListener('change', function(e) {
+                    changeAlertsPerPage(parseInt(e.target.value));
+                });
             }
         }
 
@@ -1219,10 +1565,10 @@
             try {
                 // In production, this would fetch from the actual alerts API
                 // For now, regenerate mock data to simulate refresh
-                alertsData = generateMockAlerts();
+                allAlertsData = generateMockAlerts();
                 updateAlertsStats();
-                renderAlertsList();
-                addLog(`알림 새로고침 완료 - ${alertsData.length}개 알림 로드됨`, 'info');
+                filterAlerts(); // This will update the display with current filters
+                addLog(`알림 새로고침 완료 - ${allAlertsData.length}개 알림 로드됨`, 'info');
             } catch (error) {
                 addLog(`알림 새로고침 오류: ${error.message}`, 'error');
             }
@@ -1239,19 +1585,20 @@
                     title: 'Test Alert from Dashboard',
                     message: '관리자 대시보드에서 전송된 테스트 알림입니다.',
                     timestamp: new Date(),
-                    resolved: false
+                    resolved: false,
+                    source: 'Dashboard'
                 };
 
                 // Add to the beginning of the alerts array
-                alertsData.unshift(testAlert);
+                allAlertsData.unshift(testAlert);
 
-                // Keep only the latest 20 alerts
-                if (alertsData.length > 20) {
-                    alertsData = alertsData.slice(0, 20);
+                // Keep only the latest 100 alerts
+                if (allAlertsData.length > 100) {
+                    allAlertsData = allAlertsData.slice(0, 100);
                 }
 
                 updateAlertsStats();
-                renderAlertsList();
+                filterAlerts(); // This will update the display with current filters
                 addLog('테스트 알림이 성공적으로 생성되었습니다', 'info');
 
                 // In production, this would also send the alert via the notification system
