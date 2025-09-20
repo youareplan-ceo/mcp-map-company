@@ -1,0 +1,29 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+# 기존 모듈 라우터
+from mcp.signal_api import router as signal_router
+
+# 🔽 새로 추가한 추천 API 라우터
+from mcp.recommend_api import router as reco_router
+
+app = FastAPI()
+
+# 기존 라우터 등록
+app.include_router(signal_router)
+
+# 🔽 새로 추가된 라우터 등록
+app.include_router(reco_router)
+
+# CORS 설정 (필요 시 확장 가능)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# 헬스 체크 기본 라우트 (없으면 추가)
+@app.get("/health")
+def health():
+    return {"ok": True}
