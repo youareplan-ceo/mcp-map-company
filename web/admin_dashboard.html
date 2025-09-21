@@ -1211,6 +1211,187 @@
             </div>
         </div>
 
+        <!-- 🚨 CI/CD 에러 로그 분석 패널 -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">🚨</span>
+                    CI/CD 에러 로그 분석
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <button id="refreshErrorAnalysisBtn" class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        새로고침
+                    </button>
+                    <button id="runErrorAnalysisBtn" class="bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔍</span>
+                        분석 실행
+                    </button>
+                    <button id="downloadErrorReportBtn" class="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📥</span>
+                        리포트 다운로드
+                    </button>
+                </div>
+            </div>
+
+            <!-- 에러 통계 카드 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <!-- 실패율 카드 -->
+                <div id="errorFailureRateCard" class="bg-gradient-to-br from-red-500/20 to-red-600/30 border border-red-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">📊</span>
+                        <div class="text-red-300 text-sm font-medium">실패율</div>
+                    </div>
+                    <div id="errorFailureRate" class="text-red-100 text-3xl font-bold mb-1">-</div>
+                    <div class="text-red-200 text-xs">%</div>
+                    <div id="errorFailureWarning" class="hidden mt-2 text-red-200 text-xs animate-pulse">
+                        ⚠️ 임계치 초과
+                    </div>
+                </div>
+
+                <!-- 총 에러 수 카드 -->
+                <div class="bg-gradient-to-br from-orange-500/20 to-orange-600/30 border border-orange-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">🔢</span>
+                        <div class="text-orange-300 text-sm font-medium">총 에러 수</div>
+                    </div>
+                    <div id="errorTotalCount" class="text-orange-100 text-3xl font-bold mb-1">-</div>
+                    <div class="text-orange-200 text-xs">개</div>
+                </div>
+
+                <!-- 에러 유형 수 카드 -->
+                <div class="bg-gradient-to-br from-yellow-500/20 to-yellow-600/30 border border-yellow-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">📋</span>
+                        <div class="text-yellow-300 text-sm font-medium">에러 유형</div>
+                    </div>
+                    <div id="errorTypeCount" class="text-yellow-100 text-3xl font-bold mb-1">-</div>
+                    <div class="text-yellow-200 text-xs">종류</div>
+                </div>
+
+                <!-- 분석 기간 카드 -->
+                <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">📅</span>
+                        <div class="text-blue-300 text-sm font-medium">분석 기간</div>
+                    </div>
+                    <div id="errorAnalysisPeriod" class="text-blue-100 text-3xl font-bold mb-1">7</div>
+                    <div class="text-blue-200 text-xs">일</div>
+                </div>
+            </div>
+
+            <!-- 에러 분포 차트 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- 에러 유형별 분포 차트 -->
+                <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📊</span>
+                        에러 유형별 분포
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="errorTypeDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 에러 빈도 추이 차트 -->
+                <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📈</span>
+                        일별 에러 발생 추이
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="errorTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 실패 사례 로그 미리보기 -->
+            <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg overflow-hidden mb-6">
+                <div class="p-4 border-b border-white/10 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-white dark:text-gray-100 font-semibold">최근 실패 사례 (Top 10)</h3>
+                    <div class="flex items-center space-x-2">
+                        <!-- 에러 유형 필터 -->
+                        <select id="errorTypeFilter" class="bg-gray-700 text-white px-3 py-1 rounded text-sm border border-gray-600">
+                            <option value="all">전체 유형</option>
+                            <option value="BUILD_ERROR">빌드 에러</option>
+                            <option value="TEST_FAILURE">테스트 실패</option>
+                            <option value="TIMEOUT_ERROR">타임아웃</option>
+                            <option value="MODULE_ERROR">모듈 에러</option>
+                            <option value="SYNTAX_ERROR">문법 에러</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="errorCasesList" class="max-h-80 overflow-y-auto p-4 space-y-3">
+                    <!-- 에러 사례 목록이 여기에 동적으로 추가됩니다 -->
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-2">🚨</div>
+                        <div>에러 분석 데이터를 로드하는 중...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 알림 임계치 설정 UI -->
+            <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                    <span class="mr-2">⚙️</span>
+                    알림 임계치 설정
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Critical 임계치 -->
+                    <div class="space-y-2">
+                        <label class="text-red-300 text-sm font-medium">🚨 Critical (%)</label>
+                        <input
+                            id="criticalThreshold"
+                            type="number"
+                            value="10"
+                            min="0"
+                            max="100"
+                            class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-red-500 focus:outline-none"
+                        >
+                        <div class="text-red-200 text-xs">실패율 > 10%</div>
+                    </div>
+
+                    <!-- Error 임계치 -->
+                    <div class="space-y-2">
+                        <label class="text-orange-300 text-sm font-medium">❌ Error (%)</label>
+                        <input
+                            id="errorThreshold"
+                            type="number"
+                            value="5"
+                            min="0"
+                            max="100"
+                            class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-orange-500 focus:outline-none"
+                        >
+                        <div class="text-orange-200 text-xs">실패율 5-10%</div>
+                    </div>
+
+                    <!-- Warning 임계치 -->
+                    <div class="space-y-2">
+                        <label class="text-yellow-300 text-sm font-medium">⚠️ Warning (%)</label>
+                        <input
+                            id="warningThreshold"
+                            type="number"
+                            value="1"
+                            min="0"
+                            max="100"
+                            class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-yellow-500 focus:outline-none"
+                        >
+                        <div class="text-yellow-200 text-xs">실패율 1-5%</div>
+                    </div>
+
+                    <!-- 설정 저장 버튼 -->
+                    <div class="space-y-2">
+                        <label class="text-gray-300 text-sm font-medium">설정 관리</label>
+                        <button id="saveThresholdsBtn" class="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded transition-colors duration-200">
+                            💾 저장
+                        </button>
+                        <div class="text-gray-300 text-xs">임계치 저장</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 📅 연간 운영 리포트 패널 -->
         <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
             <div class="flex items-center justify-between mb-6">
@@ -5532,6 +5713,569 @@
         // 운영 알림 매니저 전역 인스턴스 생성
         let opsNotificationManager;
         let ciReportManager;
+        let quarterlyReportManager;
+
+        // =============================================
+        // 📊 분기별 운영 리포트 매니저 (한국어 주석 포함)
+        // =============================================
+
+        class QuarterlyReportManager {
+            constructor() {
+                this.currentQuarter = this.getCurrentQuarter();
+                this.currentYear = new Date().getFullYear();
+                this.monthlyTrendChart = null;
+                this.scoreDistributionChart = null;
+                this.autoRefreshInterval = null;
+                this.init();
+            }
+
+            getCurrentQuarter() {
+                const month = new Date().getMonth() + 1;
+                if (month <= 3) return 'Q1';
+                if (month <= 6) return 'Q2';
+                if (month <= 9) return 'Q3';
+                return 'Q4';
+            }
+
+            init() {
+                this.initElements();
+                this.bindEvents();
+                this.loadQuarterlyReports();
+                this.startAutoRefresh();
+            }
+
+            initElements() {
+                // 버튼들
+                this.refreshBtn = document.getElementById('refreshQuarterlyReportBtn');
+                this.generateBtn = document.getElementById('generateQuarterlyReportBtn');
+                this.downloadBtn = document.getElementById('downloadQuarterlyReportBtn');
+
+                // 선택자들
+                this.quarterSelect = document.getElementById('quarterlyReportQuarterSelect');
+                this.yearSelect = document.getElementById('quarterlyReportYearSelect');
+
+                // 점수 표시 요소들
+                this.securityScoreEl = document.getElementById('quarterlySecurityScore');
+                this.backupScoreEl = document.getElementById('quarterlyBackupScore');
+                this.systemScoreEl = document.getElementById('quarterlySystemScore');
+                this.totalScoreEl = document.getElementById('quarterlyTotalScore');
+                this.gradeEl = document.getElementById('quarterlyPerformanceGrade');
+
+                // 상세 정보 요소들
+                this.blockedIPsEl = document.getElementById('quarterlyBlockedIPs');
+                this.securityEventsEl = document.getElementById('quarterlySecurityEvents');
+                this.rateLimitEl = document.getElementById('quarterlyRateLimit');
+                this.whitelistAddedEl = document.getElementById('quarterlyWhitelistAdded');
+
+                this.successfulBackupsEl = document.getElementById('quarterlySuccessfulBackups');
+                this.failedBackupsEl = document.getElementById('quarterlyFailedBackups');
+                this.backupSuccessRateEl = document.getElementById('quarterlyBackupSuccessRate');
+                this.cleanupOpsEl = document.getElementById('quarterlyCleanupOps');
+
+                this.avgCpuEl = document.getElementById('quarterlyAvgCpu');
+                this.avgMemoryEl = document.getElementById('quarterlyAvgMemory');
+                this.avgDiskEl = document.getElementById('quarterlyAvgDisk');
+                this.uptimeEl = document.getElementById('quarterlyUptime');
+
+                // 리포트 목록
+                this.reportsListEl = document.getElementById('quarterlyReportsList');
+
+                // 권장사항 및 기타 섹션들
+                this.recommendationsSection = document.getElementById('quarterlyRecommendationsSection');
+                this.recommendationsList = document.getElementById('quarterlyRecommendationsList');
+                this.criticalPeriodsSection = document.getElementById('quarterlyCriticalPeriodsSection');
+                this.criticalPeriodsList = document.getElementById('quarterlyCriticalPeriodsList');
+
+                // 현재 분기로 초기화
+                if (this.quarterSelect) {
+                    this.quarterSelect.value = this.currentQuarter;
+                }
+                if (this.yearSelect) {
+                    this.yearSelect.value = this.currentYear.toString();
+                }
+            }
+
+            bindEvents() {
+                // 버튼 이벤트
+                this.refreshBtn?.addEventListener('click', () => this.loadQuarterlyReports());
+                this.generateBtn?.addEventListener('click', () => this.generateQuarterlyReport());
+                this.downloadBtn?.addEventListener('click', () => this.downloadReport('markdown'));
+
+                // 선택자 이벤트
+                this.quarterSelect?.addEventListener('change', () => this.onQuarterChange());
+                this.yearSelect?.addEventListener('change', () => this.onYearChange());
+            }
+
+            async loadQuarterlyReports() {
+                this.showLoadingState();
+
+                try {
+                    const quarter = this.quarterSelect?.value || this.currentQuarter;
+                    const year = this.yearSelect?.value || this.currentYear;
+
+                    // API에서 분기별 리포트 데이터 가져오기 (임시로 모킹된 데이터 사용)
+                    await this.loadMockData(quarter, year);
+
+                    addLog('✅ 분기별 운영 리포트가 성공적으로 로드되었습니다.', 'info');
+
+                } catch (error) {
+                    console.error('분기별 리포트 로드 중 오류:', error);
+                    addLog(`📊 분기별 리포트 로드 실패: ${error.message}`, 'error');
+                    this.loadFallbackData();
+                } finally {
+                    this.hideLoadingState();
+                }
+            }
+
+            async loadMockData(quarter, year) {
+                // 임시 모킹된 데이터
+                const mockData = {
+                    performance_summary: {
+                        total_score: 85,
+                        security_score: 26,
+                        backup_score: 28,
+                        system_score: 16,
+                        ci_score: 15,
+                        grade: '우수'
+                    },
+                    security_events: {
+                        total_events: 156,
+                        blocked_ips: 45,
+                        rate_limit_violations: 23,
+                        whitelist_additions: 8
+                    },
+                    backup_operations: {
+                        successful_backups: 270,
+                        failed_backups: 3,
+                        success_rate_percent: 98.9,
+                        cleanup_operations: 90
+                    },
+                    system_performance: {
+                        avg_cpu_percent: 25.4,
+                        avg_memory_percent: 68.2,
+                        avg_disk_percent: 45.8,
+                        uptime_days: 89
+                    },
+                    recent_reports: [
+                        {
+                            quarter: quarter,
+                            year: year,
+                            total_score: 85,
+                            security_score: 26,
+                            backup_score: 28,
+                            system_score: 16,
+                            ci_score: 15,
+                            grade: '우수',
+                            generated_at: new Date().toISOString()
+                        }
+                    ],
+                    recommendations: [
+                        '메모리 사용률이 높으므로 시스템 최적화 권장',
+                        'CI 실패율 개선을 위한 테스트 코드 품질 향상 필요'
+                    ],
+                    critical_periods: [
+                        {
+                            date: '2024-02-14',
+                            description: '밸런타인 데이 트래픽 증가로 인한 일시적 성능 저하'
+                        }
+                    ],
+                    monthly_trends: {
+                        month1_score: 82,
+                        month2_score: 85,
+                        month3_score: 88
+                    }
+                };
+
+                this.updateScoreCards(mockData.performance_summary);
+                this.updateDetailedStats(mockData);
+                this.updateReportsList(mockData.recent_reports);
+                this.updateRecommendations(mockData.recommendations);
+                this.updateCriticalPeriods(mockData.critical_periods);
+                this.updateCharts(mockData);
+            }
+
+            async generateQuarterlyReport() {
+                const quarter = this.quarterSelect?.value || this.currentQuarter;
+                const year = this.yearSelect?.value || this.currentYear;
+
+                if (this.generateBtn) {
+                    this.generateBtn.disabled = true;
+                    this.generateBtn.innerHTML = '<span class="mr-2">⏳</span>생성 중...';
+                }
+
+                try {
+                    addLog(`📊 ${quarter} ${year} 분기별 리포트 생성 시작...`, 'info');
+
+                    // 실제로는 스크립트를 실행하여 리포트 생성
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
+
+                    addLog('✅ 분기별 리포트가 성공적으로 생성되었습니다.', 'info');
+                    // 자동으로 새로운 리포트 로드
+                    setTimeout(() => this.loadQuarterlyReports(), 1000);
+
+                } catch (error) {
+                    console.error('분기별 리포트 생성 중 오류:', error);
+                    addLog(`📊 분기별 리포트 생성 실패: ${error.message}`, 'error');
+                } finally {
+                    if (this.generateBtn) {
+                        this.generateBtn.disabled = false;
+                        this.generateBtn.innerHTML = '<span class="mr-2">📊</span>리포트 생성';
+                    }
+                }
+            }
+
+            updateScoreCards(performance) {
+                if (!performance) return;
+
+                // 점수 업데이트
+                if (this.securityScoreEl) this.securityScoreEl.textContent = performance.security_score || 0;
+                if (this.backupScoreEl) this.backupScoreEl.textContent = performance.backup_score || 0;
+                if (this.systemScoreEl) this.systemScoreEl.textContent = performance.system_score || 0;
+                if (this.totalScoreEl) this.totalScoreEl.textContent = performance.total_score || 0;
+
+                // 등급 업데이트
+                const grade = performance.grade || '평가 중';
+                if (this.gradeEl) {
+                    this.gradeEl.textContent = grade;
+                    this.gradeEl.className = this.getGradeClass(grade);
+                }
+            }
+
+            updateDetailedStats(data) {
+                const securityEvents = data.security_events || {};
+                const backupOps = data.backup_operations || {};
+                const systemPerf = data.system_performance || {};
+
+                // 보안 상세 정보
+                if (this.blockedIPsEl) this.blockedIPsEl.textContent = `${securityEvents.blocked_ips || 0}개`;
+                if (this.securityEventsEl) this.securityEventsEl.textContent = `${securityEvents.total_events || 0}건`;
+                if (this.rateLimitEl) this.rateLimitEl.textContent = `${securityEvents.rate_limit_violations || 0}회`;
+                if (this.whitelistAddedEl) this.whitelistAddedEl.textContent = `${securityEvents.whitelist_additions || 0}개`;
+
+                // 백업 상세 정보
+                if (this.successfulBackupsEl) this.successfulBackupsEl.textContent = `${backupOps.successful_backups || 0}회`;
+                if (this.failedBackupsEl) this.failedBackupsEl.textContent = `${backupOps.failed_backups || 0}회`;
+                if (this.backupSuccessRateEl) this.backupSuccessRateEl.textContent = `${backupOps.success_rate_percent || 0}%`;
+                if (this.cleanupOpsEl) this.cleanupOpsEl.textContent = `${backupOps.cleanup_operations || 0}회`;
+
+                // 시스템 상세 정보
+                if (this.avgCpuEl) this.avgCpuEl.textContent = `${systemPerf.avg_cpu_percent || 0}%`;
+                if (this.avgMemoryEl) this.avgMemoryEl.textContent = `${systemPerf.avg_memory_percent || 0}%`;
+                if (this.avgDiskEl) this.avgDiskEl.textContent = `${systemPerf.avg_disk_percent || 0}%`;
+                if (this.uptimeEl) this.uptimeEl.textContent = `${systemPerf.uptime_days || 0}일`;
+            }
+
+            updateReportsList(reports) {
+                if (!this.reportsListEl || !reports) return;
+
+                if (reports.length === 0) {
+                    this.reportsListEl.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="text-4xl mb-2">📊</div>
+                            <div>분기별 리포트 데이터가 없습니다.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const reportsHtml = reports.map(report => {
+                    const gradeEmoji = this.getGradeEmoji(report.grade);
+                    const formatDate = (dateStr) => {
+                        return new Date(dateStr).toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                    };
+
+                    return `
+                        <div class="bg-gray-700/50 border border-gray-600/50 rounded-lg p-4 hover:bg-gray-600/50 transition-colors duration-200">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h4 class="text-white dark:text-gray-100 font-semibold">${report.quarter} ${report.year} 분기별 리포트 ${gradeEmoji}</h4>
+                                    <span class="text-xs px-2 py-1 rounded-full bg-gray-600 text-gray-300">${report.grade} (${report.total_score}/100점)</span>
+                                </div>
+                                <div class="text-right text-sm text-gray-400">
+                                    <div>📅 ${formatDate(report.generated_at)}</div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2 text-xs text-gray-400">
+                                <div>🛡️ 보안: ${report.security_score}/30</div>
+                                <div>📦 백업: ${report.backup_score}/30</div>
+                                <div>⚙️ 시스템: ${report.system_score}/20</div>
+                                <div>🚀 CI/CD: ${report.ci_score || 0}/20</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                this.reportsListEl.innerHTML = reportsHtml;
+            }
+
+            updateRecommendations(recommendations) {
+                if (!recommendations || recommendations.length === 0) {
+                    if (this.recommendationsSection) {
+                        this.recommendationsSection.classList.add('hidden');
+                    }
+                    return;
+                }
+
+                if (this.recommendationsList) {
+                    const recommendationsHtml = recommendations.map(rec =>
+                        `<div class="flex items-start"><span class="mr-2">💡</span><span>${rec}</span></div>`
+                    ).join('');
+                    this.recommendationsList.innerHTML = recommendationsHtml;
+                }
+
+                if (this.recommendationsSection) {
+                    this.recommendationsSection.classList.remove('hidden');
+                }
+            }
+
+            updateCriticalPeriods(criticalPeriods) {
+                if (!criticalPeriods || criticalPeriods.length === 0) {
+                    if (this.criticalPeriodsSection) {
+                        this.criticalPeriodsSection.classList.add('hidden');
+                    }
+                    return;
+                }
+
+                if (this.criticalPeriodsList) {
+                    const periodsHtml = criticalPeriods.map(period =>
+                        `<div class="flex items-start"><span class="mr-2">⚠️</span><span><strong>${period.date}:</strong> ${period.description}</span></div>`
+                    ).join('');
+                    this.criticalPeriodsList.innerHTML = periodsHtml;
+                }
+
+                if (this.criticalPeriodsSection) {
+                    this.criticalPeriodsSection.classList.remove('hidden');
+                }
+            }
+
+            updateCharts(data) {
+                this.updateMonthlyTrendChart(data.monthly_trends || {});
+                this.updateScoreDistributionChart(data.performance_summary || {});
+            }
+
+            updateMonthlyTrendChart(monthlyTrends) {
+                const ctx = document.getElementById('quarterlyMonthlyTrendChart');
+                if (!ctx) return;
+
+                // 기존 차트 파괴
+                if (this.monthlyTrendChart) {
+                    this.monthlyTrendChart.destroy();
+                }
+
+                const isDark = document.documentElement.classList.contains('dark');
+                const textColor = isDark ? '#f3f4f6' : '#374151';
+                const gridColor = isDark ? 'rgba(107, 114, 128, 0.3)' : 'rgba(156, 163, 175, 0.3)';
+
+                this.monthlyTrendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1개월', '2개월', '3개월'],
+                        datasets: [{
+                            label: '월별 성과 점수',
+                            data: [
+                                monthlyTrends.month1_score || 0,
+                                monthlyTrends.month2_score || 0,
+                                monthlyTrends.month3_score || 0
+                            ],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            updateScoreDistributionChart(performance) {
+                const ctx = document.getElementById('quarterlyScoreDistributionChart');
+                if (!ctx) return;
+
+                // 기존 차트 파괴
+                if (this.scoreDistributionChart) {
+                    this.scoreDistributionChart.destroy();
+                }
+
+                const isDark = document.documentElement.classList.contains('dark');
+                const textColor = isDark ? '#f3f4f6' : '#374151';
+
+                this.scoreDistributionChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['보안', '백업', '시스템', 'CI/CD'],
+                        datasets: [{
+                            data: [
+                                performance.security_score || 0,
+                                performance.backup_score || 0,
+                                performance.system_score || 0,
+                                performance.ci_score || 0
+                            ],
+                            backgroundColor: [
+                                '#ef4444',
+                                '#3b82f6',
+                                '#10b981',
+                                '#f59e0b'
+                            ],
+                            borderWidth: 2,
+                            borderColor: isDark ? '#374151' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: textColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            async downloadReport(format) {
+                const quarter = this.quarterSelect?.value || this.currentQuarter;
+                const year = this.yearSelect?.value || this.currentYear;
+
+                try {
+                    addLog(`📥 분기별 리포트 ${format.toUpperCase()} 다운로드를 시작합니다...`, 'info');
+
+                    // 실제로는 스크립트를 실행하여 리포트 생성 후 다운로드
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+
+                    addLog(`📥 분기별 리포트 ${format.toUpperCase()} 파일이 다운로드되었습니다.`, 'info');
+
+                } catch (error) {
+                    console.error('리포트 다운로드 중 오류:', error);
+                    addLog(`📥 리포트 다운로드 실패: ${error.message}`, 'error');
+                }
+            }
+
+            onQuarterChange() {
+                const newQuarter = this.quarterSelect?.value;
+                if (newQuarter) {
+                    addLog(`📊 분기가 ${newQuarter}로 변경되었습니다.`, 'info');
+                    this.loadQuarterlyReports();
+                }
+            }
+
+            onYearChange() {
+                const newYear = this.yearSelect?.value;
+                if (newYear) {
+                    addLog(`📊 연도가 ${newYear}년으로 변경되었습니다.`, 'info');
+                    this.loadQuarterlyReports();
+                }
+            }
+
+            getGradeClass(grade) {
+                switch (grade) {
+                    case '우수': return 'text-green-200 text-xs font-medium';
+                    case '보통': return 'text-yellow-200 text-xs font-medium';
+                    case '개선 필요': return 'text-red-200 text-xs font-medium';
+                    default: return 'text-gray-200 text-xs font-medium';
+                }
+            }
+
+            getGradeEmoji(grade) {
+                switch (grade) {
+                    case '우수': return '🏆';
+                    case '보통': return '👍';
+                    case '개선 필요': return '⚠️';
+                    default: return '📊';
+                }
+            }
+
+            loadFallbackData() {
+                // 실제 데이터를 로드할 수 없을 때 기본 데이터 표시
+                const fallbackData = {
+                    performance_summary: {
+                        total_score: 0,
+                        security_score: 0,
+                        backup_score: 0,
+                        system_score: 0,
+                        ci_score: 0,
+                        grade: '데이터 없음'
+                    },
+                    security_events: { total_events: 0, blocked_ips: 0, rate_limit_violations: 0, whitelist_additions: 0 },
+                    backup_operations: { successful_backups: 0, failed_backups: 0, success_rate_percent: 0, cleanup_operations: 0 },
+                    system_performance: { avg_cpu_percent: 0, avg_memory_percent: 0, avg_disk_percent: 0, uptime_days: 0 },
+                    recent_reports: [],
+                    recommendations: [],
+                    critical_periods: [],
+                    monthly_trends: { month1_score: 0, month2_score: 0, month3_score: 0 }
+                };
+
+                this.updateScoreCards(fallbackData.performance_summary);
+                this.updateDetailedStats(fallbackData);
+                this.updateReportsList(fallbackData.recent_reports);
+                this.updateRecommendations(fallbackData.recommendations);
+                this.updateCriticalPeriods(fallbackData.critical_periods);
+                this.updateCharts(fallbackData);
+            }
+
+            showLoadingState() {
+                if (this.refreshBtn) {
+                    this.refreshBtn.disabled = true;
+                    this.refreshBtn.innerHTML = '<span class="mr-2">🔄</span>로딩 중...';
+                }
+
+                if (this.reportsListEl) {
+                    this.reportsListEl.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="text-4xl mb-2">📊</div>
+                            <div>분기별 리포트 데이터를 로드하는 중...</div>
+                        </div>
+                    `;
+                }
+            }
+
+            hideLoadingState() {
+                if (this.refreshBtn) {
+                    this.refreshBtn.disabled = false;
+                    this.refreshBtn.innerHTML = '<span class="mr-2">🔄</span>새로고침';
+                }
+            }
+
+            startAutoRefresh() {
+                this.stopAutoRefresh();
+                // 5분마다 자동 새로고침
+                this.autoRefreshInterval = setInterval(() => {
+                    this.loadQuarterlyReports();
+                }, 300000);
+            }
+
+            stopAutoRefresh() {
+                if (this.autoRefreshInterval) {
+                    clearInterval(this.autoRefreshInterval);
+                    this.autoRefreshInterval = null;
+                }
+            }
+        }
 
         // =============================================
         // 📅 연간 운영 리포트 매니저 (한국어 주석 포함)

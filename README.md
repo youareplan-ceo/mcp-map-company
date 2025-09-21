@@ -4363,6 +4363,495 @@ DEBUG=1 ./scripts/dashboard_smoke_test.sh --verbose
 HEADLESS=false python -m pytest tests/test_ops_dashboard.py::TestOpsDashboardPanels::test_dashboard_page_load -v -s
 ```
 
+## 📊 분기별 운영 리포트 자동화
+
+### 📋 quarterly_ops_report.sh 스크립트 개요
+분기별 운영 리포트 자동화 스크립트는 지난 90일간(분기)의 보안 이벤트, 백업 현황, 시스템 리소스, CI/CD 성능을 종합 분석하여 성과 평가와 함께 상세한 Markdown 리포트를 생성하고 알림 시스템과 연동됩니다.
+
+### 📊 핵심 기능
+
+#### 1. 90일 분기 분석
+- **보안 이벤트**: IP 차단, Rate Limit 위반, 화이트리스트 관리 (30점 만점)
+- **백업 현황**: 성공률, 실패 분석, 데이터 무결성 검증 (30점 만점)
+- **시스템 성능**: CPU/메모리/디스크 사용률, 업타임 분석 (20점 만점)
+- **CI/CD 성능**: 빌드 성공률, 실행 시간, 테스트 커버리지 (20점 만점)
+
+#### 2. 100점 만점 성과 채점 시스템
+- **우수** (80점 이상): 🏆 전체적으로 안정적인 운영 상태
+- **보통** (60-79점): 👍 일반적인 운영 수준, 일부 개선 필요
+- **개선 필요** (60점 미만): ⚠️ 즉각적인 개선 조치 필요
+
+### 📅 사용법
+
+#### 기본 분기별 리포트 생성
+```bash
+# 현재 분기 리포트 생성 (Markdown)
+./scripts/quarterly_ops_report.sh
+
+# JSON 형식으로 리포트 생성
+./scripts/quarterly_ops_report.sh --json
+
+# 상세 출력 모드
+./scripts/quarterly_ops_report.sh --verbose
+
+# 시뮬레이션 모드 (실제 파일 생성 안함)
+./scripts/quarterly_ops_report.sh --dry-run
+
+# 도움말 표시
+./scripts/quarterly_ops_report.sh --help
+```
+
+#### 특정 분기 리포트 생성
+```bash
+# 2024년 Q1 리포트 생성
+./scripts/quarterly_ops_report.sh --quarter Q1 --year 2024
+
+# 2023년 Q4 리포트 생성
+./scripts/quarterly_ops_report.sh --quarter Q4 --year 2023
+
+# 특정 날짜 범위 지정
+./scripts/quarterly_ops_report.sh --start-date "2024-01-01" --end-date "2024-03-31"
+```
+
+### 📊 리포트 구조
+
+#### 메타데이터
+- 리포트 생성 시간
+- 분석 기간 (분기)
+- 리포트 유형
+
+#### 성과 요약
+- **종합 점수**: 100점 만점 기준
+- **영역별 점수**: 보안(30) + 백업(30) + 시스템(20) + CI/CD(20)
+- **성과 등급**: 우수/보통/개선 필요
+- **월별 추이**: 분기 내 3개월 성과 변화
+
+#### 상세 분석
+- **보안 이벤트 분석**: 차단된 IP, 보안 위협 대응 현황
+- **백업 운영 분석**: 성공률, 실패 원인, 데이터 복구 테스트
+- **시스템 리소스 분석**: CPU/메모리/디스크 사용 패턴
+- **CI/CD 성능 분석**: 빌드 품질, 배포 안정성
+
+#### 권장사항 및 개선점
+- **우선순위별 개선 권고**: 즉시/단기/장기 개선 과제
+- **중요 이슈 기간**: 분기 내 주요 장애 및 해결 과정
+- **다음 분기 목표**: 구체적인 KPI 목표 설정
+
+### 🔔 자동 알림 시스템
+
+분기별 리포트 생성 완료 시 성과 등급에 따라 자동으로 알림 레벨이 조정되어 다중 채널 알림을 전송합니다:
+
+```python
+from mcp.utils.notifier import send_quarterly_ops_report, notify_quarterly_report
+
+# 분기별 리포트 생성 및 알림 전송
+quarterly_data = {
+    "report_metadata": {"quarter": "Q1", "year": 2024},
+    "performance_summary": {"total_score": 85, "grade": "우수"},
+    # ... 기타 데이터
+}
+
+await send_quarterly_ops_report(quarterly_data)
+# 또는 편의 함수 사용
+await notify_quarterly_report(quarterly_data, force_send=True)
+```
+
+**알림 내용 예시:**
+```
+📊 Q1 2024 분기별 운영 리포트 🏆
+
+📊 분기별 운영 리포트가 생성되었습니다.
+
+🏆 종합 성과: 85/100점 (우수)
+
+📊 영역별 점수:
+• 🛡️ 보안: 26/30점
+• 📦 백업: 28/30점
+• ⚙️ 시스템: 16/20점
+• 🚀 CI/CD: 15/20점
+
+📈 월별 추이:
+• 1개월: 82점
+• 2개월: 85점
+• 3개월: 88점
+
+📅 리포트 기간: 2024-01-01 ~ 2024-03-31
+```
+
+### 🔧 정기 실행 설정
+
+#### Cron 설정 (분기별 자동 생성)
+```bash
+# 매 분기 첫째 주 월요일 오전 9시에 분기별 리포트 생성
+0 9 * * 1 [ $(date +\%W) -eq 1 -o $(date +\%W) -eq 14 -o $(date +\%W) -eq 27 -o $(date +\%W) -eq 40 ] && cd /path/to/mcp-map-company && ./scripts/quarterly_ops_report.sh >> /var/log/quarterly_report.log 2>&1
+```
+
+#### Systemd 타이머 설정
+```ini
+# /etc/systemd/system/quarterly-ops-report.timer
+[Unit]
+Description=Quarterly Operations Report Generation
+Requires=quarterly-ops-report.service
+
+[Timer]
+# 매 분기 첫 번째 월요일 오전 9시
+OnCalendar=Mon *-01,04,07,10-01..07 09:00:00
+RandomizedDelaySec=300
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+```ini
+# /etc/systemd/system/quarterly-ops-report.service
+[Unit]
+Description=Generate Quarterly Operations Report
+After=network.target
+
+[Service]
+Type=oneshot
+User=mcp
+WorkingDirectory=/path/to/mcp-map-company
+ExecStart=/path/to/mcp-map-company/scripts/quarterly_ops_report.sh --json
+StandardOutput=append:/var/log/quarterly_report.log
+StandardError=append:/var/log/quarterly_report.log
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 🧪 테스트 및 검증
+
+#### quarterly_ops_report.sh 테스트
+```bash
+# 분기별 리포트 스크립트 테스트
+python -m pytest tests/test_quarterly_ops_report.py -v
+
+# 알림 시스템 테스트
+python -m pytest tests/test_quarterly_ops_report.py::TestQuarterlyOpsReportNotifications -v
+
+# 성능 테스트
+python -m pytest tests/test_quarterly_ops_report.py::TestQuarterlyOpsReportPerformance -v
+
+# 전체 분기별 리포트 시스템 테스트
+python -m pytest tests/test_quarterly_ops_report.py::TestQuarterlyOpsReportIntegration -v
+```
+
+#### 수동 알림 테스트
+```bash
+# Python에서 분기별 리포트 알림 테스트
+python -c "
+from mcp.utils.notifier import notify_quarterly_report
+import asyncio
+
+quarterly_data = {
+    'report_metadata': {'quarter': 'Q1', 'year': 2024},
+    'performance_summary': {'total_score': 85, 'grade': '우수'}
+}
+
+asyncio.run(notify_quarterly_report(quarterly_data))
+" >> /var/log/quarterly_notification.log 2>&1
+```
+
+### 🖥️ 웹 대시보드 연동
+
+분기별 리포트는 웹 대시보드와 연동되어 시각적 차트와 함께 표시됩니다:
+
+```javascript
+// 웹 대시보드에서 분기별 리포트 표시
+fetch('/api/reports/quarterly/latest')
+  .then(response => response.json())
+  .then(data => {
+    updateQuarterlyScoreCards(data.performance_summary);
+    updateQuarterlyCharts(data.monthly_trends);
+    updateQuarterlyRecommendations(data.recommendations);
+  });
+```
+
+### 📁 디렉토리 구조
+```
+mcp-map-company/
+├── scripts/
+│   └── quarterly_ops_report.sh          # 분기별 리포트 생성 스크립트
+├── mcp/utils/
+│   └── notifier.py                       # 알림 시스템 (분기별 리포트 함수 포함)
+├── tests/
+│   └── test_quarterly_ops_report.py      # 분기별 리포트 테스트
+├── web/
+│   └── admin_dashboard.html              # 분기별 리포트 패널 포함
+└── reports/quarterly/                    # 생성된 분기별 리포트 저장
+    ├── quarterly-report-Q1-2024.md
+    ├── quarterly-report-Q1-2024.json
+    └── ...
+```
+
+### 🚨 문제 해결
+
+#### 분기별 리포트 생성 실패
+```bash
+# 알림 시스템 개별 테스트
+python -c "from mcp.utils.notifier import test_quarterly_report_notification; import asyncio; asyncio.run(test_quarterly_report_notification())"
+
+# 분기별 리포트 수동 실행
+./scripts/quarterly_ops_report.sh --verbose
+```
+
+#### 리포트 생성 오류
+1. **로그 파일 권한 확인**: `logs/` 디렉토리 쓰기 권한
+2. **의존성 확인**: 필요한 로그 파일들이 존재하는지 확인
+3. **시뮬레이션 실행**: `--dry-run` 옵션으로 사전 검증
+
+```bash
+./scripts/quarterly_ops_report.sh --dry-run
+```
+
+이 분기별 운영 리포트 자동화 시스템을 통해 관리자는 분기별로 정기적으로 시스템 운영 성과를 종합 평가하고, 데이터 기반의 중기 운영 전략을 수립할 수 있습니다.
+
+## 📊 분기별 운영 리포트 대시보드
+
+### 📋 관리자 대시보드 패널 개요
+분기별 운영 리포트 대시보드는 관리자 웹 인터페이스를 통해 분기별 리포트 데이터를 시각적으로 표시하고, 실시간 성과 추이를 모니터링할 수 있는 종합적인 웹 대시보드 시스템입니다.
+
+### 🎛️ 대시보드 주요 기능
+
+#### 1. 분기별 성과 점수 카드
+- **보안 점수**: 30점 만점 기준 현재 점수 표시
+- **백업 점수**: 30점 만점 기준 백업 운영 성과
+- **시스템 점수**: 20점 만점 기준 시스템 안정성
+- **총합 점수**: 100점 만점 기준 종합 성과 및 등급
+
+#### 2. 월별 성과 추이 차트
+- **Line Chart**: Chart.js를 이용한 분기 내 3개월 성과 변화
+- **실시간 업데이트**: 새 데이터 입력 시 자동 차트 갱신
+- **다크모드 지원**: 테마에 따른 차트 색상 자동 조정
+
+#### 3. 영역별 점수 분포 차트
+- **Doughnut Chart**: 보안/백업/시스템/CI-CD 영역별 점수 시각화
+- **색상 구분**: 영역별 고유 색상으로 직관적 인식
+- **상호작용**: 차트 클릭 시 해당 영역 상세 정보 표시
+
+#### 4. 분기별 리포트 관리 패널
+- **분기/연도 선택**: 드롭다운으로 특정 분기 데이터 조회
+- **생성 제어**: 새 리포트 생성, 진행 상황 모니터링
+- **다운로드 기능**: Markdown/JSON 형식으로 리포트 다운로드
+
+### 🔌 API 연동
+
+#### 분기별 리포트 요약
+```
+GET /api/v1/reports/quarterly/?quarter=Q1&year=2024
+```
+
+응답 예시:
+```json
+{
+    "success": true,
+    "reports_count": 4,
+    "latest_reports": [
+        {
+            "quarter": "Q1",
+            "year": 2024,
+            "total_score": 85,
+            "grade": "우수",
+            "generated_at": "2024-03-31T23:59:59Z"
+        }
+    ],
+    "performance_summary": {
+        "total_score": 85,
+        "security_score": 26,
+        "backup_score": 28,
+        "system_score": 16,
+        "ci_score": 15,
+        "grade": "우수"
+    }
+}
+```
+
+#### 최신 분기별 리포트 조회
+```
+GET /api/v1/reports/quarterly/latest
+```
+
+#### 분기별 성과 추이
+```
+GET /api/v1/reports/quarterly/performance-trend?quarters=4
+```
+
+#### 분기별 리포트 생성
+```
+POST /api/v1/reports/quarterly/generate?quarter=Q1&year=2024
+```
+
+#### 분기별 리포트 다운로드
+```
+GET /api/v1/reports/quarterly/download/Q1-2024?format=markdown
+GET /api/v1/reports/quarterly/download/Q1-2024?format=json
+```
+
+### 💻 JavaScript 구현
+
+#### 분기별 리포트 데이터 로드
+```javascript
+class QuarterlyReportManager {
+    async loadQuarterlyReports() {
+        try {
+            const quarter = this.quarterSelect?.value || this.currentQuarter;
+            const year = this.yearSelect?.value || this.currentYear;
+
+            const response = await fetch(`/api/v1/reports/quarterly?quarter=${quarter}&year=${year}`);
+            const data = await response.json();
+
+            this.updateScoreCards(data.performance_summary);
+            this.updateDetailedStats(data);
+            this.updateReportsList(data.recent_reports);
+            this.updateCharts(data);
+
+            addLog('✅ 분기별 운영 리포트가 성공적으로 로드되었습니다.', 'info');
+        } catch (error) {
+            console.error('분기별 리포트 로드 중 오류:', error);
+            this.loadFallbackData();
+        }
+    }
+
+    updateScoreCards(performance) {
+        if (!performance) return;
+
+        document.getElementById('quarterlySecurityScore').textContent = performance.security_score || 0;
+        document.getElementById('quarterlyBackupScore').textContent = performance.backup_score || 0;
+        document.getElementById('quarterlySystemScore').textContent = performance.system_score || 0;
+        document.getElementById('quarterlyTotalScore').textContent = performance.total_score || 0;
+
+        const gradeEl = document.getElementById('quarterlyPerformanceGrade');
+        gradeEl.textContent = performance.grade || '평가 중';
+        gradeEl.className = this.getGradeClass(performance.grade);
+    }
+}
+```
+
+#### 차트 업데이트
+```javascript
+updateMonthlyTrendChart(monthlyTrends) {
+    const ctx = document.getElementById('quarterlyMonthlyTrendChart');
+    if (!ctx) return;
+
+    // 기존 차트 파괴
+    if (this.monthlyTrendChart) {
+        this.monthlyTrendChart.destroy();
+    }
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#f3f4f6' : '#374151';
+
+    this.monthlyTrendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['1개월', '2개월', '3개월'],
+            datasets: [{
+                label: '월별 성과 점수',
+                data: [
+                    monthlyTrends.month1_score || 0,
+                    monthlyTrends.month2_score || 0,
+                    monthlyTrends.month3_score || 0
+                ],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: textColor } }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: textColor }
+                }
+            }
+        }
+    });
+}
+```
+
+### 🎨 CSS 스타일링
+
+```css
+/* 분기별 리포트 패널 스타일 */
+.quarterly-report-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+/* 다크모드 분기별 리포트 패널 스타일 */
+.dark .quarterly-report-panel {
+    background: rgba(31, 41, 55, 0.5);
+    border-color: rgba(107, 114, 128, 0.5);
+}
+
+/* 분기별 성과 카드 */
+.quarterly-score-card {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.3));
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .quarterly-report-panel {
+        padding: 16px;
+    }
+
+    .quarterly-score-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}
+```
+
+모바일 및 태블릿 환경에서도 최적화된 분기별 리포트 보기를 제공합니다.
+
+### 🔄 자동 새로고침
+
+```javascript
+// 5분마다 자동 새로고침
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('quarterlyReportsList')) {
+        quarterlyReportManager = new QuarterlyReportManager();
+
+        setInterval(() => {
+            quarterlyReportManager.loadQuarterlyReports();
+        }, 300000); // 5분 간격
+    }
+});
+```
+
+### 🧪 테스트
+
+#### 분기별 리포트 대시보드 테스트
+```bash
+# 분기별 리포트 대시보드 테스트 실행
+python -m pytest tests/test_quarterly_ops_report.py::TestQuarterlyOpsReportIntegration -v
+
+# 성능 테스트
+python -m pytest tests/test_quarterly_ops_report.py::TestQuarterlyOpsReportPerformance -v
+
+# 웹 인터페이스 테스트
+python -m pytest tests/test_quarterly_ops_report.py::TestQuarterlyOpsReportNotifications -v
+```
+
+이 분기별 운영 리포트 대시보드를 통해 관리자는 직관적인 웹 인터페이스에서 실시간으로 분기별 시스템 성과를 모니터링하고, 필요한 리포트를 즉시 다운로드할 수 있습니다.
+
 ## 📅 연간 운영 리포트 자동화
 
 연간 운영 리포트 시스템은 지난 1년간의 보안, 백업, 시스템, CI/CD 성능 데이터를 종합 분석하여 자동으로 리포트를 생성하고 알림을 전송하는 기능입니다.
