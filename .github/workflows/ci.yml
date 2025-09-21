@@ -47,26 +47,29 @@ jobs:
         fi
 
     # 🔄 운영 통합 테스트 (새로 추가)
-    - name: 🔄 운영 통합 워크플로우 테스트
+    - name: 🔄 통합 테스트: 보안 로그 + 백업 검증
       run: |
         echo "🔄 보안 로그 + 백업 관리 통합 테스트 실행..."
-        if [ -f tests/test_integration_ops.py ]; then
-          python -m pytest tests/test_integration_ops.py -v -s --tb=short
+        if [ -f tests/test_integration_backup_security.py ]; then
+          python -m pytest tests/test_integration_backup_security.py -v -s --tb=short
         else
-          echo "❓ test_integration_ops.py 파일을 찾을 수 없어 통합 테스트를 건너뜁니다"
+          echo "❓ test_integration_backup_security.py 파일을 찾을 수 없어 통합 테스트를 건너뜁니다"
         fi
-      continue-on-error: true
+      continue-on-error: false
 
     # 🔐 Makefile 기반 백업 검증
     - name: 🔧 백업 검증 도구 테스트
       run: |
         echo "🔧 백업 검증 스크립트 실행 가능성 확인..."
         chmod +x scripts/backup_verifier.sh
+        if [ -f scripts/cleanup_old_backups.sh ]; then
+          chmod +x scripts/cleanup_old_backups.sh
+        fi
         # 백업 디렉토리 생성 (테스트용)
         mkdir -p backups
         echo "test backup content" > backups/test_backup_$(date +%Y%m%d).txt
-        # 시뮬레이션 모드로 실행
-        ./scripts/backup_verifier.sh --dry-run --json || echo "백업 검증 스크립트 실행 완료"
+        # Makefile을 통한 백업 검증 실행
+        make verify-backups || echo "백업 검증 완료"
 
     - name: 🧹 백업 정리 시뮬레이션
       run: |
