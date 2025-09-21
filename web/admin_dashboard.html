@@ -63,6 +63,49 @@
         .log-level-warning { color: #f59e0b; }
         .log-level-error { color: #ef4444; }
 
+        /* 운영 알림 필터 버튼 스타일 */
+        .ops-filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ops-filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .ops-filter-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Dark mode에서 운영 알림 필터 버튼 */
+        .dark .ops-filter-btn {
+            background: rgba(75, 85, 99, 0.6);
+            border-color: rgba(107, 114, 128, 0.4);
+            color: rgba(243, 244, 246, 0.8);
+        }
+
+        .dark .ops-filter-btn:hover {
+            background: rgba(107, 114, 128, 0.8);
+            color: #f3f4f6;
+        }
+
+        .dark .ops-filter-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-color: #3b82f6;
+            color: white;
+        }
+
         /* Dark mode styles for charts */
         .dark .chart-container {
             background: rgba(31, 41, 55, 0.8);
@@ -933,6 +976,82 @@
                         보안 로그를 불러오는 중...
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 🔔 운영 알림 통합 패널 -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">🔔</span>
+                    운영 알림 통합
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <button id="refreshOpsNotificationsBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        새로고침
+                    </button>
+                    <button id="testOpsNotificationBtn" class="bg-yellow-600 hover:bg-yellow-700 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔔</span>
+                        테스트 알림
+                    </button>
+                </div>
+            </div>
+
+            <!-- 통합 알림 통계 카드 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-red-500/20 dark:bg-red-600/20 border border-red-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">🚨</div>
+                    <div class="text-red-300 dark:text-red-200 text-sm font-medium">긴급 알림</div>
+                    <div id="opsNotificationsCriticalCount" class="text-red-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-orange-500/20 dark:bg-orange-600/20 border border-orange-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">❌</div>
+                    <div class="text-orange-300 dark:text-orange-200 text-sm font-medium">오류 알림</div>
+                    <div id="opsNotificationsErrorCount" class="text-orange-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-yellow-500/20 dark:bg-yellow-600/20 border border-yellow-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">⚠️</div>
+                    <div class="text-yellow-300 dark:text-yellow-200 text-sm font-medium">경고 알림</div>
+                    <div id="opsNotificationsWarningCount" class="text-yellow-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-blue-500/20 dark:bg-blue-600/20 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">ℹ️</div>
+                    <div class="text-blue-300 dark:text-blue-200 text-sm font-medium">정보 알림</div>
+                    <div id="opsNotificationsInfoCount" class="text-blue-100 text-2xl font-bold">0</div>
+                </div>
+            </div>
+
+            <!-- 최근 운영 알림 목록 -->
+            <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg overflow-hidden">
+                <div class="p-4 border-b border-white/10 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-white dark:text-gray-100 font-semibold">최근 운영 알림</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="text-sm text-white/60">실시간 업데이트</div>
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    </div>
+                </div>
+                <div id="opsNotificationsList" class="max-h-80 overflow-y-auto">
+                    <div class="p-4 text-center text-white/60 dark:text-gray-400">
+                        운영 알림을 불러오는 중...
+                    </div>
+                </div>
+            </div>
+
+            <!-- 소스별 필터 버튼 -->
+            <div class="mt-4 flex flex-wrap gap-2">
+                <button class="ops-filter-btn active" data-filter="all">
+                    📊 전체
+                </button>
+                <button class="ops-filter-btn" data-filter="security">
+                    🔒 보안
+                </button>
+                <button class="ops-filter-btn" data-filter="backup">
+                    🔧 백업
+                </button>
+                <button class="ops-filter-btn" data-filter="system">
+                    🖥️ 시스템
+                </button>
             </div>
         </div>
 
@@ -3269,6 +3388,393 @@
 
         window.addEventListener('unhandledrejection', function(event) {
             addLog(`처리되지 않은 Promise 거부: ${event.reason}`, 'error');
+        });
+
+        // =============================================
+        // 🔔 운영 알림 통합 패널 JavaScript Implementation
+        // =============================================
+
+        class OpsNotificationManager {
+            constructor() {
+                this.notifications = [];
+                this.filteredNotifications = [];
+                this.currentFilter = 'all';
+                this.autoRefreshInterval = null;
+                this.init();
+            }
+
+            init() {
+                // DOM 요소 바인딩
+                this.bindElements();
+
+                // 이벤트 리스너 설정
+                this.setupEventListeners();
+
+                // 초기 데이터 로드
+                this.loadNotifications();
+
+                // 자동 새로고침 시작 (30초마다)
+                this.startAutoRefresh();
+
+                // 페이지 언로드 시 자동 새로고침 정리
+                window.addEventListener('beforeunload', () => {
+                    this.stopAutoRefresh();
+                });
+            }
+
+            bindElements() {
+                // 필터 버튼들
+                this.filterAllBtn = document.getElementById('filterAllBtn');
+                this.filterSecurityBtn = document.getElementById('filterSecurityBtn');
+                this.filterBackupBtn = document.getElementById('filterBackupBtn');
+                this.filterSystemBtn = document.getElementById('filterSystemBtn');
+
+                // 새로고침 버튼
+                this.refreshBtn = document.getElementById('refreshOpsNotificationsBtn');
+
+                // 통계 카드들
+                this.criticalCountEl = document.getElementById('criticalNotificationCount');
+                this.errorCountEl = document.getElementById('errorNotificationCount');
+                this.warningCountEl = document.getElementById('warningNotificationCount');
+                this.infoCountEl = document.getElementById('infoNotificationCount');
+
+                // 알림 목록 컨테이너
+                this.notificationListEl = document.getElementById('opsNotificationsList');
+
+                // JSON 데이터 모달 요소들
+                this.jsonModal = document.getElementById('jsonDataModal');
+                this.jsonContentEl = document.getElementById('jsonContent');
+                this.closeJsonModalBtn = document.getElementById('closeJsonModalBtn');
+            }
+
+            setupEventListeners() {
+                // 필터 버튼 이벤트
+                this.filterAllBtn?.addEventListener('click', () => this.setFilter('all'));
+                this.filterSecurityBtn?.addEventListener('click', () => this.setFilter('security'));
+                this.filterBackupBtn?.addEventListener('click', () => this.setFilter('backup'));
+                this.filterSystemBtn?.addEventListener('click', () => this.setFilter('system'));
+
+                // 새로고침 버튼 이벤트
+                this.refreshBtn?.addEventListener('click', () => this.loadNotifications());
+
+                // JSON 모달 닫기 이벤트
+                this.closeJsonModalBtn?.addEventListener('click', () => this.closeJsonModal());
+                this.jsonModal?.addEventListener('click', (e) => {
+                    if (e.target === this.jsonModal) {
+                        this.closeJsonModal();
+                    }
+                });
+            }
+
+            async loadNotifications() {
+                try {
+                    // 로딩 상태 표시
+                    this.showLoadingState();
+
+                    // 모의 데이터 생성 (실제 구현에서는 API 호출)
+                    await this.generateMockNotifications();
+
+                    // 통계 업데이트
+                    this.updateStatistics();
+
+                    // 필터링된 알림 목록 표시
+                    this.displayNotifications();
+
+                    // 로딩 상태 해제
+                    this.hideLoadingState();
+
+                    addLog('운영 알림 데이터가 성공적으로 로드되었습니다.', 'info');
+                } catch (error) {
+                    console.error('알림 로드 중 오류:', error);
+                    addLog(`운영 알림 로드 실패: ${error.message}`, 'error');
+                    this.hideLoadingState();
+                }
+            }
+
+            async generateMockNotifications() {
+                // 실제 환경에서는 이 부분을 API 호출로 대체
+                const mockData = [
+                    {
+                        id: `ops-${Date.now()}-1`,
+                        type: 'security',
+                        level: 'critical',
+                        title: '🚨 보안 침입 시도 탐지',
+                        message: '비정상적인 로그인 시도가 감지되었습니다. IP: 192.168.1.100에서 5분간 50회 실패',
+                        timestamp: new Date(Date.now() - 300000).toISOString(),
+                        source: 'Security Logger',
+                        status: 'active',
+                        jsonData: {
+                            ip_address: '192.168.1.100',
+                            failed_attempts: 50,
+                            duration_minutes: 5,
+                            blocked: true,
+                            action_taken: 'IP 차단'
+                        }
+                    },
+                    {
+                        id: `ops-${Date.now()}-2`,
+                        type: 'backup',
+                        level: 'warning',
+                        title: '⚠️ 백업 검증 경고',
+                        message: '일부 백업 파일의 체크섬이 일치하지 않습니다. 즉시 확인이 필요합니다.',
+                        timestamp: new Date(Date.now() - 600000).toISOString(),
+                        source: 'Backup Verifier',
+                        status: 'pending',
+                        jsonData: {
+                            backup_date: '2024-01-15',
+                            corrupted_files: 3,
+                            total_files: 127,
+                            integrity_percentage: 97.6
+                        }
+                    },
+                    {
+                        id: `ops-${Date.now()}-3`,
+                        type: 'system',
+                        level: 'info',
+                        title: 'ℹ️ 시스템 정기 점검 완료',
+                        message: '정기 시스템 점검이 성공적으로 완료되었습니다.',
+                        timestamp: new Date(Date.now() - 1800000).toISOString(),
+                        source: 'System Monitor',
+                        status: 'completed',
+                        jsonData: {
+                            check_duration: '15분',
+                            checked_services: 23,
+                            issues_found: 0,
+                            next_check: '2024-01-16 02:00:00'
+                        }
+                    }
+                ];
+
+                // 시뮬레이션을 위한 지연
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                this.notifications = mockData;
+                this.applyCurrentFilter();
+            }
+
+            setFilter(filterType) {
+                this.currentFilter = filterType;
+
+                // 버튼 상태 업데이트
+                this.updateFilterButtons();
+
+                // 필터 적용 및 표시
+                this.applyCurrentFilter();
+                this.displayNotifications();
+
+                addLog(`알림 필터가 '${filterType}'로 변경되었습니다.`, 'info');
+            }
+
+            updateFilterButtons() {
+                const buttons = [this.filterAllBtn, this.filterSecurityBtn, this.filterBackupBtn, this.filterSystemBtn];
+                const filters = ['all', 'security', 'backup', 'system'];
+
+                buttons.forEach((btn, index) => {
+                    if (!btn) return;
+
+                    if (filters[index] === this.currentFilter) {
+                        btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+                        btn.classList.remove('bg-white/10', 'text-white/80', 'border-white/20');
+                    } else {
+                        btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                        btn.classList.add('bg-white/10', 'text-white/80', 'border-white/20');
+                    }
+                });
+            }
+
+            applyCurrentFilter() {
+                if (this.currentFilter === 'all') {
+                    this.filteredNotifications = [...this.notifications];
+                } else {
+                    this.filteredNotifications = this.notifications.filter(
+                        notification => notification.type === this.currentFilter
+                    );
+                }
+            }
+
+            updateStatistics() {
+                const stats = {
+                    critical: this.notifications.filter(n => n.level === 'critical').length,
+                    error: this.notifications.filter(n => n.level === 'error').length,
+                    warning: this.notifications.filter(n => n.level === 'warning').length,
+                    info: this.notifications.filter(n => n.level === 'info').length
+                };
+
+                if (this.criticalCountEl) this.criticalCountEl.textContent = stats.critical;
+                if (this.errorCountEl) this.errorCountEl.textContent = stats.error;
+                if (this.warningCountEl) this.warningCountEl.textContent = stats.warning;
+                if (this.infoCountEl) this.infoCountEl.textContent = stats.info;
+            }
+
+            displayNotifications() {
+                if (!this.notificationListEl) {
+                    console.warn('알림 목록 요소를 찾을 수 없습니다.');
+                    return;
+                }
+
+                if (this.filteredNotifications.length === 0) {
+                    this.notificationListEl.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="text-4xl mb-2">📭</div>
+                            <div>현재 표시할 알림이 없습니다.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const notificationHtml = this.filteredNotifications.map(notification => {
+                    const levelIcon = this.getLevelIcon(notification.level);
+                    const levelColor = this.getLevelColor(notification.level);
+                    const typeIcon = this.getTypeIcon(notification.type);
+                    const statusBadge = this.getStatusBadge(notification.status);
+
+                    return `
+                        <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm border border-${levelColor}-500/30">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-3 flex-1">
+                                    <div class="text-2xl">${levelIcon}</div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <h4 class="text-white dark:text-gray-100 font-semibold">${notification.title}</h4>
+                                            <span class="text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300">${typeIcon} ${notification.type}</span>
+                                            ${statusBadge}
+                                        </div>
+                                        <p class="text-white/80 dark:text-gray-300 text-sm mb-2">${notification.message}</p>
+                                        <div class="flex items-center justify-between text-xs text-white/60 dark:text-gray-400">
+                                            <span>📅 ${new Date(notification.timestamp).toLocaleString('ko-KR')}</span>
+                                            <span>📡 ${notification.source}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <button
+                                        onclick="opsNotificationManager.showJsonData('${notification.id}')"
+                                        class="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                                        title="JSON 데이터 보기"
+                                    >
+                                        📄 JSON
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                this.notificationListEl.innerHTML = notificationHtml;
+            }
+
+            getLevelIcon(level) {
+                const icons = {
+                    critical: '🚨',
+                    error: '❌',
+                    warning: '⚠️',
+                    info: 'ℹ️'
+                };
+                return icons[level] || 'ℹ️';
+            }
+
+            getLevelColor(level) {
+                const colors = {
+                    critical: 'red',
+                    error: 'red',
+                    warning: 'yellow',
+                    info: 'blue'
+                };
+                return colors[level] || 'blue';
+            }
+
+            getTypeIcon(type) {
+                const icons = {
+                    security: '🛡️',
+                    backup: '💾',
+                    system: '⚙️'
+                };
+                return icons[type] || '⚙️';
+            }
+
+            getStatusBadge(status) {
+                const badges = {
+                    active: '<span class="text-xs px-2 py-1 rounded-full bg-red-600 text-white">활성</span>',
+                    pending: '<span class="text-xs px-2 py-1 rounded-full bg-yellow-600 text-white">대기</span>',
+                    completed: '<span class="text-xs px-2 py-1 rounded-full bg-green-600 text-white">완료</span>'
+                };
+                return badges[status] || '';
+            }
+
+            showJsonData(notificationId) {
+                const notification = this.notifications.find(n => n.id === notificationId);
+                if (!notification) {
+                    addLog('해당 알림을 찾을 수 없습니다.', 'error');
+                    return;
+                }
+
+                if (this.jsonContentEl) {
+                    this.jsonContentEl.textContent = JSON.stringify(notification.jsonData, null, 2);
+                }
+
+                if (this.jsonModal) {
+                    this.jsonModal.classList.remove('hidden');
+                    this.jsonModal.classList.add('flex');
+                }
+
+                addLog(`알림 ID ${notificationId}의 JSON 데이터를 표시합니다.`, 'info');
+            }
+
+            closeJsonModal() {
+                if (this.jsonModal) {
+                    this.jsonModal.classList.add('hidden');
+                    this.jsonModal.classList.remove('flex');
+                }
+            }
+
+            showLoadingState() {
+                if (this.notificationListEl) {
+                    this.notificationListEl.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="animate-spin text-4xl mb-2">🔄</div>
+                            <div>운영 알림 데이터를 로드하는 중...</div>
+                        </div>
+                    `;
+                }
+
+                if (this.refreshBtn) {
+                    this.refreshBtn.disabled = true;
+                    this.refreshBtn.innerHTML = '<span class="mr-2">🔄</span>로딩 중...';
+                }
+            }
+
+            hideLoadingState() {
+                if (this.refreshBtn) {
+                    this.refreshBtn.disabled = false;
+                    this.refreshBtn.innerHTML = '<span class="mr-2">🔄</span>새로고침';
+                }
+            }
+
+            startAutoRefresh() {
+                this.stopAutoRefresh(); // 기존 인터벌 정리
+                this.autoRefreshInterval = setInterval(() => {
+                    this.loadNotifications();
+                }, 30000); // 30초마다 새로고침
+            }
+
+            stopAutoRefresh() {
+                if (this.autoRefreshInterval) {
+                    clearInterval(this.autoRefreshInterval);
+                    this.autoRefreshInterval = null;
+                }
+            }
+        }
+
+        // 운영 알림 매니저 전역 인스턴스 생성
+        let opsNotificationManager;
+
+        // DOM 로드 완료 시 운영 알림 매니저 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 운영 알림 통합 패널이 있는 경우에만 초기화
+            if (document.getElementById('opsNotificationsList')) {
+                opsNotificationManager = new OpsNotificationManager();
+                addLog('🔔 운영 알림 통합 패널이 초기화되었습니다.', 'info');
+            }
         });
     </script>
 

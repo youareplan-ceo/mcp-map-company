@@ -1856,3 +1856,407 @@ asyncio.run(test_weekly_report_notification())
 ```
 
 이 주간 운영 리포트 자동화 시스템을 통해 관리자는 매주 정기적으로 시스템 상태를 종합 점검하고, 데이터 기반의 운영 의사결정을 내릴 수 있습니다.
+
+## 🔔 운영 알림 통합 시스템
+
+### 개요
+운영 알림 통합 시스템은 보안 이벤트와 백업 작업 결과를 하나의 통합된 알림 채널로 관리하는 시스템입니다.
+다중 채널 알림 발송(Slack, Discord, Email, Dashboard)과 JSON 형식의 상세 결과 데이터를 제공합니다.
+
+### 주요 구성 요소
+
+#### 1. 확장된 알림 시스템 (mcp/utils/notifier.py)
+
+**새로운 통합 기능:**
+- 🛡️ **보안/백업 통합 알림 채널**: 보안 이벤트와 백업 결과를 동시에 처리
+- 📊 **JSON 형식 결과 포함**: 알림 메시지에 구조화된 데이터 첨부
+- 🔄 **백업 스크립트 실행 통합**: backup_verifier.sh/cleanup_old_backups.sh 실행 결과 자동 알림
+- 🎯 **관리자 대시보드 동시 발송**: 모든 알림이 대시보드에도 실시간 표시
+
+**핵심 함수들:**
+
+```python
+# 백업 알림 발송
+await send_backup_alert(
+    script_name="backup_verifier.sh",
+    execution_result={
+        "exit_code": 0,
+        "files_verified": 127,
+        "files_corrupted": 3,
+        "integrity_percentage": 97.6
+    },
+    level=NotificationLevel.WARNING
+)
+
+# 백업 스크립트 실행 + 알림 통합
+result = await execute_and_notify_backup_script(
+    script_path="./scripts/backup_verifier.sh",
+    script_args=["--verbose"],
+    notify_on_success=True,
+    notify_on_error=True
+)
+
+# 운영 통합 알림 (보안 + 백업)
+await send_ops_integration_alert(
+    event_type="daily_summary",
+    security_events=[{
+        "timestamp": "2024-01-15T14:30:00",
+        "event_type": "brute_force_attack",
+        "source_ip": "192.168.1.100",
+        "severity": "high"
+    }],
+    backup_results=[{
+        "script_name": "backup_verifier.sh",
+        "integrity_status": "good",
+        "files_checked": 250
+    }],
+    level=NotificationLevel.INFO
+)
+```
+
+**OpsIntegrationNotifier 클래스:**
+
+```python
+from mcp.utils.notifier import OpsIntegrationNotifier
+
+ops_notifier = OpsIntegrationNotifier()
+
+# 보안 이벤트 알림
+await ops_notifier.send_security_event_notification(
+    event=security_event_data,
+    level=NotificationLevel.CRITICAL
+)
+
+# 백업 결과 알림
+await ops_notifier.send_backup_result_notification(
+    result=backup_result_data,
+    level=NotificationLevel.INFO
+)
+
+# 통합 알림 발송
+await ops_notifier.send_integrated_notification(
+    security_events=security_events,
+    backup_results=backup_results,
+    summary="일일 운영 요약"
+)
+```
+
+#### 2. 관리자 대시보드 통합 패널 (web/admin_dashboard.html)
+
+**🔔 운영 알림 통합 패널 기능:**
+
+**통계 카드 (심각도별 색상 코딩):**
+- 🚨 **Critical**: 빨간색 - 중요한 보안 위험이나 시스템 장애
+- ❌ **Error**: 빨간색 - 백업 실패나 시스템 오류
+- ⚠️ **Warning**: 노란색 - 주의가 필요한 상황
+- ℹ️ **Info**: 파란색 - 일반적인 정보성 알림
+
+**필터링 시스템:**
+- 📋 **전체**: 모든 운영 알림 표시
+- 🛡️ **보안**: 보안 관련 이벤트만 필터링
+- 💾 **백업**: 백업 작업 결과만 표시
+- ⚙️ **시스템**: 시스템 이벤트만 표시
+
+**알림 목록 기능:**
+- 📅 **실시간 타임스탬프**: 한국 시간 형식으로 표시
+- 📡 **소스 정보**: 알림을 생성한 시스템 구성 요소
+- 🏷️ **상태 배지**: 활성/대기/완료 상태 표시
+- 📄 **JSON 데이터 버튼**: 상세 데이터 모달 창으로 확인
+
+**Dark Mode 완전 지원:**
+```css
+/* 운영 알림 패널 다크모드 스타일 */
+.ops-filter-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.ops-filter-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+```
+
+**자동 새로고침 시스템:**
+- 🔄 **30초 간격**: 실시간 데이터 자동 갱신
+- 🔗 **실시간 연동**: notifier.py와 직접 연동
+- 📱 **반응형 디자인**: 모바일/데스크톱 환경 지원
+
+#### 3. 통합 테스트 시스템 (tests/test_ops_notifications.py)
+
+**pytest 기반 통합 테스트:**
+
+**테스트 범위:**
+1. **백업 알림 시스템 테스트**
+   ```python
+   @pytest.mark.asyncio
+   async def test_send_backup_alert_success():
+       # 백업 알림 발송 성공 시나리오 테스트
+
+   @pytest.mark.asyncio
+   async def test_execute_and_notify_backup_script_success():
+       # subprocess.run 백업 스크립트 실행 + 알림 통합 테스트
+   ```
+
+2. **운영 통합 알림 테스트**
+   ```python
+   @pytest.mark.asyncio
+   async def test_send_ops_integration_alert():
+       # 보안 이벤트 + 백업 결과 통합 알림 테스트
+   ```
+
+3. **모의 데이터 시나리오 테스트**
+   ```python
+   def test_subprocess_run_verification():
+       # subprocess.run 검증 테스트
+
+   def test_json_result_parsing():
+       # JSON 결과 파싱 테스트
+   ```
+
+4. **오류 처리 및 복원력 테스트**
+   ```python
+   @pytest.mark.asyncio
+   async def test_notification_error_handling():
+       # 알림 발송 실패 시 오류 처리 테스트
+   ```
+
+**테스트 실행 방법:**
+```bash
+# 전체 운영 알림 통합 테스트 실행
+python -m pytest tests/test_ops_notifications.py -v
+
+# 특정 테스트 클래스 실행
+python -m pytest tests/test_ops_notifications.py::TestOpsNotificationIntegration -v
+
+# 상세 출력과 함께 실행
+python -m pytest tests/test_ops_notifications.py -v --tb=short --maxfail=3
+```
+
+#### 4. CI/CD 통합 (GitHub Actions)
+
+**자동화된 테스트 실행:**
+```yaml
+# .github/workflows/ci.yml에서 자동 실행
+- name: 🔔 운영 알림 통합 테스트
+  run: |
+    echo "🔔 운영 알림 통합 시스템 테스트 실행..."
+    python -m pytest tests/test_ops_notifications.py -v --tb=short
+```
+
+**CI 백업 검증 통합:**
+```yaml
+- name: 🔧 백업 검증 + 알림 테스트
+  run: |
+    make verify-backups
+    python -m pytest tests/test_ops_notifications.py::test_execute_and_notify_backup_script_success -v
+```
+
+### 사용 시나리오
+
+#### 시나리오 1: 일일 백업 검증 자동화
+```bash
+# Makefile을 통한 백업 검증 + 알림
+make verify-backups
+
+# 또는 직접 스크립트 실행
+./scripts/backup_verifier.sh --verbose
+
+# Python을 통한 프로그래밍 방식 실행
+python -c "
+import asyncio
+from mcp.utils.notifier import execute_and_notify_backup_script
+
+async def main():
+    result = await execute_and_notify_backup_script(
+        './scripts/backup_verifier.sh',
+        ['--verbose'],
+        notify_on_success=True
+    )
+    print(f'백업 검증 완료: {result}')
+
+asyncio.run(main())
+"
+```
+
+#### 시나리오 2: 보안 이벤트 + 백업 상태 통합 리포트
+```python
+# 보안 이벤트와 백업 결과를 통합한 일일 리포트
+from mcp.utils.notifier import send_ops_integration_alert, NotificationLevel
+
+security_events = [
+    {
+        "timestamp": "2024-01-15T14:30:00",
+        "event_type": "login_failure",
+        "source_ip": "192.168.1.100",
+        "failed_attempts": 50,
+        "action_taken": "IP 차단"
+    }
+]
+
+backup_results = [
+    {
+        "script_name": "backup_verifier.sh",
+        "execution_time": "2024-01-15T02:00:00",
+        "exit_code": 0,
+        "files_verified": 127,
+        "integrity_percentage": 100.0
+    }
+]
+
+await send_ops_integration_alert(
+    event_type="daily_summary",
+    security_events=security_events,
+    backup_results=backup_results,
+    level=NotificationLevel.INFO
+)
+```
+
+#### 시나리오 3: 관리자 대시보드 실시간 모니터링
+1. **대시보드 접속**: `http://localhost:8088/admin_dashboard.html`
+2. **🔔 운영 알림 통합 패널** 섹션 확인
+3. **필터 사용**: 보안/백업/시스템별 알림 필터링
+4. **JSON 데이터 확인**: 알림 클릭 → JSON 버튼 → 상세 데이터 모달
+5. **자동 갱신**: 30초마다 최신 알림 자동 로드
+
+### 설정 및 환경변수
+
+#### 알림 채널 설정
+```bash
+# Slack 웹훅 URL
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+
+# Discord 웹훅 URL
+export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK"
+
+# 이메일 설정
+export EMAIL_SMTP_SERVER="smtp.gmail.com"
+export EMAIL_SMTP_PORT="587"
+export EMAIL_USERNAME="your-email@gmail.com"
+export EMAIL_PASSWORD="your-app-password"
+```
+
+#### 백업 스크립트 경로 설정
+```bash
+# 백업 검증 스크립트 경로
+export BACKUP_VERIFIER_SCRIPT="./scripts/backup_verifier.sh"
+
+# 백업 정리 스크립트 경로
+export CLEANUP_BACKUPS_SCRIPT="./scripts/cleanup_old_backups.sh"
+
+# 백업 디렉토리
+export BACKUP_DIRECTORY="./backups"
+```
+
+### 성능 및 최적화
+
+#### 알림 속도 제한
+- **Critical**: 즉시 발송
+- **Error**: 1초 지연
+- **Warning**: 3초 지연
+- **Info**: 5초 지연
+
+#### 메모리 관리
+- 대시보드는 최근 100개 알림만 메모리에 유지
+- JSON 데이터는 필요시에만 로드
+- 자동 가비지 컬렉션으로 메모리 최적화
+
+#### 네트워크 최적화
+- 알림 발송 실패 시 지수 백오프 재시도
+- 배치 알림 발송으로 API 호출 최소화
+- 압축된 JSON 데이터 전송
+
+### 보안 고려사항
+
+#### 민감 정보 보호
+- IP 주소는 마지막 옥텟 마스킹 옵션 제공
+- 백업 경로는 상대 경로로만 표시
+- 시스템 정보는 요약된 형태로만 알림에 포함
+
+#### 접근 제어
+- 관리자 대시보드는 인증된 사용자만 접근
+- API 엔드포인트는 Rate Limiting 적용
+- 로그 파일은 읽기 전용 권한 설정
+
+### 문제 해결
+
+#### 일반적인 문제
+1. **"알림이 대시보드에 표시되지 않음"**
+   ```bash
+   # 브라우저 콘솔에서 확인
+   console.log('opsNotificationManager:', opsNotificationManager);
+
+   # 네트워크 탭에서 API 호출 확인
+   # 30초 간격으로 새로고침되는지 확인
+   ```
+
+2. **"백업 스크립트 실행 실패"**
+   ```bash
+   # 스크립트 권한 확인
+   chmod +x scripts/backup_verifier.sh
+
+   # 수동 실행 테스트
+   ./scripts/backup_verifier.sh --verbose
+
+   # Python에서 실행 테스트
+   python -c "
+   import asyncio
+   from mcp.utils.notifier import execute_and_notify_backup_script
+   asyncio.run(execute_and_notify_backup_script('./scripts/backup_verifier.sh'))
+   "
+   ```
+
+3. **"JSON 데이터 모달이 열리지 않음"**
+   ```javascript
+   // 브라우저 콘솔에서 확인
+   document.getElementById('jsonDataModal').style.display = 'flex';
+
+   // JavaScript 오류 확인
+   console.error 이벤트 리스너 확인
+   ```
+
+#### 디버깅 모드
+```bash
+# 상세 로그와 함께 테스트 실행
+python -m pytest tests/test_ops_notifications.py -v -s --tb=long
+
+# 알림 시스템 직접 테스트
+python -c "
+import asyncio
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+from mcp.utils.notifier import send_backup_alert, NotificationLevel
+
+async def test():
+    await send_backup_alert(
+        'test_script.sh',
+        {'exit_code': 0, 'message': '테스트'},
+        NotificationLevel.INFO
+    )
+
+asyncio.run(test())
+"
+```
+
+### 향후 확장 계획
+
+#### 1. 고급 필터링
+- 시간대별 알림 필터링
+- 심각도별 알림 그룹핑
+- 사용자 정의 검색 쿼리
+
+#### 2. 알림 규칙 엔진
+- 조건부 알림 발송 규칙
+- 에스컬레이션 정책
+- 자동 해결 액션
+
+#### 3. 모바일 앱 연동
+- 푸시 알림 지원
+- 모바일 전용 대시보드
+- 오프라인 알림 큐
+
+이 운영 알림 통합 시스템을 통해 관리자는 보안 이벤트와 백업 작업을 통합적으로 모니터링하고, 실시간으로 시스템 상태를 파악할 수 있습니다.
