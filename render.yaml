@@ -3,7 +3,7 @@ services:
     name: mcp-map-company
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -k uvicorn.workers.UvicornWorker mcp.run:app
+    startCommand: uvicorn mcp.run:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
