@@ -4538,11 +4538,14 @@ HEADLESS=false python -m pytest tests/test_ops_dashboard.py::TestOpsDashboardPan
 
 #### 특정 분기 리포트 생성
 ```bash
-# 2024년 Q1 리포트 생성
-./scripts/quarterly_ops_report.sh --quarter Q1 --year 2024
+# 2024년 1분기 리포트 생성
+./scripts/quarterly_ops_report.sh --year 2024 --quarter 1
 
-# 2023년 Q4 리포트 생성
-./scripts/quarterly_ops_report.sh --quarter Q4 --year 2023
+# 2023년 4분기 리포트 생성
+./scripts/quarterly_ops_report.sh --year 2023 --quarter 4
+
+# Markdown 형식으로 출력
+./scripts/quarterly_ops_report.sh --year 2024 --quarter 3 --md
 
 # 특정 날짜 범위 지정
 ./scripts/quarterly_ops_report.sh --start-date "2024-01-01" --end-date "2024-03-31"

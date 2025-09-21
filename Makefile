@@ -63,3 +63,35 @@ ci-clean-dry:
 ci-clean-json:
 	@echo "🧹 CI 클린업 작업 실행 (JSON 출력)..."
 	./scripts/ci_cleanup.sh --json
+
+# 📊 분기별 운영 리포트 자동화 명령어
+
+# 분기별 운영 리포트 생성 (기본 Markdown)
+quarterly-report:
+	@echo "📊 분기별 운영 리포트 생성 중..."
+	./scripts/quarterly_ops_report.sh --verbose
+
+# 분기별 운영 리포트 JSON 출력
+quarterly-report-json:
+	@echo "📊 분기별 운영 리포트 생성 (JSON 출력)..."
+	./scripts/quarterly_ops_report.sh --json --verbose
+
+# 분기별 운영 리포트 Markdown 출력
+quarterly-report-md:
+	@echo "📊 분기별 운영 리포트 생성 (Markdown 출력)..."
+	./scripts/quarterly_ops_report.sh --md --verbose
+
+# 특정 연도/분기 리포트 생성 (예: make quarterly-report-specific YEAR=2024 QUARTER=3)
+quarterly-report-specific:
+	@echo "📊 특정 분기 운영 리포트 생성 ($(YEAR)년 $(QUARTER)분기)..."
+	./scripts/quarterly_ops_report.sh --year $(YEAR) --quarter $(QUARTER) --verbose
+
+# 분기별 운영 리포트 시뮬레이션 (변경 사항 없음)
+quarterly-report-dry:
+	@echo "📊 분기별 운영 리포트 시뮬레이션..."
+	./scripts/quarterly_ops_report.sh --dry-run --verbose
+
+# 분기별 운영 리포트 테스트 실행
+quarterly-report-test:
+	@echo "🧪 분기별 운영 리포트 테스트 실행..."
+	python3 -m pytest tests/test_quarterly_ops_report.py -v

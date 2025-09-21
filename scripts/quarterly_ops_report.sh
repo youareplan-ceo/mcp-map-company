@@ -57,6 +57,8 @@ OUTPUT_FORMAT="markdown"
 VERBOSE_MODE=false
 DRY_RUN_MODE=false
 SPECIFIED_PERIOD=""
+SPECIFIED_YEAR=""
+SPECIFIED_QUARTER=""
 
 # 색상 코드 (터미널 출력용)
 readonly RED='\033[0;31m'
@@ -139,7 +141,32 @@ calculate_quarter_period() {
     local end_date
     local start_date
 
-    if [[ -n "$SPECIFIED_PERIOD" ]]; then
+    if [[ -n "$SPECIFIED_YEAR" && -n "$SPECIFIED_QUARTER" ]]; then
+        # --year 및 --quarter 옵션이 지정된 경우
+        local year="$SPECIFIED_YEAR"
+        local quarter="$SPECIFIED_QUARTER"
+
+        # 연도 및 분기 유효성 검사
+        if [[ ! "$year" =~ ^[0-9]{4}$ ]] || [[ "$year" -lt 1900 ]] || [[ "$year" -gt 2100 ]]; then
+            log_message "ERROR" "잘못된 연도 형식: $year (1900-2100 범위)"
+            exit 1
+        fi
+
+        if [[ ! "$quarter" =~ ^[1-4]$ ]]; then
+            log_message "ERROR" "잘못된 분기 형식: $quarter (1-4 범위)"
+            exit 1
+        fi
+
+        case "$quarter" in
+            1) start_date="${year}-01-01"; end_date="${year}-03-31" ;;
+            2) start_date="${year}-04-01"; end_date="${year}-06-30" ;;
+            3) start_date="${year}-07-01"; end_date="${year}-09-30" ;;
+            4) start_date="${year}-10-01"; end_date="${year}-12-31" ;;
+        esac
+
+        log_message "INFO" "지정된 분기 분석: ${year}년 ${quarter}분기 ($start_date ~ $end_date)"
+
+    elif [[ -n "$SPECIFIED_PERIOD" ]]; then
         # 특정 분기 지정된 경우 (예: 2024-Q3)
         if [[ "$SPECIFIED_PERIOD" =~ ^([0-9]{4})-Q([1-4])$ ]]; then
             local year="${BASH_REMATCH[1]}"
@@ -159,6 +186,7 @@ calculate_quarter_period() {
         # 기본값: 최근 90일
         end_date=$(date '+%Y-%m-%d')
         start_date=$(date -d "$end_date - ${DEFAULT_ANALYSIS_DAYS} days" '+%Y-%m-%d')
+        log_message "INFO" "기본 분석 기간: 최근 90일 ($start_date ~ $end_date)"
     fi
 
     echo "$start_date|$end_date"
@@ -1405,10 +1433,13 @@ show_help() {
 
 옵션:
     --json          JSON 형식으로 결과 출력
+    --md, --markdown    Markdown 형식으로 결과 출력 (기본값)
     --verbose       상세한 진행 상황 및 디버그 정보 표시
     --dry-run       실제 파일 생성 없이 테스트 실행
-    --help          이 도움말 메시지 표시
+    --year YEAR     특정 연도 지정 (예: 2025)
+    --quarter NUM   특정 분기 지정 (1, 2, 3, 4)
     --period PERIOD 특정 분기 지정 (예: 2024-Q3)
+    --help          이 도움말 메시지 표시
 
 사용 예시:
     # 기본 Markdown 리포트 생성
@@ -1417,10 +1448,16 @@ show_help() {
     # JSON 형식으로 출력
     ./scripts/quarterly_ops_report.sh --json
 
+    # 명시적으로 Markdown 형식 지정
+    ./scripts/quarterly_ops_report.sh --md
+
     # 상세 진행 상황과 함께 실행
     ./scripts/quarterly_ops_report.sh --verbose
 
-    # 특정 분기 분석
+    # 특정 연도와 분기 지정
+    ./scripts/quarterly_ops_report.sh --year 2025 --quarter 3
+
+    # 특정 분기 분석 (기존 방식)
     ./scripts/quarterly_ops_report.sh --period 2024-Q2
 
     # 테스트 실행 (실제 파일 생성 안함)
@@ -1458,6 +1495,10 @@ while [[ $# -gt 0 ]]; do
             OUTPUT_FORMAT="json"
             shift
             ;;
+        --md|--markdown)
+            OUTPUT_FORMAT="markdown"
+            shift
+            ;;
         --verbose)
             VERBOSE_MODE=true
             shift
@@ -1469,6 +1510,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --period)
             SPECIFIED_PERIOD="$2"
+            shift 2
+            ;;
+        --year)
+            SPECIFIED_YEAR="$2"
+            shift 2
+            ;;
+        --quarter)
+            SPECIFIED_QUARTER="$2"
             shift 2
             ;;
         --help|-h)

@@ -217,6 +217,93 @@ class TestQuarterlyOpsReportScript:
 
         assert grade == expected_grade, f"점수 {total_score}에 대한 등급이 잘못되었습니다"
 
+    @pytest.mark.parametrize("year,quarter,expected_dates", [
+        (2024, 1, ("2024-01-01", "2024-03-31")),
+        (2024, 2, ("2024-04-01", "2024-06-30")),
+        (2024, 3, ("2024-07-01", "2024-09-30")),
+        (2024, 4, ("2024-10-01", "2024-12-31")),
+        (2025, 2, ("2025-04-01", "2025-06-30")),
+    ])
+    def test_year_quarter_options(self, script_path, year, quarter, expected_dates, tmp_path):
+        """--year 및 --quarter 옵션 테스트"""
+        try:
+            result = subprocess.run(
+                [str(script_path), "--year", str(year), "--quarter", str(quarter), "--dry-run"],
+                capture_output=True,
+                text=True,
+                timeout=60,
+                cwd=tmp_path
+            )
+
+            # 스크립트가 성공적으로 실행되었는지 확인
+            assert result.returncode == 0, f"스크립트 실행 실패: {result.stderr}"
+
+            # 지정된 분기 정보가 출력에 포함되는지 확인
+            output = result.stderr  # 로그는 stderr로 출력됨
+            assert f"{year}년 {quarter}분기" in output, "지정된 분기 정보가 출력에 없습니다"
+            assert expected_dates[0] in output, f"시작 날짜 {expected_dates[0]}가 출력에 없습니다"
+            assert expected_dates[1] in output, f"종료 날짜 {expected_dates[1]}가 출력에 없습니다"
+
+        except subprocess.TimeoutExpired:
+            pytest.fail("--year --quarter 옵션 테스트가 60초 내에 완료되지 않았습니다")
+
+    def test_invalid_year_option(self, script_path, tmp_path):
+        """잘못된 --year 옵션 테스트"""
+        try:
+            result = subprocess.run(
+                [str(script_path), "--year", "abc", "--quarter", "1", "--dry-run"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+                cwd=tmp_path
+            )
+
+            # 에러로 종료되어야 함
+            assert result.returncode != 0, "잘못된 연도에 대해 에러가 발생하지 않았습니다"
+            assert "잘못된 연도 형식" in result.stderr or "ERROR" in result.stderr
+
+        except subprocess.TimeoutExpired:
+            pytest.fail("잘못된 연도 테스트가 30초 내에 완료되지 않았습니다")
+
+    def test_invalid_quarter_option(self, script_path, tmp_path):
+        """잘못된 --quarter 옵션 테스트"""
+        try:
+            result = subprocess.run(
+                [str(script_path), "--year", "2024", "--quarter", "5", "--dry-run"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+                cwd=tmp_path
+            )
+
+            # 에러로 종료되어야 함
+            assert result.returncode != 0, "잘못된 분기에 대해 에러가 발생하지 않았습니다"
+            assert "잘못된 분기 형식" in result.stderr or "ERROR" in result.stderr
+
+        except subprocess.TimeoutExpired:
+            pytest.fail("잘못된 분기 테스트가 30초 내에 완료되지 않았습니다")
+
+    def test_markdown_option(self, script_path, tmp_path):
+        """--md/--markdown 옵션 테스트"""
+        try:
+            result = subprocess.run(
+                [str(script_path), "--md", "--dry-run"],
+                capture_output=True,
+                text=True,
+                timeout=60,
+                cwd=tmp_path
+            )
+
+            # 스크립트가 성공적으로 실행되었는지 확인
+            assert result.returncode == 0, f"--md 옵션 테스트 실패: {result.stderr}"
+
+            # Markdown 리포트 생성 메시지 확인
+            output = result.stderr
+            assert "Markdown 리포트 생성" in output, "Markdown 리포트 생성 메시지가 없습니다"
+
+        except subprocess.TimeoutExpired:
+            pytest.fail("--md 옵션 테스트가 60초 내에 완료되지 않았습니다")
+
 
 class TestQuarterlyOpsReportNotifications:
     """분기별 운영 리포트 알림 시스템 테스트 클래스"""
