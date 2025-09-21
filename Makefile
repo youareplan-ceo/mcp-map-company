@@ -207,7 +207,100 @@ ci-remediation-demo:
 	@make test-flaky-isolation
 	@echo "🎭 데모 완료! 실제 사용을 위해서는 'make ci-autofix' 명령을 사용하세요."
 
+# 🔎 이상탐지 고도화 명령어
+
+# RCA 원인분석 샘플 실행
+anomaly-rca-sample:
+	@echo "🔍 RCA 원인분석 샘플 실행"
+	@curl -X POST http://localhost:8088/api/v1/anomaly/rca \
+		-H "Content-Type: application/json" \
+		-d '{"target_metric": "cpu_usage", "time_range": "1h", "correlation_threshold": 0.7}' \
+		| python3 -m json.tool
+
+# 계절성 분해 샘플 실행
+anomaly-decompose-sample:
+	@echo "📈 계절성 분해 분석 샘플 실행"
+	@curl "http://localhost:8088/api/v1/anomaly/decompose?metric=memory_usage&period=7d" \
+		| python3 -m json.tool
+
+# 이상탐지 정책 목록 조회
+anomaly-policies-list:
+	@echo "⚙️ 이상탐지 정책 목록 조회"
+	@curl http://localhost:8088/api/v1/anomaly/policies | python3 -m json.tool
+
+# 백테스트 실행 (기본 설정)
+anomaly-backtest:
+	@echo "🧪 이상탐지 백테스트 실행"
+	@python3 scripts/anomaly_backtest.py --config configs/backtest_config.yaml --verbose
+
+# 백테스트 파라미터 튜닝
+anomaly-backtest-tune:
+	@echo "🎯 백테스트 파라미터 튜닝 실행"
+	@python3 scripts/anomaly_backtest.py --tune --output results/tuning_results.json --verbose
+
+# 이상탐지 시스템 전체 테스트
+test-anomaly-system:
+	@echo "🧪 이상탐지 시스템 전체 테스트"
+	@python3 -m pytest tests/test_anomaly_rca_and_policy.py -v --tb=short
+
+# RCA 엔진 단위 테스트
+test-anomaly-rca:
+	@echo "🔍 RCA 엔진 단위 테스트"
+	@python3 -m pytest tests/test_anomaly_rca_and_policy.py::TestAnomalyRCACore -v
+
+# 정책 API 테스트
+test-anomaly-policy:
+	@echo "⚙️ 이상탐지 정책 API 테스트"
+	@python3 -m pytest tests/test_anomaly_rca_and_policy.py::TestAnomalyPolicyAPI -v
+
+# 성능 벤치마크 테스트 (대용량 데이터)
+test-anomaly-performance:
+	@echo "📊 이상탐지 성능 벤치마크 테스트"
+	@python3 -m pytest tests/test_anomaly_rca_and_policy.py::TestAnomalyRCAPerformance -v
+
+# 이상탐지 대시보드 통합 테스트
+test-anomaly-dashboard:
+	@echo "📊 이상탐지 대시보드 통합 테스트"
+	@python3 -m pytest tests/test_anomaly_rca_and_policy.py::TestAdminDashboardIntegration -v
+
+# 이상탐지 시스템 헬스체크
+anomaly-health-check:
+	@echo "🏥 이상탐지 시스템 헬스체크"
+	@echo "1️⃣ RCA 엔진 모듈 확인..."
+	@test -f mcp/anomaly_rca.py && echo "✅ RCA 엔진 존재" || echo "❌ RCA 엔진 없음"
+	@test -f mcp/anomaly_policy_api.py && echo "✅ 정책 API 존재" || echo "❌ 정책 API 없음"
+	@echo "2️⃣ 백테스트 스크립트 확인..."
+	@test -f scripts/anomaly_backtest.py && echo "✅ 백테스트 스크립트 존재" || echo "❌ 백테스트 스크립트 없음"
+	@echo "3️⃣ 테스트 스위트 확인..."
+	@test -f tests/test_anomaly_rca_and_policy.py && echo "✅ 테스트 스위트 존재" || echo "❌ 테스트 스위트 없음"
+	@echo "4️⃣ 정책 설정 파일 확인..."
+	@test -f data/anomaly_policy.yaml && echo "✅ 정책 설정 파일 존재" || echo "📄 정책 설정 파일 생성 필요"
+	@echo "5️⃣ 결과 디렉토리 확인..."
+	@test -d results && echo "✅ 결과 디렉토리 존재" || (mkdir -p results && echo "📁 결과 디렉토리 생성")
+	@echo "🏥 이상탐지 시스템 헬스체크 완료"
+
+# 이상탐지 시스템 데모 실행
+anomaly-demo:
+	@echo "🎭 이상탐지 고도화 시스템 데모 실행"
+	@echo "1️⃣ 시스템 헬스체크..."
+	@make anomaly-health-check
+	@echo "2️⃣ RCA 원인분석 샘플..."
+	@make anomaly-rca-sample
+	@echo "3️⃣ 계절성 분해 샘플..."
+	@make anomaly-decompose-sample
+	@echo "4️⃣ 정책 목록 조회..."
+	@make anomaly-policies-list
+	@echo "5️⃣ 핵심 기능 테스트..."
+	@make test-anomaly-rca
+	@echo "🎭 데모 완료! 전체 시스템 테스트를 위해서는 'make test-anomaly-system' 명령을 사용하세요."
+
 # .PHONY 선언 (CI 자동 완화 관련)
 .PHONY: ci-autofix-dry ci-autofix ci-test-hooks ci-clear-cache ci-retry-tests
 .PHONY: test-flaky-isolation test-autoremediation test-runbooks test-dashboard-remediation
 .PHONY: monitor-autoremediation autoremediation-stats ci-remediation-health ci-remediation-demo
+
+# .PHONY 선언 (이상탐지 고도화 관련)
+.PHONY: anomaly-rca-sample anomaly-decompose-sample anomaly-policies-list
+.PHONY: anomaly-backtest anomaly-backtest-tune test-anomaly-system test-anomaly-rca
+.PHONY: test-anomaly-policy test-anomaly-performance test-anomaly-dashboard
+.PHONY: anomaly-health-check anomaly-demo
