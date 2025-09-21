@@ -11,7 +11,7 @@ import logging
 import json
 import time
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from email.mime.text import MimeText
 from email.mime.multipart import MimeMultipart
 from typing import Optional, Dict, Any, List
@@ -1232,6 +1232,815 @@ async def test_notifications():
     print(f"알림 테스트 결과: {test_results}")
     return test_results
 
+# ================================================
+# 보안+백업 통합 알림 시스템 (Operations Integration)
+# ================================================
+
+import subprocess
+import tempfile
+
+async def send_backup_alert(
+    script_name: str,
+    execution_result: Dict[str, Any],
+    level: NotificationLevel = NotificationLevel.INFO
+) -> Dict[str, bool]:
+    """
+    백업 스크립트 실행 결과 알림 전송
+
+    Args:
+        script_name: 실행된 스크립트 이름 (backup_verifier.sh, cleanup_old_backups.sh 등)
+        execution_result: 스크립트 실행 결과 (JSON 형태)
+        level: 알림 심각도
+
+    Returns:
+        채널별 전송 결과
+    """
+    # 스크립트별 메시지 템플릿
+    script_messages = {
+        'backup_verifier.sh': "🔍 백업 검증이 완료되었습니다.",
+        'cleanup_old_backups.sh': "🧹 백업 정리가 완료되었습니다.",
+        'daily_ops.sh': "🔄 일일 운영 작업이 완료되었습니다."
+    }
+
+    message = script_messages.get(script_name, f"🔧 운영 스크립트 실행 완료: {script_name}")
+
+    # 실행 결과에 따른 레벨 조정
+    if execution_result.get('returncode', 0) != 0:
+        level = NotificationLevel.ERROR
+        message = f"❌ 운영 스크립트 실행 실패: {script_name}"
+    elif execution_result.get('warnings', 0) > 0:
+        level = NotificationLevel.WARNING
+        message = f"⚠️ 운영 스크립트 경고 발생: {script_name}"
+
+    # 알림 제목 생성
+    title = f"🔧 운영 알림: {script_name}"
+
+    # 세부 정보 필드 준비
+    ops_fields = {
+        "🛠️ 스크립트": script_name,
+        "📅 실행 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "📊 실행 결과": "성공" if execution_result.get('returncode', 0) == 0 else "실패"
+    }
+
+    # execution_result의 주요 정보를 필드에 추가
+    if 'file' in execution_result:
+        ops_fields["📦 백업 파일"] = execution_result['file']
+    if 'size' in execution_result:
+        ops_fields["📏 파일 크기"] = f"{execution_result['size']:,} bytes"
+    if 'deleted_count' in execution_result:
+        ops_fields["🗑️ 정리된 파일"] = f"{execution_result['deleted_count']}개"
+    if 'total_size_bytes' in execution_result:
+        ops_fields["💾 절약된 공간"] = f"{execution_result['total_size_bytes']:,} bytes"
+
+    # JSON 원본 데이터 첨부 (Info 레벨 이상)
+    if level in [NotificationLevel.WARNING, NotificationLevel.ERROR]:
+        json_data = json.dumps(execution_result, ensure_ascii=False, indent=2)
+        ops_fields["📄 JSON 원본"] = f"```json\n{json_data}\n```"
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=level,
+        title=title,
+        fields=ops_fields,
+        attach_logs=level in [NotificationLevel.ERROR, NotificationLevel.CRITICAL]
+    )
+
+async def execute_and_notify_backup_script(
+    script_path: str,
+    script_args: List[str] = None,
+    notify_on_success: bool = True,
+    notify_on_error: bool = True
+) -> Dict[str, Any]:
+    """
+    백업 스크립트 실행 후 결과에 따라 자동 알림 전송
+
+    Args:
+        script_path: 실행할 스크립트 경로
+        script_args: 스크립트 인수 목록
+        notify_on_success: 성공 시 알림 여부
+        notify_on_error: 실패 시 알림 여부
+
+    Returns:
+        실행 결과와 알림 전송 결과를 포함한 딕셔너리
+    """
+    script_args = script_args or []
+    script_name = Path(script_path).name
+
+    try:
+        # 스크립트 실행
+        result = subprocess.run(
+            [script_path] + script_args,
+            capture_output=True,
+            text=True,
+            timeout=300  # 5분 타임아웃
+        )
+
+        # 결과 파싱
+        execution_result = {
+            'script': script_name,
+            'returncode': result.returncode,
+            'stdout': result.stdout,
+            'stderr': result.stderr,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # JSON 출력 파싱 시도
+        if result.stdout.strip():
+            try:
+                # JSON 출력인 경우 파싱
+                json_output = json.loads(result.stdout.strip())
+                execution_result.update(json_output)
+            except json.JSONDecodeError:
+                # 일반 텍스트 출력인 경우 그대로 저장
+                execution_result['output'] = result.stdout.strip()
+
+        # 알림 전송 조건 확인
+        send_notification = False
+        notification_level = NotificationLevel.INFO
+
+        if result.returncode != 0 and notify_on_error:
+            send_notification = True
+            notification_level = NotificationLevel.ERROR
+        elif result.returncode == 0 and notify_on_success:
+            send_notification = True
+            notification_level = NotificationLevel.INFO
+
+        # 알림 전송
+        notification_result = {}
+        if send_notification:
+            notification_result = await send_backup_alert(
+                script_name=script_name,
+                execution_result=execution_result,
+                level=notification_level
+            )
+
+        return {
+            'execution': execution_result,
+            'notification': notification_result,
+            'success': result.returncode == 0
+        }
+
+    except subprocess.TimeoutExpired:
+        error_result = {
+            'script': script_name,
+            'returncode': -1,
+            'error': 'Script execution timeout (5 minutes)',
+            'timestamp': datetime.now().isoformat()
+        }
+
+        if notify_on_error:
+            notification_result = await send_backup_alert(
+                script_name=script_name,
+                execution_result=error_result,
+                level=NotificationLevel.ERROR
+            )
+        else:
+            notification_result = {}
+
+        return {
+            'execution': error_result,
+            'notification': notification_result,
+            'success': False
+        }
+
+    except Exception as e:
+        error_result = {
+            'script': script_name,
+            'returncode': -2,
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }
+
+        if notify_on_error:
+            notification_result = await send_backup_alert(
+                script_name=script_name,
+                execution_result=error_result,
+                level=NotificationLevel.ERROR
+            )
+        else:
+            notification_result = {}
+
+        return {
+            'execution': error_result,
+            'notification': notification_result,
+            'success': False
+        }
+
+async def send_ops_integration_alert(
+    event_type: str,
+    security_events: List[Dict],
+    backup_results: List[Dict],
+    level: NotificationLevel = NotificationLevel.INFO
+) -> Dict[str, bool]:
+    """
+    보안 이벤트와 백업 결과를 통합한 운영 알림 전송
+
+    Args:
+        event_type: 통합 이벤트 유형 ('daily_summary', 'security_backup_sync' 등)
+        security_events: 보안 이벤트 목록
+        backup_results: 백업 결과 목록
+        level: 알림 심각도
+
+    Returns:
+        채널별 전송 결과
+    """
+    # 이벤트 유형별 메시지 템플릿
+    event_messages = {
+        'daily_summary': "📊 일일 운영 현황 요약",
+        'security_backup_sync': "🔒 보안+백업 통합 현황",
+        'ops_health_check': "🏥 운영 시스템 헬스체크",
+        'weekly_report': "📋 주간 운영 리포트"
+    }
+
+    message = event_messages.get(event_type, f"🔧 운영 통합 알림: {event_type}")
+    title = f"🔧 운영 통합 알림: {event_type}"
+
+    # 통합 통계 계산
+    total_security_events = len(security_events)
+    blocked_ips = len([e for e in security_events if e.get('event') == 'BLOCKED_IP'])
+    backup_successes = len([b for b in backup_results if b.get('success', False)])
+    backup_failures = len([b for b in backup_results if not b.get('success', True)])
+
+    # 통합 필드 준비
+    integration_fields = {
+        "📅 리포트 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "🔒 보안 이벤트": f"{total_security_events}건",
+        "🚫 차단된 IP": f"{blocked_ips}개",
+        "✅ 백업 성공": f"{backup_successes}건",
+        "❌ 백업 실패": f"{backup_failures}건"
+    }
+
+    # 세부 보안 이벤트 (최근 5개)
+    if security_events:
+        recent_security = security_events[-5:]
+        security_summary = []
+        for event in recent_security:
+            event_info = f"• {event.get('event', 'UNKNOWN')} - {event.get('ip', 'N/A')}"
+            security_summary.append(event_info)
+        integration_fields["🔍 최근 보안 이벤트"] = "\n".join(security_summary)
+
+    # 세부 백업 결과 (최근 5개)
+    if backup_results:
+        recent_backups = backup_results[-5:]
+        backup_summary = []
+        for backup in recent_backups:
+            status = "✅" if backup.get('success', False) else "❌"
+            backup_info = f"{status} {backup.get('script', 'Unknown')} - {backup.get('timestamp', 'N/A')}"
+            backup_summary.append(backup_info)
+        integration_fields["🔧 최근 백업 작업"] = "\n".join(backup_summary)
+
+    # 레벨 조정 (실패가 있는 경우)
+    if backup_failures > 0 or blocked_ips > 10:
+        level = NotificationLevel.WARNING
+        message = f"⚠️ {message} (주의 필요)"
+    elif backup_failures > 2 or blocked_ips > 50:
+        level = NotificationLevel.ERROR
+        message = f"❌ {message} (즉시 확인 필요)"
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=level,
+        title=title,
+        fields=integration_fields,
+        attach_logs=level in [NotificationLevel.ERROR, NotificationLevel.CRITICAL]
+    )
+
+async def send_dashboard_notification(
+    notification_data: Dict[str, Any],
+    target_dashboard: str = "admin"
+) -> bool:
+    """
+    관리자 대시보드로 실시간 알림 전송
+
+    Args:
+        notification_data: 대시보드에 표시할 알림 데이터
+        target_dashboard: 대상 대시보드 ('admin', 'security' 등)
+
+    Returns:
+        전송 성공 여부
+    """
+    try:
+        # 대시보드 알림 파일 경로
+        dashboard_notification_file = f"logs/dashboard_notifications_{target_dashboard}.json"
+
+        # 기존 알림 로드
+        notifications = []
+        if Path(dashboard_notification_file).exists():
+            try:
+                with open(dashboard_notification_file, 'r', encoding='utf-8') as f:
+                    notifications = json.load(f)
+            except json.JSONDecodeError:
+                notifications = []
+
+        # 새 알림 추가
+        new_notification = {
+            'id': f"notif_{int(datetime.now().timestamp())}_{random.randint(1000, 9999)}",
+            'timestamp': datetime.now().isoformat(),
+            'title': notification_data.get('title', '알림'),
+            'message': notification_data.get('message', ''),
+            'level': notification_data.get('level', 'info'),
+            'source': notification_data.get('source', 'system'),
+            'fields': notification_data.get('fields', {}),
+            'read': False
+        }
+
+        notifications.append(new_notification)
+
+        # 최대 100개까지만 보관
+        if len(notifications) > 100:
+            notifications = notifications[-100:]
+
+        # 알림 파일 저장
+        with open(dashboard_notification_file, 'w', encoding='utf-8') as f:
+            json.dump(notifications, f, ensure_ascii=False, indent=2)
+
+        logger.info(f"대시보드 알림 전송 완료: {target_dashboard} - {notification_data.get('title', '제목없음')}")
+        return True
+
+    except Exception as e:
+        logger.error(f"대시보드 알림 전송 실패: {e}")
+        return False
+
+class OpsIntegrationNotifier:
+    """운영 통합 알림 관리자 (보안+백업)"""
+
+    def __init__(self):
+        self.security_events = []
+        self.backup_results = []
+        self.last_summary_time = datetime.now()
+
+    async def log_security_event(self, event_data: Dict[str, Any]):
+        """보안 이벤트 로깅"""
+        event_data['timestamp'] = datetime.now().isoformat()
+        self.security_events.append(event_data)
+
+        # 최대 500개까지만 보관
+        if len(self.security_events) > 500:
+            self.security_events = self.security_events[-500:]
+
+        # 심각한 보안 이벤트의 경우 즉시 알림
+        if event_data.get('level') in ['critical', 'error']:
+            await send_security_alert(
+                event_type=event_data.get('event', 'SECURITY_EVENT'),
+                client_ip=event_data.get('ip', 'Unknown'),
+                details=event_data,
+                level=NotificationLevel.CRITICAL if event_data.get('level') == 'critical' else NotificationLevel.ERROR
+            )
+
+        # 대시보드 알림 전송
+        await send_dashboard_notification({
+            'title': f"보안 이벤트: {event_data.get('event', 'Unknown')}",
+            'message': f"IP {event_data.get('ip', 'Unknown')}에서 {event_data.get('event', '보안 이벤트')} 발생",
+            'level': event_data.get('level', 'info'),
+            'source': 'security',
+            'fields': event_data
+        })
+
+    async def log_backup_result(self, backup_data: Dict[str, Any]):
+        """백업 결과 로깅"""
+        backup_data['timestamp'] = datetime.now().isoformat()
+        self.backup_results.append(backup_data)
+
+        # 최대 100개까지만 보관
+        if len(self.backup_results) > 100:
+            self.backup_results = self.backup_results[-100:]
+
+        # 백업 실패의 경우 즉시 알림
+        if not backup_data.get('success', True):
+            await send_backup_alert(
+                script_name=backup_data.get('script', 'unknown'),
+                execution_result=backup_data,
+                level=NotificationLevel.ERROR
+            )
+
+        # 대시보드 알림 전송
+        await send_dashboard_notification({
+            'title': f"백업 작업: {backup_data.get('script', 'Unknown')}",
+            'message': f"백업 작업이 {'성공' if backup_data.get('success', True) else '실패'}했습니다",
+            'level': 'info' if backup_data.get('success', True) else 'error',
+            'source': 'backup',
+            'fields': backup_data
+        })
+
+    async def send_daily_summary(self):
+        """일일 요약 알림 전송"""
+        # 24시간 내 이벤트 필터링
+        now = datetime.now()
+        yesterday = now - timedelta(days=1)
+
+        recent_security = [
+            event for event in self.security_events
+            if datetime.fromisoformat(event['timestamp']) > yesterday
+        ]
+
+        recent_backups = [
+            backup for backup in self.backup_results
+            if datetime.fromisoformat(backup['timestamp']) > yesterday
+        ]
+
+        await send_ops_integration_alert(
+            event_type='daily_summary',
+            security_events=recent_security,
+            backup_results=recent_backups,
+            level=NotificationLevel.INFO
+        )
+
+        self.last_summary_time = now
+
+# 전역 운영 통합 알림 관리자 인스턴스
+ops_notifier = OpsIntegrationNotifier()
+
+# 편의 함수들
+async def log_security_event(event_data: Dict[str, Any]):
+    """보안 이벤트 로깅 편의 함수"""
+    return await ops_notifier.log_security_event(event_data)
+
+async def log_backup_result(backup_data: Dict[str, Any]):
+    """백업 결과 로깅 편의 함수"""
+    return await ops_notifier.log_backup_result(backup_data)
+
+async def send_daily_ops_summary():
+    """일일 운영 요약 전송 편의 함수"""
+    return await ops_notifier.send_daily_summary()
+
+async def test_ops_integration():
+    """운영 통합 알림 시스템 테스트"""
+    print("🔧 운영 통합 알림 시스템 테스트 시작...")
+
+    # 테스트 보안 이벤트 로깅
+    await log_security_event({
+        'event': 'BLOCKED_IP',
+        'ip': '192.168.1.100',
+        'level': 'critical',
+        'details': '테스트용 차단 이벤트'
+    })
+
+    # 테스트 백업 결과 로깅
+    await log_backup_result({
+        'script': 'backup_verifier.sh',
+        'success': True,
+        'file': 'backup_20240921.tar.gz',
+        'size': 1337,
+        'details': '테스트용 백업 검증'
+    })
+
+    # 백업 스크립트 실행 및 알림 테스트
+    test_result = await execute_and_notify_backup_script(
+        script_path="scripts/backup_verifier.sh",
+        script_args=["--dry-run", "--json"],
+        notify_on_success=True,
+        notify_on_error=True
+    )
+
+    print(f"백업 스크립트 실행 테스트 결과: {test_result['success']}")
+
+    # 일일 요약 테스트
+    await send_daily_ops_summary()
+
+    print("✅ 운영 통합 알림 시스템 테스트 완료")
+
+# ================================================
+# 주간 운영 리포트 알림 시스템 (Weekly Operations Report)
+# ================================================
+
+async def send_weekly_ops_report(
+    report_data: Dict[str, Any],
+    report_file_path: Optional[str] = None,
+    level: NotificationLevel = NotificationLevel.INFO
+) -> Dict[str, bool]:
+    """
+    주간 운영 리포트 결과 알림 전송 (한국어 메시지 지원)
+
+    Args:
+        report_data: weekly_ops_report.sh 실행 결과 데이터
+        report_file_path: 생성된 Markdown 리포트 파일 경로
+        level: 알림 심각도
+
+    Returns:
+        채널별 전송 결과
+    """
+    # 리포트 기간 정보
+    period_start = report_data.get('report_metadata', {}).get('period_start', 'Unknown')
+    period_end = report_data.get('report_metadata', {}).get('period_end', 'Unknown')
+
+    # 주요 통계 추출
+    security_events = report_data.get('security_events', {})
+    backup_ops = report_data.get('backup_operations', {})
+    system_resources = report_data.get('system_resources', {})
+    status_summary = report_data.get('status_summary', {})
+
+    # 통계 요약
+    blocked_ips = security_events.get('blocked_ips', 0)
+    backup_success_rate = backup_ops.get('success_rate_percent', 0)
+    disk_usage = system_resources.get('disk_usage_percent', 0)
+
+    # 상태에 따른 레벨 조정
+    if status_summary.get('security_status') == 'critical' or status_summary.get('backup_status') == 'needs_improvement':
+        level = NotificationLevel.ERROR
+    elif status_summary.get('security_status') == 'warning' or backup_success_rate < 90:
+        level = NotificationLevel.WARNING
+
+    # 메시지 생성
+    message = f"📊 주간 운영 리포트가 생성되었습니다.\n"
+    message += f"📅 기간: {period_start} ~ {period_end}\n\n"
+
+    # 상태 요약
+    if blocked_ips > 50:
+        message += "🚨 보안: 다수의 IP 차단이 발생했습니다. 즉시 검토가 필요합니다.\n"
+    elif blocked_ips > 10:
+        message += "⚠️ 보안: 평소보다 많은 IP 차단이 발생했습니다.\n"
+    else:
+        message += "✅ 보안: 정상적인 보안 상태를 유지하고 있습니다.\n"
+
+    if backup_success_rate < 80:
+        message += "🚨 백업: 백업 성공률이 낮습니다. 백업 시스템 점검이 필요합니다.\n"
+    elif backup_success_rate < 95:
+        message += "⚠️ 백업: 백업 성공률이 평균 이하입니다.\n"
+    else:
+        message += "✅ 백업: 백업이 안정적으로 수행되고 있습니다.\n"
+
+    # 알림 제목 생성
+    title = f"📊 주간 운영 리포트 ({period_start} ~ {period_end})"
+
+    # 세부 정보 필드 준비
+    report_fields = {
+        "📅 리포트 기간": f"{period_start} ~ {period_end}",
+        "📊 생성 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "🛡️ 보안 현황": f"차단 IP {blocked_ips}개 | 상태: {status_summary.get('security_status', 'unknown')}",
+        "📦 백업 현황": f"성공률 {backup_success_rate}% | 상태: {status_summary.get('backup_status', 'unknown')}",
+        "💾 시스템 리소스": f"디스크 사용률 {disk_usage}% | 상태: {status_summary.get('disk_status', 'unknown')}"
+    }
+
+    # 상세 통계 추가
+    if security_events:
+        report_fields["🔒 보안 세부사항"] = (
+            f"Rate Limit 위반: {security_events.get('rate_limit_violations', 0)}회\n"
+            f"화이트리스트 추가: {security_events.get('whitelist_additions', 0)}회\n"
+            f"모니터링 이벤트: {security_events.get('monitoring_events', 0)}회"
+        )
+
+    if backup_ops:
+        report_fields["📦 백업 세부사항"] = (
+            f"성공한 백업: {backup_ops.get('successful_backups', 0)}회\n"
+            f"실패한 백업: {backup_ops.get('failed_backups', 0)}회\n"
+            f"정리 작업: {backup_ops.get('cleanup_operations', 0)}회"
+        )
+
+    # 리포트 파일 링크 추가
+    if report_file_path:
+        # 상대 경로를 웹 URL로 변환
+        report_url = report_file_path.replace('reports/', '/reports/')
+        report_fields["📄 상세 리포트"] = f"[Markdown 리포트 보기]({report_url})"
+
+    # 권장 사항 추가
+    recommendations = []
+    if blocked_ips > 20:
+        recommendations.append("🔍 보안 정책 검토 및 화이트리스트 최적화")
+    if backup_success_rate < 95:
+        recommendations.append("📦 백업 시스템 점검 및 저장소 확인")
+    if disk_usage > 85:
+        recommendations.append("💾 디스크 정리 및 용량 확장 검토")
+
+    if recommendations:
+        report_fields["💡 권장 사항"] = "\n".join(recommendations)
+
+    # 다음 주 계획 추가
+    next_week_plans = [
+        "🔍 보안 패턴 분석 및 화이트리스트 최적화",
+        "📦 백업 정책 검토 및 저장 공간 최적화",
+        "🔄 자동화 스크립트 성능 개선"
+    ]
+    report_fields["📋 다음 주 계획"] = "\n".join(next_week_plans)
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=level,
+        title=title,
+        fields=report_fields,
+        attach_logs=level in [NotificationLevel.ERROR, NotificationLevel.CRITICAL]
+    )
+
+async def execute_and_notify_weekly_report(
+    script_path: str = "scripts/weekly_ops_report.sh",
+    script_args: List[str] = None,
+    auto_notify: bool = True
+) -> Dict[str, Any]:
+    """
+    주간 운영 리포트 스크립트 실행 후 결과 알림 전송
+
+    Args:
+        script_path: weekly_ops_report.sh 스크립트 경로
+        script_args: 스크립트 실행 인수
+        auto_notify: 자동 알림 전송 여부
+
+    Returns:
+        실행 결과와 알림 전송 결과
+    """
+    script_args = script_args or ["--json"]
+
+    try:
+        # 스크립트 실행
+        result = subprocess.run(
+            [script_path] + script_args,
+            capture_output=True,
+            text=True,
+            timeout=300,  # 5분 타임아웃
+            cwd=Path(script_path).parent.parent  # 프로젝트 루트에서 실행
+        )
+
+        execution_result = {
+            'script': 'weekly_ops_report.sh',
+            'returncode': result.returncode,
+            'stdout': result.stdout,
+            'stderr': result.stderr,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # JSON 출력 파싱
+        report_data = {}
+        report_file_path = None
+
+        if result.returncode == 0 and result.stdout.strip():
+            try:
+                # JSON 출력 파싱
+                json_output = json.loads(result.stdout.strip())
+                report_data = json_output
+
+                # 리포트 파일 경로 추정
+                period_end = report_data.get('report_metadata', {}).get('period_end', datetime.now().strftime('%Y-%m-%d'))
+                report_file_path = f"reports/weekly/weekly-report-{period_end}.md"
+
+            except json.JSONDecodeError:
+                # JSON 파싱 실패 시 기본 데이터 사용
+                report_data = {
+                    'report_metadata': {
+                        'period_start': (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d'),
+                        'period_end': datetime.now().strftime('%Y-%m-%d'),
+                        'generated_at': datetime.now().isoformat()
+                    },
+                    'execution_output': result.stdout.strip()
+                }
+
+        # 알림 전송
+        notification_result = {}
+        if auto_notify and result.returncode == 0:
+            notification_result = await send_weekly_ops_report(
+                report_data=report_data,
+                report_file_path=report_file_path,
+                level=NotificationLevel.INFO
+            )
+        elif auto_notify and result.returncode != 0:
+            # 실행 실패 시 에러 알림
+            error_data = {
+                'report_metadata': {
+                    'period_start': 'Unknown',
+                    'period_end': 'Unknown',
+                    'generated_at': datetime.now().isoformat()
+                },
+                'error': result.stderr or "스크립트 실행 실패",
+                'returncode': result.returncode
+            }
+            notification_result = await send_weekly_ops_report(
+                report_data=error_data,
+                level=NotificationLevel.ERROR
+            )
+
+        return {
+            'execution': execution_result,
+            'report_data': report_data,
+            'report_file': report_file_path,
+            'notification': notification_result,
+            'success': result.returncode == 0
+        }
+
+    except subprocess.TimeoutExpired:
+        error_result = {
+            'script': 'weekly_ops_report.sh',
+            'returncode': -1,
+            'error': 'Weekly report generation timeout (5 minutes)',
+            'timestamp': datetime.now().isoformat()
+        }
+
+        if auto_notify:
+            notification_result = await send_weekly_ops_report(
+                report_data={
+                    'error': 'Script timeout',
+                    'report_metadata': {'generated_at': datetime.now().isoformat()}
+                },
+                level=NotificationLevel.ERROR
+            )
+        else:
+            notification_result = {}
+
+        return {
+            'execution': error_result,
+            'report_data': {},
+            'report_file': None,
+            'notification': notification_result,
+            'success': False
+        }
+
+    except Exception as e:
+        error_result = {
+            'script': 'weekly_ops_report.sh',
+            'returncode': -2,
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }
+
+        if auto_notify:
+            notification_result = await send_weekly_ops_report(
+                report_data={
+                    'error': str(e),
+                    'report_metadata': {'generated_at': datetime.now().isoformat()}
+                },
+                level=NotificationLevel.ERROR
+            )
+        else:
+            notification_result = {}
+
+        return {
+            'execution': error_result,
+            'report_data': {},
+            'report_file': None,
+            'notification': notification_result,
+            'success': False
+        }
+
+# 편의 함수
+async def send_weekly_report_notification(report_period: str = None):
+    """
+    주간 리포트 생성 및 알림 전송 편의 함수
+
+    Args:
+        report_period: 리포트 기간 (None일 경우 최근 7일)
+    """
+    script_args = ["--json"]
+    if report_period:
+        script_args.extend(["--period", report_period])
+
+    return await execute_and_notify_weekly_report(
+        script_args=script_args,
+        auto_notify=True
+    )
+
+async def test_weekly_report_notification():
+    """주간 리포트 알림 시스템 테스트"""
+    print("📊 주간 리포트 알림 시스템 테스트 시작...")
+
+    # 테스트용 리포트 데이터
+    test_report_data = {
+        'report_metadata': {
+            'period_start': '2024-09-14',
+            'period_end': '2024-09-21',
+            'generated_at': datetime.now().isoformat(),
+            'report_type': 'weekly_operations'
+        },
+        'security_events': {
+            'blocked_ips': 15,
+            'rate_limit_violations': 45,
+            'whitelist_additions': 3,
+            'monitoring_events': 120,
+            'total_security_events': 183
+        },
+        'backup_operations': {
+            'successful_backups': 6,
+            'failed_backups': 1,
+            'cleanup_operations': 2,
+            'success_rate_percent': 86,
+            'total_backup_operations': 7
+        },
+        'system_resources': {
+            'disk_usage_percent': 78,
+            'security_log_size_bytes': 2048576,
+            'backup_directory_size_kb': 1048576
+        },
+        'status_summary': {
+            'security_status': 'warning',
+            'backup_status': 'good',
+            'disk_status': 'normal'
+        }
+    }
+
+    # 테스트 알림 전송
+    result = await send_weekly_ops_report(
+        report_data=test_report_data,
+        report_file_path="reports/weekly/weekly-report-2024-09-21.md",
+        level=NotificationLevel.INFO
+    )
+
+    print(f"✅ 주간 리포트 알림 테스트 완료: {result}")
+    return result
+
 if __name__ == "__main__":
     # 테스트 실행
-    asyncio.run(test_notifications())
+    import sys
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "ops":
+            asyncio.run(test_ops_integration())
+        elif sys.argv[1] == "weekly":
+            asyncio.run(test_weekly_report_notification())
+        else:
+            asyncio.run(test_notifications())
+    else:
+        asyncio.run(test_notifications())

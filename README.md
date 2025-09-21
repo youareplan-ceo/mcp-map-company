@@ -1509,3 +1509,350 @@ await send_ci_cleanup_report(
 - 시스템 리소스 사용량 모니터링
 
 이 CI 클린업 자동화 시스템을 통해 CI/CD 파이프라인 실행 후 생성되는 아티팩트와 로그 파일을 효율적으로 관리하여 시스템 성능과 저장 공간을 최적화할 수 있습니다.
+
+## 📊 주간 운영 리포트 자동화
+
+### 📋 weekly_ops_report.sh 스크립트 개요
+주간 운영 리포트 자동화 스크립트는 지난 7일간의 보안 이벤트와 백업 현황을 종합 분석하여 상세한 Markdown 리포트를 생성하고 알림 시스템과 연동됩니다.
+
+### 🎯 주요 기능
+
+#### 1. 📊 종합 데이터 분석
+- **보안 로그 분석**: 차단된 IP, Rate Limit 위반, 화이트리스트 이벤트 집계
+- **백업 상태 분석**: 성공/실패 통계, 정리 작업 현황
+- **시스템 리소스**: 디스크 사용률, 로그 파일 크기, 백업 디렉토리 용량
+- **상태 평가**: 보안/백업/시스템 상태별 자동 등급 부여
+
+#### 2. 📄 다양한 출력 형식
+- **Markdown 리포트**: `reports/weekly/weekly-report-YYYY-MM-DD.md`
+- **JSON 출력**: 자동화 파이프라인 연동용 구조화된 데이터
+- **상세 분석**: 권장 사항, 다음 주 계획, 상태 평가 포함
+
+#### 3. 🔔 알림 시스템 통합
+- **자동 알림**: 리포트 생성 완료 시 Slack/Discord/Email 전송
+- **상태별 알림**: 보안/백업 상태에 따른 알림 레벨 자동 조정
+- **한국어 메시지**: 완전한 한국어 지원으로 가독성 향상
+
+### 🛠️ 사용법
+
+#### 기본 실행
+```bash
+# 주간 리포트 생성 (Markdown)
+./scripts/weekly_ops_report.sh
+
+# 상세 출력과 함께 생성
+./scripts/weekly_ops_report.sh --verbose
+```
+
+#### JSON 출력 모드
+```bash
+# JSON 형식으로 결과 출력
+./scripts/weekly_ops_report.sh --json
+
+# JSON + 상세 출력
+./scripts/weekly_ops_report.sh --json --verbose
+```
+
+#### 시뮬레이션 모드
+```bash
+# 파일 생성 없이 시뮬레이션
+./scripts/weekly_ops_report.sh --dry-run
+
+# 시뮬레이션 + 상세 출력
+./scripts/weekly_ops_report.sh --dry-run --verbose
+```
+
+### 📊 출력 예시
+
+#### Markdown 리포트 예시
+```markdown
+# 📊 주간 운영 리포트
+
+**보고 기간**: 2024-09-14 ~ 2024-09-21
+**생성 일시**: 2024-09-21 14:30:25
+
+## 🛡️ 보안 현황
+
+### 보안 이벤트 요약
+- 🚫 **차단된 IP**: 15건
+- ⚠️ **Rate Limit 위반**: 45건
+- ✅ **화이트리스트 추가**: 3건
+- 👀 **모니터링 이벤트**: 120건
+
+### 보안 상태 평가
+⚠️ **주의**: 차단된 IP 수가 증가했습니다. 모니터링을 강화하세요.
+
+## 📦 백업 현황
+
+### 백업 통계
+- ✅ **성공한 백업**: 6회
+- ❌ **실패한 백업**: 1회
+- 🧹 **정리 작업**: 2회
+- 📊 **성공률**: 86%
+
+### 백업 상태 평가
+⚠️ **양호**: 백업 성공률이 양호합니다.
+```
+
+#### JSON 출력 예시
+```json
+{
+  "report_metadata": {
+    "period_start": "2024-09-14",
+    "period_end": "2024-09-21",
+    "generated_at": "2024-09-21T14:30:25Z",
+    "report_type": "weekly_operations"
+  },
+  "security_events": {
+    "blocked_ips": 15,
+    "rate_limit_violations": 45,
+    "whitelist_additions": 3,
+    "monitoring_events": 120,
+    "total_security_events": 183
+  },
+  "backup_operations": {
+    "successful_backups": 6,
+    "failed_backups": 1,
+    "cleanup_operations": 2,
+    "success_rate_percent": 86,
+    "total_backup_operations": 7
+  },
+  "system_resources": {
+    "disk_usage_percent": 78,
+    "security_log_size_bytes": 2048576,
+    "backup_directory_size_kb": 1048576
+  },
+  "status_summary": {
+    "security_status": "warning",
+    "backup_status": "good",
+    "disk_status": "normal"
+  }
+}
+```
+
+### 🔔 알림 시스템 연동
+
+#### 자동 알림 기능
+주간 리포트 생성 완료 시 자동으로 다중 채널 알림을 전송합니다:
+
+```python
+from mcp.utils.notifier import send_weekly_report_notification
+
+# 주간 리포트 생성 및 알림 전송
+result = await send_weekly_report_notification()
+```
+
+#### 알림 내용 예시
+**Slack/Discord 알림**:
+```
+📊 주간 운영 리포트 (2024-09-14 ~ 2024-09-21)
+
+📊 주간 운영 리포트가 생성되었습니다.
+📅 기간: 2024-09-14 ~ 2024-09-21
+
+⚠️ 보안: 평소보다 많은 IP 차단이 발생했습니다.
+✅ 백업: 백업이 안정적으로 수행되고 있습니다.
+
+📅 리포트 기간: 2024-09-14 ~ 2024-09-21
+🛡️ 보안 현황: 차단 IP 15개 | 상태: warning
+📦 백업 현황: 성공률 86% | 상태: good
+💡 권장 사항: 🔍 보안 정책 검토 및 화이트리스트 최적화
+```
+
+#### 상태별 알림 레벨
+- **Info**: 모든 상태가 정상인 경우
+- **Warning**: 보안 이벤트 증가 또는 백업 성공률 90% 미만
+- **Error**: 심각한 보안 위험 또는 백업 성공률 80% 미만
+
+### 🧪 테스트 실행
+
+#### weekly_ops_report.sh 테스트
+```bash
+# 주간 리포트 스크립트 테스트
+python -m pytest tests/test_weekly_ops_report.py -v
+
+# 알림 통합 테스트
+python -m pytest tests/test_weekly_ops_report.py::TestWeeklyOpsNotifierIntegration -v
+
+# 성능 테스트
+python -m pytest tests/test_weekly_ops_report.py::TestWeeklyOpsPerformance -v
+
+# 전체 통합 테스트
+python -m pytest tests/test_weekly_ops_report.py::TestWeeklyOpsIntegration -v
+```
+
+#### 테스트 시나리오
+1. **스크립트 기본 검증**
+   - 파일 존재 및 실행 권한 확인
+   - 도움말 옵션 정상 동작 검증
+   - 잘못된 옵션 에러 처리 확인
+
+2. **기능별 테스트**
+   - 시뮬레이션 모드 정상 동작
+   - JSON 출력 스키마 검증
+   - Markdown 리포트 생성 및 내용 확인
+
+3. **알림 통합 테스트**
+   - notifier.py 연동 확인
+   - Mock 알림 채널 테스트
+   - End-to-End 워크플로우 검증
+
+4. **성능 테스트**
+   - 60초 이내 실행 완료 검증
+   - 대량 로그 처리 성능 확인
+
+### 🔧 정기 실행 설정
+
+#### cron을 통한 자동 실행
+```bash
+# 매주 월요일 오전 9시에 주간 리포트 생성
+0 9 * * 1 cd /path/to/mcp-map-company && ./scripts/weekly_ops_report.sh >> /var/log/weekly_report.log 2>&1
+
+# 알림 포함 자동 실행 (Python 스크립트)
+0 9 * * 1 cd /path/to/mcp-map-company && python -c "
+import asyncio
+from mcp.utils.notifier import send_weekly_report_notification
+asyncio.run(send_weekly_report_notification())
+" >> /var/log/weekly_notification.log 2>&1
+```
+
+#### systemd 타이머 설정
+```ini
+# /etc/systemd/system/weekly-ops-report.service
+[Unit]
+Description=Weekly Operations Report Generation
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/path/to/mcp-map-company
+ExecStart=/path/to/mcp-map-company/scripts/weekly_ops_report.sh
+User=mcp-user
+StandardOutput=journal
+StandardError=journal
+
+# /etc/systemd/system/weekly-ops-report.timer
+[Unit]
+Description=Run Weekly Operations Report every Monday at 9 AM
+Requires=weekly-ops-report.service
+
+[Timer]
+OnCalendar=Mon *-*-* 09:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+### 📈 모니터링 및 분석
+
+#### 리포트 데이터 분석
+```bash
+# 최근 리포트 파일 목록
+ls -la reports/weekly/ | tail -10
+
+# JSON 데이터 분석
+./scripts/weekly_ops_report.sh --json | jq '.security_events.blocked_ips'
+
+# 주간 트렌드 분석
+for file in reports/weekly/*.json; do
+  echo "$(basename $file): $(jq -r '.backup_operations.success_rate_percent' $file)%"
+done
+```
+
+#### 리포트 아카이브 관리
+```bash
+# 6개월 이상 된 리포트 압축
+find reports/weekly/ -name "*.md" -mtime +180 -exec gzip {} \;
+
+# 1년 이상 된 리포트 삭제
+find reports/weekly/ -name "*.gz" -mtime +365 -delete
+
+# 리포트 디렉토리 용량 확인
+du -sh reports/weekly/
+```
+
+### 💡 고급 활용
+
+#### 1. 맞춤형 분석 기간
+```bash
+# 특정 기간 분석 (미래 확장 기능)
+./scripts/weekly_ops_report.sh --start-date 2024-09-01 --end-date 2024-09-07
+```
+
+#### 2. 부서별 리포트 생성
+```bash
+# 보안팀용 리포트 (보안 이벤트 중심)
+./scripts/weekly_ops_report.sh --focus security --json
+
+# 인프라팀용 리포트 (백업/시스템 중심)
+./scripts/weekly_ops_report.sh --focus infrastructure --json
+```
+
+#### 3. 알림 채널 선택
+```python
+# 특정 채널로만 알림 전송
+from mcp.utils.notifier import send_weekly_ops_report, NotificationChannel
+
+result = await send_weekly_ops_report(
+    report_data=report_data,
+    channels=[NotificationChannel.SLACK]
+)
+```
+
+#### 4. 대시보드 연동
+```javascript
+// 웹 대시보드에서 주간 리포트 표시
+fetch('/api/weekly-report/latest')
+  .then(response => response.json())
+  .then(data => {
+    updateSecurityChart(data.security_events);
+    updateBackupStatus(data.backup_operations);
+    updateSystemHealth(data.system_resources);
+  });
+```
+
+### 🔒 보안 고려사항
+
+#### 권한 관리
+- 스크립트 실행 권한: `chmod +x scripts/weekly_ops_report.sh`
+- 로그 디렉토리 읽기 권한: `logs/` 디렉토리
+- 리포트 디렉토리 쓰기 권한: `reports/weekly/` 디렉토리
+
+#### 민감 정보 보호
+- IP 주소는 마스킹 처리 옵션 제공
+- 상세 로그는 관리자만 접근 가능
+- 알림 메시지에는 요약 정보만 포함
+
+### 📋 문제 해결
+
+#### 일반적인 문제
+1. **"로그 파일을 찾을 수 없습니다"**
+   - 로그 디렉토리 존재 확인: `ls -la logs/`
+   - 권한 확인: `ls -la logs/security.log`
+
+2. **"JSON 파싱 오류"**
+   - 스크립트 출력 확인: `./scripts/weekly_ops_report.sh --verbose`
+   - 로그 파일 형식 검증
+
+3. **"알림 전송 실패"**
+   - 환경변수 확인: `echo $SLACK_WEBHOOK_URL`
+   - 네트워크 연결 확인: `curl -I $SLACK_WEBHOOK_URL`
+
+#### 디버깅 모드
+```bash
+# 상세 디버그 출력
+./scripts/weekly_ops_report.sh --verbose --dry-run
+
+# 로그 파일 분석
+tail -f logs/daily_ops.log
+
+# 알림 테스트
+python -c "
+import asyncio
+from mcp.utils.notifier import test_weekly_report_notification
+asyncio.run(test_weekly_report_notification())
+"
+```
+
+이 주간 운영 리포트 자동화 시스템을 통해 관리자는 매주 정기적으로 시스템 상태를 종합 점검하고, 데이터 기반의 운영 의사결정을 내릴 수 있습니다.
