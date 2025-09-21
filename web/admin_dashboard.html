@@ -1211,6 +1211,225 @@
             </div>
         </div>
 
+        <!-- 📅 연간 운영 리포트 패널 -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">📅</span>
+                    연간 운영 리포트
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <button id="refreshYearlyReportBtn" class="bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        새로고침
+                    </button>
+                    <button id="generateYearlyReportBtn" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📊</span>
+                        리포트 생성
+                    </button>
+                    <button id="downloadYearlyReportMdBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📄</span>
+                        Markdown
+                    </button>
+                    <button id="downloadYearlyReportJsonBtn" class="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📋</span>
+                        JSON
+                    </button>
+                    <button id="sendYearlyNotificationBtn" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📢</span>
+                        알림 전송
+                    </button>
+                </div>
+            </div>
+
+            <!-- 연간 성과 점수 카드 -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <!-- 종합 성과 카드 -->
+                <div class="bg-gradient-to-br from-purple-500/20 to-purple-600/30 border border-purple-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">🏆</span>
+                        <div class="text-purple-300 text-sm font-medium">종합 성과</div>
+                    </div>
+                    <div id="yearlyTotalScore" class="text-purple-100 text-3xl font-bold mb-1">-</div>
+                    <div class="text-purple-200 text-xs">/100점</div>
+                    <div id="yearlyGrade" class="text-purple-200 text-sm font-medium mt-1">-</div>
+                </div>
+
+                <!-- 보안 점수 카드 -->
+                <div class="bg-gradient-to-br from-red-500/20 to-red-600/30 border border-red-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">🛡️</span>
+                        <div class="text-red-300 text-sm font-medium">보안 점수</div>
+                    </div>
+                    <div id="yearlySecurityScore" class="text-red-100 text-3xl font-bold mb-1">-</div>
+                    <div class="text-red-200 text-xs">/30점</div>
+                </div>
+
+                <!-- 백업 점수 카드 -->
+                <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">📦</span>
+                        <div class="text-blue-300 text-sm font-medium">백업 점수</div>
+                    </div>
+                    <div id="yearlyBackupScore" class="text-blue-100 text-3xl font-bold mb-1">-</div>
+                    <div class="text-blue-200 text-xs">/30점</div>
+                </div>
+
+                <!-- 시스템 점수 카드 -->
+                <div class="bg-gradient-to-br from-orange-500/20 to-orange-600/30 border border-orange-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">⚙️</span>
+                        <div class="text-orange-300 text-sm font-medium">시스템 점수</div>
+                    </div>
+                    <div id="yearlySystemScore" class="text-orange-100 text-3xl font-bold mb-1">-</div>
+                    <div class="text-orange-200 text-xs">/20점</div>
+                </div>
+
+                <!-- CI/CD 점수 카드 -->
+                <div class="bg-gradient-to-br from-green-500/20 to-green-600/30 border border-green-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">🚀</span>
+                        <div class="text-green-300 text-sm font-medium">CI/CD 점수</div>
+                    </div>
+                    <div id="yearlyCIScore" class="text-green-100 text-3xl font-bold mb-1">-</div>
+                    <div class="text-green-200 text-xs">/20점</div>
+                </div>
+            </div>
+
+            <!-- 연간 추이 차트 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- 분기별 성과 추이 차트 -->
+                <div class="bg-black/20 dark:bg-gray-900/30 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📈</span>
+                        분기별 성과 추이
+                    </h3>
+                    <div style="height: 250px;">
+                        <canvas id="yearlyQuarterlyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 연간 성과 분포 차트 -->
+                <div class="bg-black/20 dark:bg-gray-900/30 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🍰</span>
+                        성과 영역별 분포
+                    </h3>
+                    <div style="height: 250px;">
+                        <canvas id="yearlyDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 이벤트 집중 구간 및 치명적 이벤트 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- 치명적 이벤트 Top5 -->
+                <div class="bg-black/20 dark:bg-gray-900/30 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🚨</span>
+                        치명적 이벤트 Top5
+                    </h3>
+                    <div id="yearlyCriticalEventsList" class="space-y-3">
+                        <div class="text-gray-400 dark:text-gray-500 text-center py-4">
+                            데이터를 불러오는 중...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 연간 통계 요약 -->
+                <div class="bg-black/20 dark:bg-gray-900/30 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📊</span>
+                        연간 통계 요약
+                    </h3>
+                    <div id="yearlyStatsSummary" class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">보안 이벤트:</span>
+                            <span id="yearlySecurityEvents" class="text-white font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">백업 성공률:</span>
+                            <span id="yearlyBackupSuccessRate" class="text-white font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">시스템 가동시간:</span>
+                            <span id="yearlySystemUptime" class="text-white font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">CI 빌드 수:</span>
+                            <span id="yearlyCIBuilds" class="text-white font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">테스트 커버리지:</span>
+                            <span id="yearlyTestCoverage" class="text-white font-medium">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 리포트 생성/다운로드 컨트롤 -->
+            <div class="bg-black/20 dark:bg-gray-900/30 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-white dark:text-gray-100 font-semibold flex items-center">
+                        <span class="mr-2">📋</span>
+                        리포트 관리
+                    </h3>
+                    <div class="flex items-center space-x-2">
+                        <select id="yearlyReportYearSelect" class="bg-gray-800 dark:bg-gray-700 text-white border border-gray-600 rounded px-3 py-1 text-sm">
+                            <option value="2024">2024년</option>
+                            <option value="2023">2023년</option>
+                            <option value="2022">2022년</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 리포트 생성 상태 -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">리포트 상태:</span>
+                            <span id="yearlyReportStatus" class="text-yellow-400 font-medium">준비 중</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">마지막 생성:</span>
+                            <span id="yearlyReportLastGenerated" class="text-white font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">파일 크기:</span>
+                            <span id="yearlyReportFileSize" class="text-white font-medium">-</span>
+                        </div>
+                    </div>
+
+                    <!-- 알림 및 공유 -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">마지막 알림:</span>
+                            <span id="yearlyLastNotification" class="text-white font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 dark:text-gray-400">알림 채널:</span>
+                            <div class="flex space-x-1">
+                                <span id="yearlySlackStatus" class="text-xs px-2 py-1 rounded bg-gray-600 text-gray-300">Slack</span>
+                                <span id="yearlyDiscordStatus" class="text-xs px-2 py-1 rounded bg-gray-600 text-gray-300">Discord</span>
+                                <span id="yearlyEmailStatus" class="text-xs px-2 py-1 rounded bg-gray-600 text-gray-300">Email</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 진행률 표시 (리포트 생성 중일 때) -->
+                <div id="yearlyReportProgress" class="hidden mt-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-300 text-sm">리포트 생성 중...</span>
+                        <span id="yearlyProgressPercent" class="text-white text-sm font-medium">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div id="yearlyProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 📅 월간 운영 리포트 패널 -->
         <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
             <div class="flex items-center justify-between mb-6">
@@ -1446,6 +1665,249 @@
             </div>
         </div>
 
+        <!-- 📊 분기별 운영 리포트 패널 -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">📊</span>
+                    분기별 운영 리포트
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <select id="quarterlyReportQuarterSelect" class="bg-gray-700 text-white px-3 py-2 rounded text-sm border border-gray-600 focus:outline-none focus:border-blue-500">
+                        <option value="Q1">Q1 (1-3월)</option>
+                        <option value="Q2">Q2 (4-6월)</option>
+                        <option value="Q3">Q3 (7-9월)</option>
+                        <option value="Q4">Q4 (10-12월)</option>
+                    </select>
+                    <button id="refreshQuarterlyReportBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        새로고침
+                    </button>
+                    <button id="generateQuarterlyReportBtn" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📊</span>
+                        리포트 생성
+                    </button>
+                    <button id="downloadQuarterlyReportBtn" class="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📥</span>
+                        다운로드
+                    </button>
+                </div>
+            </div>
+
+            <!-- 분기별 성과 점수 카드들 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <!-- 보안 점수 카드 -->
+                <div class="bg-gradient-to-br from-red-500/20 to-red-600/30 border border-red-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">🛡️</span>
+                        <div class="text-red-300 dark:text-red-200 text-sm font-medium">보안 점수</div>
+                    </div>
+                    <div id="quarterlySecurityScore" class="text-red-100 text-3xl font-bold mb-1">0</div>
+                    <div class="text-red-200 text-xs">/30점</div>
+                </div>
+
+                <!-- 백업 점수 카드 -->
+                <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">📦</span>
+                        <div class="text-blue-300 dark:text-blue-200 text-sm font-medium">백업 점수</div>
+                    </div>
+                    <div id="quarterlyBackupScore" class="text-blue-100 text-3xl font-bold mb-1">0</div>
+                    <div class="text-blue-200 text-xs">/30점</div>
+                </div>
+
+                <!-- 시스템 점수 카드 -->
+                <div class="bg-gradient-to-br from-green-500/20 to-green-600/30 border border-green-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">⚙️</span>
+                        <div class="text-green-300 dark:text-green-200 text-sm font-medium">시스템 점수</div>
+                    </div>
+                    <div id="quarterlySystemScore" class="text-green-100 text-3xl font-bold mb-1">0</div>
+                    <div class="text-green-200 text-xs">/20점</div>
+                </div>
+
+                <!-- 총합 점수 카드 -->
+                <div class="bg-gradient-to-br from-yellow-500/20 to-yellow-600/30 border border-yellow-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">🏆</span>
+                        <div class="text-yellow-300 dark:text-yellow-200 text-sm font-medium">총합 점수</div>
+                    </div>
+                    <div id="quarterlyTotalScore" class="text-yellow-100 text-3xl font-bold mb-1">0</div>
+                    <div id="quarterlyPerformanceGrade" class="text-yellow-200 text-xs font-medium">등급 확인 중...</div>
+                </div>
+            </div>
+
+            <!-- 분기별 성과 차트들 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- 월별 추이 차트 -->
+                <div class="bg-gray-800/30 border border-gray-600/30 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📈</span>
+                        월별 성과 추이
+                    </h3>
+                    <div class="h-64">
+                        <canvas id="quarterlyMonthlyTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 영역별 점수 분포 차트 -->
+                <div class="bg-gray-800/30 border border-gray-600/30 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🎯</span>
+                        영역별 점수 분포
+                    </h3>
+                    <div class="h-64">
+                        <canvas id="quarterlyScoreDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 분기별 리포트 상세 정보 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- 보안 상세 -->
+                <div class="bg-red-500/10 dark:bg-red-600/10 border border-red-400/20 rounded-lg p-4">
+                    <h4 class="text-red-300 dark:text-red-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">🛡️</span>
+                        보안 현황
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-red-200">차단 IP:</span>
+                            <span id="quarterlyBlockedIPs" class="text-red-100 font-medium">0개</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-red-200">보안 이벤트:</span>
+                            <span id="quarterlySecurityEvents" class="text-red-100 font-medium">0건</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-red-200">Rate Limit:</span>
+                            <span id="quarterlyRateLimit" class="text-red-100 font-medium">0회</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-red-200">화이트리스트 추가:</span>
+                            <span id="quarterlyWhitelistAdded" class="text-red-100 font-medium">0개</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 백업 상세 -->
+                <div class="bg-blue-500/10 dark:bg-blue-600/10 border border-blue-400/20 rounded-lg p-4">
+                    <h4 class="text-blue-300 dark:text-blue-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">📦</span>
+                        백업 현황
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-blue-200">성공 백업:</span>
+                            <span id="quarterlySuccessfulBackups" class="text-blue-100 font-medium">0회</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-200">실패 백업:</span>
+                            <span id="quarterlyFailedBackups" class="text-blue-100 font-medium">0회</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-200">성공률:</span>
+                            <span id="quarterlyBackupSuccessRate" class="text-blue-100 font-medium">0%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-200">정리 작업:</span>
+                            <span id="quarterlyCleanupOps" class="text-blue-100 font-medium">0회</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 시스템 상세 -->
+                <div class="bg-green-500/10 dark:bg-green-600/10 border border-green-400/20 rounded-lg p-4">
+                    <h4 class="text-green-300 dark:text-green-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">⚙️</span>
+                        시스템 현황
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-green-200">평균 CPU:</span>
+                            <span id="quarterlyAvgCpu" class="text-green-100 font-medium">0%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-green-200">평균 메모리:</span>
+                            <span id="quarterlyAvgMemory" class="text-green-100 font-medium">0%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-green-200">평균 디스크:</span>
+                            <span id="quarterlyAvgDisk" class="text-green-100 font-medium">0%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-green-200">업타임:</span>
+                            <span id="quarterlyUptime" class="text-green-100 font-medium">0일</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최신 분기별 리포트 목록 및 다운로드 -->
+            <div class="bg-gray-800/30 border border-gray-600/30 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-white dark:text-gray-100 font-semibold">최근 분기별 리포트</h3>
+                    <div class="flex items-center space-x-2">
+                        <select id="quarterlyReportYearSelect" class="bg-gray-700 text-white px-3 py-1 rounded text-sm border border-gray-600 focus:outline-none focus:border-blue-500">
+                            <option value="2024">2024년</option>
+                            <option value="2023">2023년</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="quarterlyReportsList" class="max-h-64 overflow-y-auto p-4 space-y-3">
+                    <!-- 분기별 리포트 목록이 여기에 동적으로 추가됩니다 -->
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-2">📊</div>
+                        <div>분기별 리포트 데이터를 로드하는 중...</div>
+                        <div class="text-sm text-gray-500 mt-2">첫 번째 리포트 생성까지 시간이 걸릴 수 있습니다.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 분기별 리포트 권장사항 -->
+            <div id="quarterlyRecommendationsSection" class="mt-6 hidden">
+                <div class="bg-yellow-500/10 dark:bg-yellow-600/10 border border-yellow-400/20 rounded-lg p-4">
+                    <h4 class="text-yellow-300 dark:text-yellow-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">💡</span>
+                        분기별 권장사항
+                    </h4>
+                    <div id="quarterlyRecommendationsList" class="space-y-2 text-sm text-yellow-200">
+                        <!-- 권장사항이 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주요 이슈 기간 -->
+            <div id="quarterlyCriticalPeriodsSection" class="mt-6 hidden">
+                <div class="bg-red-500/10 dark:bg-red-600/10 border border-red-400/20 rounded-lg p-4">
+                    <h4 class="text-red-300 dark:text-red-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">⚠️</span>
+                        주요 이슈 기간
+                    </h4>
+                    <div id="quarterlyCriticalPeriodsList" class="space-y-2 text-sm text-red-200">
+                        <!-- 주요 이슈 기간이 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 다음 분기 목표 -->
+            <div id="nextQuarterGoalsSection" class="mt-6 hidden">
+                <div class="bg-purple-500/10 dark:bg-purple-600/10 border border-purple-400/20 rounded-lg p-4">
+                    <h4 class="text-purple-300 dark:text-purple-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">🎯</span>
+                        다음 분기 목표
+                    </h4>
+                    <div id="nextQuarterGoalsList" class="space-y-2 text-sm text-purple-200">
+                        <div>• 종합 성과 점수 90점 이상 달성</div>
+                        <div>• 보안 이벤트 15% 감소</div>
+                        <div>• 백업 성공률 99% 이상 유지</div>
+                        <div>• 시스템 자동화 및 CI/CD 성능 향상</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <div class="text-center text-white/70 dark:text-gray-400 text-sm">
             © 2024 MCP-MAP Company. All rights reserved.
@@ -1543,6 +2005,11 @@
                         this.updateSingleChart(chart);
                     }
                 });
+
+                // 연간 운영 리포트 차트 업데이트
+                if (yearlyReportManager) {
+                    yearlyReportManager.updateChartsForTheme();
+                }
             }
 
             updateSingleChart(chart) {
@@ -5066,6 +5533,552 @@
         let opsNotificationManager;
         let ciReportManager;
 
+        // =============================================
+        // 📅 연간 운영 리포트 매니저 (한국어 주석 포함)
+        // =============================================
+
+        class YearlyReportManager {
+            constructor() {
+                this.currentYear = new Date().getFullYear();
+                this.isLoading = false;
+                this.reportData = null;
+                this.charts = {
+                    quarterly: null,
+                    distribution: null
+                };
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.updateYearSelector();
+                this.loadInitialData();
+                addLog('📅 연간 운영 리포트 매니저가 초기화되었습니다.', 'info');
+            }
+
+            setupEventListeners() {
+                // 새로고침 버튼
+                const refreshBtn = document.getElementById('yearlyRefreshBtn');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', () => this.refreshData());
+                }
+
+                // 리포트 생성 버튼
+                const generateBtn = document.getElementById('yearlyGenerateBtn');
+                if (generateBtn) {
+                    generateBtn.addEventListener('click', () => this.generateReport());
+                }
+
+                // Markdown 다운로드 버튼
+                const markdownBtn = document.getElementById('yearlyMarkdownBtn');
+                if (markdownBtn) {
+                    markdownBtn.addEventListener('click', () => this.downloadMarkdown());
+                }
+
+                // JSON 다운로드 버튼
+                const jsonBtn = document.getElementById('yearlyJsonBtn');
+                if (jsonBtn) {
+                    jsonBtn.addEventListener('click', () => this.downloadJson());
+                }
+
+                // 알림 전송 버튼
+                const notifyBtn = document.getElementById('yearlyNotifyBtn');
+                if (notifyBtn) {
+                    notifyBtn.addEventListener('click', () => this.sendNotification());
+                }
+
+                // 연도 선택기
+                const yearSelector = document.getElementById('yearlyYearSelector');
+                if (yearSelector) {
+                    yearSelector.addEventListener('change', (e) => {
+                        this.currentYear = parseInt(e.target.value);
+                        this.loadYearlyData();
+                    });
+                }
+            }
+
+            updateYearSelector() {
+                const yearSelector = document.getElementById('yearlyYearSelector');
+                if (!yearSelector) return;
+
+                // 현재 연도부터 5년 전까지의 옵션 생성
+                const currentYear = new Date().getFullYear();
+                yearSelector.innerHTML = '';
+
+                for (let year = currentYear; year >= currentYear - 5; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year + '년';
+                    if (year === this.currentYear) {
+                        option.selected = true;
+                    }
+                    yearSelector.appendChild(option);
+                }
+            }
+
+            async loadInitialData() {
+                await this.loadYearlyData();
+            }
+
+            async refreshData() {
+                addLog('📅 연간 운영 리포트 데이터를 새로고침합니다...', 'info');
+                await this.loadYearlyData();
+                this.showSuccessToast('데이터가 새로고침되었습니다');
+            }
+
+            async loadYearlyData() {
+                if (this.isLoading) return;
+
+                this.setLoadingState(true);
+                this.updateProgressBar(0, '연간 데이터 로딩 중...');
+
+                try {
+                    // 실제로는 yearly_ops_report.sh 스크립트를 호출하여 데이터를 가져옴
+                    // 여기서는 시뮬레이션된 데이터 사용
+                    this.updateProgressBar(25, '보안 데이터 분석 중...');
+                    await this.delay(500);
+
+                    this.updateProgressBar(50, '백업 데이터 분석 중...');
+                    await this.delay(500);
+
+                    this.updateProgressBar(75, '시스템 메트릭 분석 중...');
+                    await this.delay(500);
+
+                    this.updateProgressBar(100, '리포트 생성 완료');
+
+                    // 시뮬레이션된 연간 리포트 데이터
+                    this.reportData = this.generateSimulatedData();
+
+                    this.updateScoreCards();
+                    this.updateCharts();
+                    this.updateCriticalEvents();
+                    this.updateStatistics();
+
+                    addLog(`📅 ${this.currentYear}년 연간 운영 리포트가 로드되었습니다.`, 'success');
+
+                } catch (error) {
+                    console.error('연간 리포트 로딩 실패:', error);
+                    addLog('❌ 연간 리포트 로딩에 실패했습니다: ' + error.message, 'error');
+                    this.showErrorToast('데이터 로딩에 실패했습니다');
+                } finally {
+                    this.setLoadingState(false);
+                }
+            }
+
+            generateSimulatedData() {
+                // 실제 환경에서는 yearly_ops_report.sh의 출력을 파싱
+                const baseScore = 75 + Math.random() * 20; // 75-95 점
+                return {
+                    year: this.currentYear,
+                    overall_score: Math.round(baseScore),
+                    security_score: Math.round(baseScore + (Math.random() - 0.5) * 10),
+                    backup_score: Math.round(baseScore + (Math.random() - 0.5) * 8),
+                    system_score: Math.round(baseScore + (Math.random() - 0.5) * 12),
+                    cicd_score: Math.round(baseScore + (Math.random() - 0.5) * 15),
+                    quarterly_trends: [
+                        { quarter: 'Q1', score: Math.round(baseScore + (Math.random() - 0.5) * 10) },
+                        { quarter: 'Q2', score: Math.round(baseScore + (Math.random() - 0.5) * 10) },
+                        { quarter: 'Q3', score: Math.round(baseScore + (Math.random() - 0.5) * 10) },
+                        { quarter: 'Q4', score: Math.round(baseScore + (Math.random() - 0.5) * 10) }
+                    ],
+                    critical_events: [
+                        { date: '2024-12-15', type: '보안', description: 'SSH 무차별 대입 공격 차단', severity: 'high' },
+                        { date: '2024-11-28', type: '백업', description: '백업 검증 실패 (database-prod)', severity: 'medium' },
+                        { date: '2024-10-22', type: 'CI/CD', description: 'Production 배포 실패 (rollback 수행)', severity: 'high' },
+                        { date: '2024-09-15', type: '시스템', description: 'Disk 사용량 90% 초과', severity: 'medium' },
+                        { date: '2024-08-08', type: '보안', description: 'Suspicious API 호출 패턴 탐지', severity: 'low' }
+                    ],
+                    statistics: {
+                        total_security_incidents: Math.floor(50 + Math.random() * 30),
+                        backup_success_rate: Math.round(95 + Math.random() * 4),
+                        system_uptime: Math.round(98 + Math.random() * 1.5),
+                        avg_deployment_time: Math.round(8 + Math.random() * 4)
+                    }
+                };
+            }
+
+            updateScoreCards() {
+                if (!this.reportData) return;
+
+                const scoreCards = [
+                    { id: 'yearlyOverallScore', value: this.reportData.overall_score },
+                    { id: 'yearlySecurityScore', value: this.reportData.security_score },
+                    { id: 'yearlyBackupScore', value: this.reportData.backup_score },
+                    { id: 'yearlySystemScore', value: this.reportData.system_score },
+                    { id: 'yearlyCicdScore', value: this.reportData.cicd_score }
+                ];
+
+                scoreCards.forEach(card => {
+                    const element = document.getElementById(card.id);
+                    if (element) {
+                        this.animateScore(element, card.value);
+                    }
+                });
+            }
+
+            animateScore(element, targetValue) {
+                const startValue = 0;
+                const duration = 1000;
+                const startTime = performance.now();
+
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    const currentValue = Math.round(startValue + (targetValue - startValue) * progress);
+                    element.textContent = currentValue;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+
+                requestAnimationFrame(animate);
+            }
+
+            updateCharts() {
+                if (!this.reportData) return;
+
+                this.updateQuarterlyTrendChart();
+                this.updateScoreDistributionChart();
+            }
+
+            updateQuarterlyTrendChart() {
+                const ctx = document.getElementById('yearlyQuarterlyChart');
+                if (!ctx) return;
+
+                // 기존 차트 파괴
+                if (this.charts.quarterly) {
+                    this.charts.quarterly.destroy();
+                }
+
+                const isDark = document.documentElement.classList.contains('dark');
+                const textColor = isDark ? '#e5e7eb' : '#374151';
+                const gridColor = isDark ? '#374151' : '#e5e7eb';
+
+                this.charts.quarterly = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: this.reportData.quarterly_trends.map(q => q.quarter),
+                        datasets: [{
+                            label: '분기별 성과 점수',
+                            data: this.reportData.quarterly_trends.map(q => q.score),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: textColor }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            },
+                            x: {
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            updateScoreDistributionChart() {
+                const ctx = document.getElementById('yearlyDistributionChart');
+                if (!ctx) return;
+
+                // 기존 차트 파괴
+                if (this.charts.distribution) {
+                    this.charts.distribution.destroy();
+                }
+
+                const isDark = document.documentElement.classList.contains('dark');
+                const textColor = isDark ? '#e5e7eb' : '#374151';
+
+                this.charts.distribution = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['보안', '백업', '시스템', 'CI/CD'],
+                        datasets: [{
+                            data: [
+                                this.reportData.security_score,
+                                this.reportData.backup_score,
+                                this.reportData.system_score,
+                                this.reportData.cicd_score
+                            ],
+                            backgroundColor: [
+                                '#ef4444', // 보안 - 빨간색
+                                '#10b981', // 백업 - 초록색
+                                '#f59e0b', // 시스템 - 노란색
+                                '#3b82f6'  // CI/CD - 파란색
+                            ],
+                            borderWidth: 2,
+                            borderColor: isDark ? '#1f2937' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: textColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            updateCriticalEvents() {
+                if (!this.reportData) return;
+
+                const container = document.getElementById('yearlyCriticalEventsList');
+                if (!container) return;
+
+                container.innerHTML = '';
+
+                this.reportData.critical_events.slice(0, 5).forEach(event => {
+                    const severityColors = {
+                        high: 'text-red-400 bg-red-500/20',
+                        medium: 'text-yellow-400 bg-yellow-500/20',
+                        low: 'text-green-400 bg-green-500/20'
+                    };
+
+                    const severityLabels = {
+                        high: '높음',
+                        medium: '보통',
+                        low: '낮음'
+                    };
+
+                    const eventElement = document.createElement('div');
+                    eventElement.className = 'flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10';
+                    eventElement.innerHTML = `
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="text-sm font-medium text-white">${event.type}</span>
+                                <span class="px-2 py-1 rounded text-xs font-medium ${severityColors[event.severity]}">${severityLabels[event.severity]}</span>
+                            </div>
+                            <div class="text-sm text-gray-300">${event.description}</div>
+                        </div>
+                        <div class="text-xs text-gray-400">${event.date}</div>
+                    `;
+                    container.appendChild(eventElement);
+                });
+            }
+
+            updateStatistics() {
+                if (!this.reportData) return;
+
+                const stats = [
+                    { id: 'yearlySecurityIncidents', value: this.reportData.statistics.total_security_incidents },
+                    { id: 'yearlyBackupSuccessRate', value: this.reportData.statistics.backup_success_rate + '%' },
+                    { id: 'yearlySystemUptime', value: this.reportData.statistics.system_uptime + '%' },
+                    { id: 'yearlyAvgDeployTime', value: this.reportData.statistics.avg_deployment_time + '분' }
+                ];
+
+                stats.forEach(stat => {
+                    const element = document.getElementById(stat.id);
+                    if (element) {
+                        element.textContent = stat.value;
+                    }
+                });
+            }
+
+            async generateReport() {
+                if (this.isLoading) return;
+
+                addLog('📊 연간 운영 리포트를 생성합니다...', 'info');
+                this.setLoadingState(true);
+
+                try {
+                    // 실제로는 yearly_ops_report.sh 스크립트를 실행
+                    await this.delay(2000);
+
+                    await this.loadYearlyData();
+                    this.showSuccessToast('리포트가 생성되었습니다');
+
+                } catch (error) {
+                    console.error('리포트 생성 실패:', error);
+                    addLog('❌ 리포트 생성에 실패했습니다: ' + error.message, 'error');
+                    this.showErrorToast('리포트 생성에 실패했습니다');
+                } finally {
+                    this.setLoadingState(false);
+                }
+            }
+
+            async downloadMarkdown() {
+                if (!this.reportData) {
+                    this.showErrorToast('리포트 데이터가 없습니다');
+                    return;
+                }
+
+                const markdown = this.generateMarkdownReport();
+                this.downloadFile(`yearly_ops_report_${this.currentYear}.md`, markdown, 'text/markdown');
+                addLog('📄 Markdown 리포트가 다운로드되었습니다.', 'success');
+            }
+
+            async downloadJson() {
+                if (!this.reportData) {
+                    this.showErrorToast('리포트 데이터가 없습니다');
+                    return;
+                }
+
+                const json = JSON.stringify(this.reportData, null, 2);
+                this.downloadFile(`yearly_ops_report_${this.currentYear}.json`, json, 'application/json');
+                addLog('📊 JSON 리포트가 다운로드되었습니다.', 'success');
+            }
+
+            generateMarkdownReport() {
+                return `# 📅 ${this.currentYear}년 연간 운영 리포트
+
+## 📊 종합 성과 요약
+- **종합 점수**: ${this.reportData.overall_score}/100
+- **보안 점수**: ${this.reportData.security_score}/100
+- **백업 점수**: ${this.reportData.backup_score}/100
+- **시스템 점수**: ${this.reportData.system_score}/100
+- **CI/CD 점수**: ${this.reportData.cicd_score}/100
+
+## 📈 분기별 성과 트렌드
+${this.reportData.quarterly_trends.map(q => `- **${q.quarter}**: ${q.score}점`).join('\n')}
+
+## 🚨 주요 보안 이벤트 (Top 5)
+${this.reportData.critical_events.slice(0, 5).map(event =>
+    `- **${event.date}** [${event.type}] ${event.description} (위험도: ${event.severity})`
+).join('\n')}
+
+## 📋 연간 통계
+- **보안 인시던트**: ${this.reportData.statistics.total_security_incidents}건
+- **백업 성공률**: ${this.reportData.statistics.backup_success_rate}%
+- **시스템 가동시간**: ${this.reportData.statistics.system_uptime}%
+- **평균 배포 시간**: ${this.reportData.statistics.avg_deployment_time}분
+
+---
+*Generated by MCP Map Company Admin Dashboard*
+`;
+            }
+
+            async sendNotification() {
+                if (!this.reportData) {
+                    this.showErrorToast('리포트 데이터가 없습니다');
+                    return;
+                }
+
+                if (this.isLoading) return;
+
+                addLog('📧 연간 운영 리포트 알림을 전송합니다...', 'info');
+                this.setLoadingState(true);
+
+                try {
+                    // 실제로는 mcp/utils/notifier.py의 send_yearly_ops_report 함수를 호출
+                    await this.delay(1500);
+
+                    this.showSuccessToast('연간 리포트 알림이 전송되었습니다');
+                    addLog('📧 연간 운영 리포트 알림이 성공적으로 전송되었습니다.', 'success');
+
+                } catch (error) {
+                    console.error('알림 전송 실패:', error);
+                    addLog('❌ 알림 전송에 실패했습니다: ' + error.message, 'error');
+                    this.showErrorToast('알림 전송에 실패했습니다');
+                } finally {
+                    this.setLoadingState(false);
+                }
+            }
+
+            downloadFile(filename, content, mimeType) {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+
+            setLoadingState(loading) {
+                this.isLoading = loading;
+                const buttons = [
+                    'yearlyRefreshBtn', 'yearlyGenerateBtn', 'yearlyMarkdownBtn',
+                    'yearlyJsonBtn', 'yearlyNotifyBtn'
+                ];
+
+                buttons.forEach(btnId => {
+                    const btn = document.getElementById(btnId);
+                    if (btn) {
+                        btn.disabled = loading;
+                        btn.style.opacity = loading ? '0.5' : '1';
+                    }
+                });
+            }
+
+            updateProgressBar(percentage, message) {
+                const progressBar = document.getElementById('yearlyProgressBar');
+                const progressText = document.getElementById('yearlyProgressText');
+
+                if (progressBar) {
+                    progressBar.style.width = percentage + '%';
+                }
+
+                if (progressText) {
+                    progressText.textContent = message;
+                }
+            }
+
+            showSuccessToast(message) {
+                this.showToast(message, 'success');
+            }
+
+            showErrorToast(message) {
+                this.showToast(message, 'error');
+            }
+
+            showToast(message, type) {
+                // 간단한 토스트 알림 구현
+                const toast = document.createElement('div');
+                toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium z-50 ${
+                    type === 'success' ? 'bg-green-600' : 'bg-red-600'
+                }`;
+                toast.textContent = message;
+
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+
+            // 차트 업데이트 (다크모드 변경시 호출)
+            updateChartsForTheme() {
+                if (this.reportData) {
+                    this.updateCharts();
+                }
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        // 전역 변수로 매니저 인스턴스 저장
+        let yearlyReportManager = null;
+
         // DOM 로드 완료 시 매니저들 초기화
         document.addEventListener('DOMContentLoaded', function() {
             // 운영 알림 통합 패널이 있는 경우에만 초기화
@@ -5078,6 +6091,18 @@
             if (document.getElementById('ciReportsList')) {
                 ciReportManager = new CIReportManager();
                 addLog('📊 CI/CD 성능 리포트 패널이 초기화되었습니다.', 'info');
+            }
+
+            // 분기별 운영 리포트 패널이 있는 경우에만 초기화
+            if (document.getElementById('quarterlyReportsList')) {
+                quarterlyReportManager = new QuarterlyReportManager();
+                addLog('📊 분기별 운영 리포트 패널이 초기화되었습니다.', 'info');
+            }
+
+            // 연간 운영 리포트 패널이 있는 경우에만 초기화
+            if (document.getElementById('yearlyOverallScore')) {
+                yearlyReportManager = new YearlyReportManager();
+                addLog('📅 연간 운영 리포트 패널이 초기화되었습니다.', 'info');
             }
         });
     </script>

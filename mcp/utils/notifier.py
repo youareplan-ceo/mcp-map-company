@@ -2898,6 +2898,487 @@ async def test_ci_notifications():
         'summary_alerts': summary_result
     }
 
+# 📊 분기별 운영 리포트 알림 시스템
+async def send_quarterly_ops_report(
+    quarterly_data: Dict[str, Any],
+    notification_level: NotificationLevel = None,
+    force_send: bool = False
+) -> bool:
+    """
+    분기별 운영 리포트 알림 전송 (한국어 주석 포함)
+
+    성과 등급에 따라 알림 레벨을 자동 조정하고
+    Slack/Discord/Email 멀티 채널로 전송
+
+    Args:
+        quarterly_data: 분기별 리포트 데이터 (JSON 형식)
+        notification_level: 강제 알림 레벨 (None이면 자동 판정)
+        force_send: 속도 제한 무시하고 강제 전송
+
+    Returns:
+        bool: 전송 성공 여부
+    """
+    try:
+        logger.info("📊 분기별 운영 리포트 알림 전송 시작")
+
+        # 필수 데이터 검증
+        if not quarterly_data:
+            logger.error("분기별 리포트 데이터가 비어있습니다")
+            return False
+
+        # 성과 점수 및 등급 추출
+        performance = quarterly_data.get("performance_summary", {})
+        total_score = performance.get("total_score", 0)
+        grade = performance.get("grade", "개선 필요")
+        quarter = quarterly_data.get("report_metadata", {}).get("quarter", "Q1")
+        year = quarterly_data.get("report_metadata", {}).get("year", datetime.now().year)
+
+        # 보안/백업/시스템/CI 점수 추출
+        security_score = performance.get("security_score", 0)
+        backup_score = performance.get("backup_score", 0)
+        system_score = performance.get("system_score", 0)
+        ci_score = performance.get("ci_score", 0)
+
+        # 알림 레벨 자동 판정 (성과 등급 기반)
+        if notification_level is None:
+            if grade == "우수" and total_score >= 90:
+                notification_level = NotificationLevel.INFO
+            elif grade == "우수" and total_score >= 85:
+                notification_level = NotificationLevel.INFO
+            elif grade == "보통":
+                notification_level = NotificationLevel.WARNING
+            else:  # 개선 필요
+                notification_level = NotificationLevel.ERROR
+
+        logger.info(f"분기별 성과 등급: {grade} ({total_score}점) -> 알림 레벨: {notification_level.value}")
+
+        # 한국어 메시지 템플릿 생성
+        emoji_map = {
+            "우수": "🏆",
+            "보통": "👍",
+            "개선 필요": "⚠️"
+        }
+        grade_emoji = emoji_map.get(grade, "📊")
+
+        # 기본 메시지 구성
+        title = f"📊 {year}년 {quarter} 분기별 운영 리포트 {grade_emoji}"
+
+        # 성과 요약 메시지
+        summary_msg = f"""
+**{year}년 {quarter} 분기별 운영 성과 요약**
+
+🏆 **종합 성과**: {total_score}/100점 ({grade})
+
+📊 **영역별 점수**:
+• 🛡️ 보안: {security_score}/30점
+• 📦 백업: {backup_score}/30점
+• ⚙️ 시스템: {system_score}/20점
+• 🚀 CI/CD: {ci_score}/20점
+
+📈 **월별 추이**:
+• 1개월: {quarterly_data.get('monthly_trends', {}).get('month1_score', 0)}점
+• 2개월: {quarterly_data.get('monthly_trends', {}).get('month2_score', 0)}점
+• 3개월: {quarterly_data.get('monthly_trends', {}).get('month3_score', 0)}점
+        """.strip()
+
+        # 상세 통계 정보
+        security_events = quarterly_data.get("security_events", {})
+        backup_ops = quarterly_data.get("backup_operations", {})
+        system_perf = quarterly_data.get("system_performance", {})
+        ci_perf = quarterly_data.get("ci_performance", {})
+
+        details_msg = f"""
+🔐 **보안 현황** ({security_events.get('total_events', 0)}건):
+• 차단 IP: {security_events.get('blocked_ips', 0)}개
+• Rate Limit 위반: {security_events.get('rate_limit_violations', 0)}건
+• 화이트리스트 추가: {security_events.get('whitelist_additions', 0)}건
+
+📦 **백업 현황** ({backup_ops.get('success_rate_percent', 0)}% 성공률):
+• 성공: {backup_ops.get('successful_backups', 0)}회
+• 실패: {backup_ops.get('failed_backups', 0)}회
+• 정리 작업: {backup_ops.get('cleanup_operations', 0)}회
+
+⚙️ **시스템 성능** (평균 CPU: {system_perf.get('avg_cpu_percent', 0)}%):
+• 메모리 사용률: {system_perf.get('avg_memory_percent', 0)}%
+• 디스크 사용률: {system_perf.get('avg_disk_percent', 0)}%
+• 업타임: {system_perf.get('uptime_days', 0)}일
+
+🚀 **CI/CD 성능** ({ci_perf.get('success_rate_percent', 0)}% 성공률):
+• 총 실행: {ci_perf.get('total_runs', 0)}회
+• 성공: {ci_perf.get('successful_runs', 0)}회
+• 실패: {ci_perf.get('failed_runs', 0)}회
+• 평균 실행시간: {ci_perf.get('avg_duration_minutes', 0)}분
+        """.strip()
+
+        # 개선 권고사항 추가
+        recommendations = quarterly_data.get("recommendations", [])
+        if recommendations:
+            recommendations_msg = "\n🔧 **개선 권고사항**:\n"
+            for i, rec in enumerate(recommendations[:5], 1):
+                recommendations_msg += f"• {rec}\n"
+        else:
+            recommendations_msg = "\n✅ **특별한 개선사항 없음** - 현재 운영 상태가 양호합니다."
+
+        # 위험 요소 및 중요 이벤트
+        critical_periods = quarterly_data.get("critical_periods", [])
+        if critical_periods:
+            critical_msg = "\n⚠️ **주요 이슈 기간**:\n"
+            for period in critical_periods[:3]:
+                critical_msg += f"• {period.get('date', 'N/A')}: {period.get('description', 'N/A')}\n"
+        else:
+            critical_msg = "\n✅ **중요 이슈 없음** - 안정적인 운영이 유지되었습니다."
+
+        # 최종 메시지 조합
+        full_message = f"{summary_msg}\n\n{details_msg}{recommendations_msg}{critical_msg}"
+
+        # 다중 채널 알림 전송
+        success_results = []
+
+        # Slack 알림
+        try:
+            slack_result = await send_notification(
+                message=full_message,
+                title=title,
+                level=notification_level,
+                force_send=force_send,
+                channel="ops-reports"
+            )
+            success_results.append(slack_result)
+            logger.info(f"Slack 분기별 리포트 알림 전송: {'성공' if slack_result else '실패'}")
+        except Exception as e:
+            logger.error(f"Slack 분기별 리포트 알림 전송 오류: {str(e)}")
+            success_results.append(False)
+
+        # Discord 알림
+        try:
+            discord_result = await send_notification(
+                message=full_message,
+                title=title,
+                level=notification_level,
+                force_send=force_send,
+                channel="operations"
+            )
+            success_results.append(discord_result)
+            logger.info(f"Discord 분기별 리포트 알림 전송: {'성공' if discord_result else '실패'}")
+        except Exception as e:
+            logger.error(f"Discord 분기별 리포트 알림 전송 오류: {str(e)}")
+            success_results.append(False)
+
+        # Email 알림 (중요도가 높은 경우만)
+        if notification_level in [NotificationLevel.ERROR, NotificationLevel.CRITICAL]:
+            try:
+                email_result = await send_notification(
+                    message=full_message,
+                    title=title,
+                    level=notification_level,
+                    force_send=force_send,
+                    channel="email"
+                )
+                success_results.append(email_result)
+                logger.info(f"Email 분기별 리포트 알림 전송: {'성공' if email_result else '실패'}")
+            except Exception as e:
+                logger.error(f"Email 분기별 리포트 알림 전송 오류: {str(e)}")
+                success_results.append(False)
+
+        # 전체 성공 여부 판정 (하나라도 성공하면 True)
+        overall_success = any(success_results)
+
+        if overall_success:
+            logger.info(f"📊 분기별 운영 리포트 알림 전송 완료 - {quarter} {grade} ({total_score}점)")
+        else:
+            logger.error("📊 분기별 운영 리포트 알림 전송 실패 - 모든 채널에서 실패")
+
+        # 리포트 메타데이터 로깅
+        report_meta = {
+            "quarter": quarter,
+            "year": year,
+            "grade": grade,
+            "total_score": total_score,
+            "notification_level": notification_level.value,
+            "channels_attempted": len(success_results),
+            "channels_successful": sum(success_results),
+            "timestamp": datetime.now().isoformat()
+        }
+        logger.info(f"분기별 리포트 메타데이터: {report_meta}")
+
+        return overall_success
+
+    except Exception as e:
+        logger.error(f"분기별 운영 리포트 알림 전송 중 오류 발생: {str(e)}", exc_info=True)
+        return False
+
+# 📅 연간 운영 리포트 알림 시스템
+async def send_yearly_ops_report(
+    yearly_data: Dict[str, Any],
+    notification_level: NotificationLevel = None,
+    force_send: bool = False
+) -> bool:
+    """
+    연간 운영 리포트 알림 전송 (한국어 주석 포함)
+
+    성과 등급에 따라 알림 레벨을 자동 조정하고
+    Slack/Discord/Email 멀티 채널로 전송
+
+    Args:
+        yearly_data: 연간 리포트 데이터 (JSON 형식)
+        notification_level: 강제 알림 레벨 (None이면 자동 판정)
+        force_send: 속도 제한 무시하고 강제 전송
+
+    Returns:
+        bool: 전송 성공 여부
+    """
+    try:
+        logger.info("📅 연간 운영 리포트 알림 전송 시작")
+
+        # 필수 데이터 검증
+        if not yearly_data:
+            logger.error("연간 리포트 데이터가 비어있습니다")
+            return False
+
+        # 성과 점수 및 등급 추출
+        performance = yearly_data.get("performance_summary", {})
+        total_score = performance.get("total_score", 0)
+        grade = performance.get("grade", "개선 필요")
+        year = yearly_data.get("report_metadata", {}).get("year", datetime.now().year)
+
+        # 보안/백업/시스템/CI 점수 추출
+        security_score = performance.get("security_score", 0)
+        backup_score = performance.get("backup_score", 0)
+        system_score = performance.get("system_score", 0)
+        ci_score = performance.get("ci_score", 0)
+
+        # 알림 레벨 자동 판정 (성과 등급 기반)
+        if notification_level is None:
+            if grade == "우수" and total_score >= 90:
+                notification_level = NotificationLevel.INFO
+            elif grade == "우수" and total_score >= 85:
+                notification_level = NotificationLevel.INFO
+            elif grade == "보통":
+                notification_level = NotificationLevel.WARNING
+            else:  # 개선 필요
+                notification_level = NotificationLevel.ERROR
+
+        logger.info(f"연간 성과 등급: {grade} ({total_score}점) -> 알림 레벨: {notification_level.value}")
+
+        # 한국어 메시지 템플릿 생성
+        emoji_map = {
+            "우수": "🏆",
+            "보통": "👍",
+            "개선 필요": "⚠️"
+        }
+        grade_emoji = emoji_map.get(grade, "📊")
+
+        # 기본 메시지 구성
+        title = f"📅 {year}년 연간 운영 리포트 {grade_emoji}"
+
+        # 성과 요약 메시지
+        summary_msg = f"""
+**{year}년 연간 운영 성과 요약**
+
+🏆 **종합 성과**: {total_score}/100점 ({grade})
+
+📊 **영역별 점수**:
+• 🛡️ 보안: {security_score}/30점
+• 📦 백업: {backup_score}/30점
+• ⚙️ 시스템: {system_score}/20점
+• 🚀 CI/CD: {ci_score}/20점
+
+📈 **분기별 추이**:
+• 1분기: {yearly_data.get('quarterly_comparison', {}).get('q1_average', 0)}점
+• 2분기: {yearly_data.get('quarterly_comparison', {}).get('q2_average', 0)}점
+• 3분기: {yearly_data.get('quarterly_comparison', {}).get('q3_average', 0)}점
+• 4분기: {yearly_data.get('quarterly_comparison', {}).get('q4_average', 0)}점
+        """.strip()
+
+        # 상세 통계 정보
+        security_events = yearly_data.get("security_events", {})
+        backup_ops = yearly_data.get("backup_operations", {})
+        system_perf = yearly_data.get("system_performance", {})
+        ci_perf = yearly_data.get("ci_performance", {})
+
+        details_msg = f"""
+🔐 **보안 현황** ({security_events.get('total_events', 0)}건):
+• 차단 IP: {security_events.get('blocked_ips', 0)}개
+• Rate Limit 위반: {security_events.get('rate_limit_violations', 0)}건
+• 화이트리스트 추가: {security_events.get('whitelist_additions', 0)}건
+
+📦 **백업 현황** ({backup_ops.get('success_rate_percent', 0)}% 성공률):
+• 성공: {backup_ops.get('successful_backups', 0)}회
+• 실패: {backup_ops.get('failed_backups', 0)}회
+• 정리 작업: {backup_ops.get('cleanup_operations', 0)}회
+
+⚙️ **시스템 성능** ({system_perf.get('uptime_days', 0)}일 가동):
+• 평균 CPU: {system_perf.get('average_cpu_usage_percent', 0)}%
+• 평균 메모리: {system_perf.get('average_memory_usage_percent', 0)}%
+• 성능 이슈: {system_perf.get('performance_incidents', 0)}건
+
+🚀 **CI/CD 성능** ({ci_perf.get('success_rate_percent', 0)}% 성공률):
+• 총 빌드: {ci_perf.get('total_builds', 0)}회
+• 평균 빌드 시간: {ci_perf.get('average_build_time_seconds', 0)}초
+• 테스트 커버리지: {ci_perf.get('average_test_coverage_percent', 0)}%
+        """.strip()
+
+        # 권장사항 생성
+        recommendations = []
+        if backup_ops.get('success_rate_percent', 0) < 95:
+            recommendations.append("📦 백업 시스템 안정성 개선 필요")
+        if ci_perf.get('success_rate_percent', 0) < 90:
+            recommendations.append("🚀 CI/CD 파이프라인 최적화 필요")
+        if system_perf.get('performance_incidents', 0) > 10:
+            recommendations.append("⚙️ 시스템 성능 모니터링 강화 필요")
+        if security_events.get('total_events', 0) > 1000:
+            recommendations.append("🛡️ 보안 위협 대응 체계 점검 필요")
+
+        if not recommendations:
+            recommendations.append("✅ 모든 영역에서 양호한 성과를 보이고 있습니다")
+
+        recommendations_msg = "\n".join(f"• {rec}" for rec in recommendations[:5])
+
+        # 전체 메시지 조합
+        full_message = f"{summary_msg}\n\n{details_msg}\n\n💡 **주요 권장사항**:\n{recommendations_msg}"
+
+        # 속도 제한 확인 (연간 리포트는 1일 1회 제한)
+        rate_limit_key = f"yearly_report_{year}"
+        current_time = time.time()
+
+        if not force_send:
+            last_sent = _last_notification_times["yearly_report"].get(rate_limit_key, 0)
+            if current_time - last_sent < 86400:  # 24시간 = 86400초
+                logger.warning(f"연간 리포트 알림 속도 제한: {year}년 리포트는 이미 24시간 내 전송됨")
+                return False
+
+        # 모든 채널로 알림 전송
+        results = []
+
+        # Slack 알림
+        if os.getenv('SLACK_WEBHOOK_URL'):
+            try:
+                slack_result = await send_to_slack(
+                    message=full_message,
+                    title=title,
+                    level=notification_level,
+                    include_logs=False  # 연간 리포트는 로그 제외
+                )
+                results.append(("Slack", slack_result))
+                logger.info(f"Slack 연간 리포트 알림: {'성공' if slack_result else '실패'}")
+            except Exception as e:
+                logger.error(f"Slack 연간 리포트 알림 실패: {e}")
+                results.append(("Slack", False))
+
+        # Discord 알림
+        if os.getenv('DISCORD_WEBHOOK_URL'):
+            try:
+                discord_result = await send_to_discord(
+                    message=full_message,
+                    title=title,
+                    level=notification_level,
+                    include_logs=False  # 연간 리포트는 로그 제외
+                )
+                results.append(("Discord", discord_result))
+                logger.info(f"Discord 연간 리포트 알림: {'성공' if discord_result else '실패'}")
+            except Exception as e:
+                logger.error(f"Discord 연간 리포트 알림 실패: {e}")
+                results.append(("Discord", False))
+
+        # Email 알림 (중요한 연간 리포트는 이메일로도 전송)
+        if os.getenv('SMTP_SERVER') and os.getenv('SMTP_USERNAME'):
+            try:
+                # HTML 형식의 이메일 내용 생성
+                html_content = f"""
+                <html>
+                <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5;">
+                    <div style="max-width: 800px; margin: 0 auto; background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <h1 style="color: #2c3e50; text-align: center; border-bottom: 3px solid #3498db; padding-bottom: 15px;">
+                            {title}
+                        </h1>
+                        <div style="background-color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                            <h2 style="color: #34495e; margin-top: 0;">📊 성과 요약</h2>
+                            <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                                <div style="text-align: center; margin: 10px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">🛡️</div>
+                                    <div style="font-size: 18px; font-weight: bold;">{security_score}/30</div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">보안</div>
+                                </div>
+                                <div style="text-align: center; margin: 10px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #3498db;">📦</div>
+                                    <div style="font-size: 18px; font-weight: bold;">{backup_score}/30</div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">백업</div>
+                                </div>
+                                <div style="text-align: center; margin: 10px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #f39c12;">⚙️</div>
+                                    <div style="font-size: 18px; font-weight: bold;">{system_score}/20</div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">시스템</div>
+                                </div>
+                                <div style="text-align: center; margin: 10px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #27ae60;">🚀</div>
+                                    <div style="font-size: 18px; font-weight: bold;">{ci_score}/20</div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">CI/CD</div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #bdc3c7;">
+                                <span style="font-size: 28px; font-weight: bold; color: #2c3e50;">총 {total_score}/100점</span>
+                                <span style="margin-left: 15px; padding: 5px 15px; background-color: #3498db; color: white; border-radius: 20px; font-size: 14px;">{grade}</span>
+                            </div>
+                        </div>
+                        <div style="white-space: pre-line; line-height: 1.6; color: #34495e;">
+                            {details_msg.replace('**', '<strong>').replace('**', '</strong>')}
+                        </div>
+                        <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                            <h3 style="color: #856404; margin-top: 0;">💡 주요 권장사항</h3>
+                            <div style="color: #856404;">
+                                {recommendations_msg.replace('•', '<li>').replace('\n', '</li>')}
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ecf0f1; color: #7f8c8d; font-size: 12px;">
+                            <p>이 리포트는 자동으로 생성되었습니다 | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                            <p>MCP Map Company 운영팀</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+
+                email_result = await send_to_email(
+                    message=full_message,
+                    title=title,
+                    level=notification_level,
+                    html_content=html_content
+                )
+                results.append(("Email", email_result))
+                logger.info(f"Email 연간 리포트 알림: {'성공' if email_result else '실패'}")
+            except Exception as e:
+                logger.error(f"Email 연간 리포트 알림 실패: {e}")
+                results.append(("Email", False))
+
+        # 전송 결과 로깅
+        success_count = sum(1 for _, success in results if success)
+        total_channels = len(results)
+
+        if success_count > 0:
+            # 속도 제한 타임스탬프 업데이트
+            _last_notification_times["yearly_report"][rate_limit_key] = current_time
+
+            logger.info(f"연간 리포트 알림 전송 완료: {success_count}/{total_channels} 채널 성공")
+
+            # 알림 로그 기록
+            log_notification(
+                level=notification_level.value,
+                message=f"연간 리포트 ({year}년, {grade}, {total_score}점)",
+                channels=[channel for channel, success in results if success],
+                success=True,
+                title=title,
+                yearly_data=yearly_data
+            )
+
+            return True
+        else:
+            logger.error("연간 리포트 알림 전송 실패: 모든 채널에서 전송 실패")
+            return False
+
+    except Exception as e:
+        logger.error(f"연간 리포트 알림 전송 중 오류 발생: {e}")
+        return False
+
 # 편의 함수들
 async def notify_ci_failure(failed_workflows: List[Dict[str, Any]]):
     """CI 실패 알림 편의 함수"""
@@ -2910,6 +3391,359 @@ async def notify_ci_recovery(successful_workflows: List[Dict[str, Any]], recover
 async def notify_ci_summary(total_runs: int, success_count: int, failure_count: int, in_progress_count: int):
     """CI 요약 알림 편의 함수"""
     return await send_ci_summary_alert(total_runs, success_count, failure_count, in_progress_count)
+
+async def notify_quarterly_report(quarterly_data: Dict[str, Any], force_send: bool = False):
+    """분기별 운영 리포트 알림 편의 함수 (한국어 주석 포함)"""
+    return await send_quarterly_ops_report(quarterly_data, force_send=force_send)
+
+async def notify_yearly_report(yearly_data: Dict[str, Any], force_send: bool = False):
+    """연간 운영 리포트 알림 편의 함수 (한국어 주석 포함)"""
+    return await send_yearly_ops_report(yearly_data, force_send=force_send)
+
+# 🚨 CI/CD 에러 로그 분석 알림 시스템
+async def send_ci_error_alert(
+    failure_rate: float,
+    total_errors: int,
+    top_errors: List[Dict[str, Any]],
+    period_days: int = 7,
+    notification_level: NotificationLevel = None,
+    force_send: bool = False
+) -> Dict[str, bool]:
+    """
+    CI/CD 에러 로그 분석 결과 알림 전송 (한국어 주석 포함)
+
+    실패율에 따라 알림 레벨을 자동 조정하고
+    Slack/Discord/Email 다중 채널로 한국어 메시지 전송
+
+    Args:
+        failure_rate: CI/CD 실패율 (%)
+        total_errors: 총 에러 수
+        top_errors: 상위 에러 목록 (최대 3개)
+        period_days: 분석 기간 (일)
+        notification_level: 강제 알림 레벨 (None이면 자동 판정)
+        force_send: 속도 제한 무시하고 강제 전송
+
+    Returns:
+        Dict[str, bool]: 채널별 전송 결과
+    """
+    try:
+        logger.info("🚨 CI/CD 에러 분석 알림 전송 시작")
+
+        # 실패율에 따른 알림 레벨 자동 판정
+        if notification_level is None:
+            if failure_rate > 10.0:
+                notification_level = NotificationLevel.CRITICAL
+                alert_emoji = "🚨"
+                alert_status = "Critical"
+            elif failure_rate > 5.0:
+                notification_level = NotificationLevel.ERROR
+                alert_emoji = "❌"
+                alert_status = "Error"
+            elif failure_rate > 1.0:
+                notification_level = NotificationLevel.WARNING
+                alert_emoji = "⚠️"
+                alert_status = "Warning"
+            else:
+                notification_level = NotificationLevel.INFO
+                alert_emoji = "ℹ️"
+                alert_status = "Info"
+        else:
+            # 수동 설정된 레벨에 따른 이모지/상태 설정
+            level_mapping = {
+                NotificationLevel.CRITICAL: ("🚨", "Critical"),
+                NotificationLevel.ERROR: ("❌", "Error"),
+                NotificationLevel.WARNING: ("⚠️", "Warning"),
+                NotificationLevel.INFO: ("ℹ️", "Info")
+            }
+            alert_emoji, alert_status = level_mapping.get(notification_level, ("🔍", "Debug"))
+
+        logger.info(f"CI/CD 에러 분석 - 실패율: {failure_rate:.1f}% -> 알림 레벨: {notification_level.value}")
+
+        # 한국어 메시지 제목
+        title = f"{alert_emoji} CI/CD 에러 로그 분석 리포트 ({alert_status})"
+
+        # 기본 요약 메시지
+        summary_msg = f"""
+**최근 {period_days}일간 CI/CD 에러 분석 결과**
+
+{alert_emoji} **알림 등급**: {alert_status}
+📊 **실패율**: {failure_rate:.1f}%
+🔢 **총 에러 수**: {total_errors:,}개
+📅 **분석 기간**: 최근 {period_days}일
+        """.strip()
+
+        # 상위 에러 목록 추가
+        if top_errors and len(top_errors) > 0:
+            errors_msg = "\n\n🔥 **주요 에러 Top 3**:\n"
+            for i, error in enumerate(top_errors[:3], 1):
+                error_msg = error.get('message', 'N/A')
+                error_count = error.get('count', 0)
+                # 에러 메시지가 너무 길면 줄임
+                if len(error_msg) > 50:
+                    error_msg = error_msg[:47] + "..."
+                errors_msg += f"{i}. **{error_msg}** ({error_count}회)\n"
+        else:
+            errors_msg = "\n\n✅ **주요 에러 없음** - 분석된 에러가 없습니다."
+
+        # 권장 조치사항
+        recommendations = []
+        if failure_rate > 10.0:
+            recommendations.extend([
+                "🚨 즉시 개발팀 에스컬레이션 필요",
+                "🔍 실패 원인 긴급 분석 및 핫픽스 검토",
+                "⚠️ 배포 중단 고려"
+            ])
+        elif failure_rate > 5.0:
+            recommendations.extend([
+                "🛠️ CI/CD 파이프라인 점검 필요",
+                "📋 실패 패턴 분석 및 개선 계획 수립",
+                "👥 개발팀과 협의 필요"
+            ])
+        elif failure_rate > 1.0:
+            recommendations.extend([
+                "📈 실패율 모니터링 강화",
+                "🔍 주요 에러 패턴 분석"
+            ])
+        else:
+            recommendations.append("✅ 현재 CI/CD 상태 양호 - 지속 모니터링")
+
+        if recommendations:
+            recommendations_msg = "\n\n💡 **권장 조치사항**:\n"
+            for rec in recommendations:
+                recommendations_msg += f"• {rec}\n"
+        else:
+            recommendations_msg = ""
+
+        # 추가 정보
+        additional_info = f"""
+📊 **분석 상세**:
+• 실패율 임계치: Critical(>10%), Error(5~10%), Warning(1~5%), Info(≤1%)
+• 로그 압축 및 정리 완료
+• 자동 알림 시스템 작동 중
+
+🔗 **관련 링크**:
+• CI/CD 대시보드: /admin_dashboard.html
+• 에러 로그 디렉토리: logs/ci_errors/
+• 리포트 파일: logs/ci_errors/reports/
+        """.strip()
+
+        # 최종 메시지 조합
+        full_message = f"{summary_msg}{errors_msg}{recommendations_msg}\n\n{additional_info}"
+
+        # 속도 제한 확인 (같은 실패율 범위에서 1시간 제한)
+        rate_limit_key = f"ci_error_{alert_status.lower()}"
+        current_time = time.time()
+
+        if not force_send:
+            last_sent = _last_notification_times.get("ci_error", {}).get(rate_limit_key, 0)
+            rate_limit_seconds = 3600  # 1시간
+
+            # Critical의 경우 속도 제한을 더 짧게 (15분)
+            if notification_level == NotificationLevel.CRITICAL:
+                rate_limit_seconds = 900  # 15분
+
+            if current_time - last_sent < rate_limit_seconds:
+                logger.warning(f"CI 에러 알림 속도 제한: {alert_status} 등급은 {rate_limit_seconds//60}분 내 전송됨")
+                return {}
+
+        # 채널별 전송 결과
+        results = {}
+
+        # Slack 알림
+        try:
+            slack_fields = {
+                f"{alert_emoji} 알림 등급": alert_status,
+                "📊 실패율": f"{failure_rate:.1f}%",
+                "🔢 총 에러 수": f"{total_errors:,}개",
+                "📅 분석 기간": f"최근 {period_days}일",
+                "⏰ 분석 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+
+            # 상위 에러를 필드로 추가
+            if top_errors:
+                for i, error in enumerate(top_errors[:3], 1):
+                    error_msg = error.get('message', 'N/A')
+                    error_count = error.get('count', 0)
+                    if len(error_msg) > 30:
+                        error_msg = error_msg[:27] + "..."
+                    slack_fields[f"🔥 Top {i} Error"] = f"{error_msg} ({error_count}회)"
+
+            slack_result = await notification_manager.send_notification(
+                message=full_message,
+                level=notification_level,
+                title=title,
+                fields=slack_fields,
+                attach_logs=notification_level in [NotificationLevel.ERROR, NotificationLevel.CRITICAL]
+            )
+            results["slack"] = slack_result
+            logger.info(f"Slack CI 에러 알림 전송: {'성공' if slack_result else '실패'}")
+
+        except Exception as e:
+            logger.error(f"Slack CI 에러 알림 전송 오류: {str(e)}")
+            results["slack"] = False
+
+        # Discord 알림
+        try:
+            # Discord용 간소화된 메시지
+            discord_message = f"""
+{alert_emoji} **CI/CD 에러 분석 ({alert_status})**
+
+📊 실패율: **{failure_rate:.1f}%**
+🔢 에러 수: **{total_errors:,}개**
+📅 기간: 최근 {period_days}일
+
+{errors_msg.strip() if errors_msg else "✅ 주요 에러 없음"}
+
+💡 **권장사항**: {recommendations[0] if recommendations else "지속 모니터링"}
+            """.strip()
+
+            discord_result = await notification_manager.send_notification(
+                message=discord_message,
+                level=notification_level,
+                title=title,
+                platform="discord"
+            )
+            results["discord"] = discord_result
+            logger.info(f"Discord CI 에러 알림 전송: {'성공' if discord_result else '실패'}")
+
+        except Exception as e:
+            logger.error(f"Discord CI 에러 알림 전송 오류: {str(e)}")
+            results["discord"] = False
+
+        # Email 알림 (Critical이나 Error 레벨인 경우만)
+        if notification_level in [NotificationLevel.CRITICAL, NotificationLevel.ERROR]:
+            try:
+                # HTML 형식 이메일 내용
+                html_content = f"""
+                <html>
+                <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa;">
+                    <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 20px; text-align: center;">
+                            <h1 style="margin: 0; font-size: 24px;">{title}</h1>
+                            <div style="margin-top: 10px; font-size: 18px; opacity: 0.9;">실패율: {failure_rate:.1f}%</div>
+                        </div>
+
+                        <div style="padding: 30px;">
+                            <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px;">
+                                <h3 style="margin: 0 0 10px 0; color: #856404;">📊 분석 요약</h3>
+                                <p style="margin: 0; color: #856404;">
+                                    최근 {period_days}일간 총 {total_errors:,}개의 에러가 발생했습니다.<br>
+                                    현재 실패율은 {failure_rate:.1f}%로 <strong>{alert_status}</strong> 등급입니다.
+                                </p>
+                            </div>
+
+                            {f'''
+                            <div style="margin-bottom: 20px;">
+                                <h3 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px;">🔥 주요 에러</h3>
+                                <ol style="color: #34495e;">
+                                    {"".join(f'<li><strong>{error.get("message", "N/A")[:50]}{"..." if len(error.get("message", "")) > 50 else ""}</strong> ({error.get("count", 0)}회)</li>' for error in top_errors[:3])}
+                                </ol>
+                            </div>
+                            ''' if top_errors else '<div style="text-align: center; color: #27ae60; font-size: 16px; margin: 20px 0;">✅ 주요 에러 없음</div>'}
+
+                            <div style="background-color: #e8f4fd; border-left: 4px solid #3498db; padding: 15px;">
+                                <h3 style="margin: 0 0 10px 0; color: #2980b9;">💡 권장 조치사항</h3>
+                                <ul style="margin: 0; color: #2980b9;">
+                                    {"".join(f"<li>{rec}</li>" for rec in recommendations[:3])}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div style="background-color: #ecf0f1; padding: 15px; text-align: center; color: #7f8c8d; font-size: 12px;">
+                            <p style="margin: 0;">이 알림은 자동으로 생성되었습니다 | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                            <p style="margin: 5px 0 0 0;">MCP Map Company CI/CD 모니터링 시스템</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+
+                email_result = await notification_manager.send_notification(
+                    message=full_message,
+                    level=notification_level,
+                    title=title,
+                    html_content=html_content,
+                    platform="email"
+                )
+                results["email"] = email_result
+                logger.info(f"Email CI 에러 알림 전송: {'성공' if email_result else '실패'}")
+
+            except Exception as e:
+                logger.error(f"Email CI 에러 알림 전송 오류: {str(e)}")
+                results["email"] = False
+
+        # 전송 성공한 채널이 있으면 속도 제한 타임스탬프 업데이트
+        if any(results.values()):
+            if "ci_error" not in _last_notification_times:
+                _last_notification_times["ci_error"] = {}
+            _last_notification_times["ci_error"][rate_limit_key] = current_time
+
+            logger.info(f"🚨 CI/CD 에러 알림 전송 완료 - {alert_status} 등급 (실패율: {failure_rate:.1f}%)")
+
+            # 알림 로그 기록
+            log_notification(
+                level=notification_level.value,
+                message=f"CI/CD 에러 분석 ({alert_status}, {failure_rate:.1f}%, {total_errors}개 에러)",
+                channels=[channel for channel, success in results.items() if success],
+                success=True,
+                title=title,
+                ci_error_data={
+                    "failure_rate": failure_rate,
+                    "total_errors": total_errors,
+                    "top_errors": top_errors,
+                    "period_days": period_days,
+                    "alert_status": alert_status
+                }
+            )
+        else:
+            logger.error("CI/CD 에러 알림 전송 실패: 모든 채널에서 전송 실패")
+
+        return results
+
+    except Exception as e:
+        logger.error(f"CI/CD 에러 알림 전송 중 오류 발생: {str(e)}", exc_info=True)
+        return {}
+
+def send_ci_error_alert_sync(
+    failure_rate: float,
+    total_errors: int,
+    top_errors: List[Dict[str, Any]],
+    period_days: int = 7
+) -> Dict[str, bool]:
+    """
+    CI/CD 에러 알림 동기 래퍼 함수 (스크립트에서 호출용)
+
+    Args:
+        failure_rate: CI/CD 실패율 (%)
+        total_errors: 총 에러 수
+        top_errors: 상위 에러 목록
+        period_days: 분석 기간 (일)
+
+    Returns:
+        Dict[str, bool]: 채널별 전송 결과
+    """
+    try:
+        # 이벤트 루프가 있는지 확인
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # 이미 실행 중인 루프에서는 태스크로 실행
+            task = asyncio.create_task(send_ci_error_alert(
+                failure_rate, total_errors, top_errors, period_days
+            ))
+            return {}  # 비동기 실행으로 즉시 반환
+        else:
+            # 새 루프에서 실행
+            return asyncio.run(send_ci_error_alert(
+                failure_rate, total_errors, top_errors, period_days
+            ))
+    except RuntimeError:
+        # 이벤트 루프가 없는 경우 새로 생성
+        return asyncio.run(send_ci_error_alert(
+            failure_rate, total_errors, top_errors, period_days
+        ))
+    except Exception as e:
+        logger.error(f"CI 에러 알림 동기 래퍼 실행 오류: {str(e)}")
+        return {}
 
 if __name__ == "__main__":
     # 테스트 실행

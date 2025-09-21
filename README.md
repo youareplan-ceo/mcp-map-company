@@ -4363,6 +4363,274 @@ DEBUG=1 ./scripts/dashboard_smoke_test.sh --verbose
 HEADLESS=false python -m pytest tests/test_ops_dashboard.py::TestOpsDashboardPanels::test_dashboard_page_load -v -s
 ```
 
+## 📅 연간 운영 리포트 자동화
+
+연간 운영 리포트 시스템은 지난 1년간의 보안, 백업, 시스템, CI/CD 성능 데이터를 종합 분석하여 자동으로 리포트를 생성하고 알림을 전송하는 기능입니다.
+
+### 주요 구성 요소
+
+#### 1. 연간 분석 스크립트 (scripts/yearly_ops_report.sh)
+
+종합적인 연간 운영 현황 분석을 수행하는 bash 스크립트입니다.
+
+```bash
+# 기본 실행 (현재 연도)
+./scripts/yearly_ops_report.sh
+
+# 특정 연도 분석
+./scripts/yearly_ops_report.sh --year 2023
+
+# JSON 형식 출력
+./scripts/yearly_ops_report.sh --format json
+
+# Markdown 형식 출력
+./scripts/yearly_ops_report.sh --format markdown
+
+# 상세 모드 (verbose)
+./scripts/yearly_ops_report.sh --verbose
+
+# 테스트 모드 (실제 데이터 없이 시뮬레이션)
+./scripts/yearly_ops_report.sh --dry-run
+```
+
+#### 2. 알림 시스템 확장 (mcp/utils/notifier.py)
+
+연간 리포트를 다중 채널로 자동 전송하는 기능이 추가되었습니다.
+
+```python
+from mcp.utils.notifier import NotificationManager, NotificationLevel
+
+# 연간 리포트 데이터 준비
+yearly_data = {
+    "year": 2024,
+    "overall_score": 87,
+    "security_score": 92,
+    "backup_score": 85,
+    "system_score": 88,
+    "cicd_score": 84
+}
+
+# 자동 알림 전송 (성능 점수에 따라 알림 레벨 자동 조정)
+notifier = NotificationManager()
+await notifier.send_yearly_ops_report(yearly_data)
+
+# 강제 전송 (24시간 제한 무시)
+await notifier.send_yearly_ops_report(yearly_data, force_send=True)
+
+# 특정 알림 레벨로 전송
+await notifier.send_yearly_ops_report(
+    yearly_data,
+    notification_level=NotificationLevel.CRITICAL
+)
+```
+
+**알림 레벨 자동 조정 규칙:**
+- 90점 이상: `INFO` 레벨 (🟢 우수 성과)
+- 70-89점: `WARNING` 레벨 (🟡 보통 성과)
+- 70점 미만: `CRITICAL` 레벨 (🔴 개선 필요)
+
+#### 3. 웹 대시보드 패널 (web/admin_dashboard.html)
+
+관리자 대시보드에 **"📅 연간 운영 리포트"** 패널이 추가되었습니다.
+
+**주요 기능:**
+- **5개 점수 카드**: 종합/보안/백업/시스템/CI-CD 성과 점수를 한눈에 표시
+- **분기별 트렌드 차트**: Chart.js를 이용한 분기별 성과 변화 시각화
+- **점수 분포 차트**: 영역별 성과 분포를 도넛 차트로 표시
+- **주요 이벤트 Top5**: 연간 발생한 중요 보안/시스템 이벤트 요약
+- **연간 통계 요약**: 보안 인시던트, 백업 성공률, 시스템 가동시간, 평균 배포 시간
+- **연도별 분석**: 2019년부터 현재까지 연도 선택하여 과거 데이터 조회
+- **다운로드 기능**: Markdown/JSON 형식으로 리포트 다운로드
+- **알림 전송**: 원클릭 연간 리포트 알림 전송
+
+**패널 구성:**
+```
+📅 연간 운영 리포트
+├── 액션 버튼 (새로고침, 리포트 생성, 다운로드, 알림 전송)
+├── 성과 점수 카드 (5개 - 그라디언트 스타일링)
+├── 차트 섹션
+│   ├── 분기별 성과 트렌드 (Line Chart)
+│   └── 영역별 점수 분포 (Doughnut Chart)
+├── 주요 이벤트 Top5 (위험도별 색상 구분)
+├── 연간 통계 요약 (4개 핵심 지표)
+└── 리포트 관리 (연도 선택, 진행 상황 표시)
+```
+
+#### 4. 자동화 테스트 (tests/test_yearly_ops_report.py)
+
+pytest 기반의 포괄적인 테스트 스위트가 제공됩니다.
+
+```bash
+# 전체 테스트 실행
+python -m pytest tests/test_yearly_ops_report.py -v
+
+# 스크립트 실행 테스트만
+python -m pytest tests/test_yearly_ops_report.py::TestYearlyOpsReportScript -v
+
+# 알림 시스템 테스트만
+python -m pytest tests/test_yearly_ops_report.py::TestNotificationSystem -v
+
+# 성능 테스트만
+python -m pytest tests/test_yearly_ops_report.py::TestPerformance -v
+
+# 상세 로그와 함께 실행
+python -m pytest tests/test_yearly_ops_report.py -v -s --log-cli-level=INFO
+```
+
+**테스트 범위:**
+- ✅ 스크립트 실행 및 출력 검증
+- ✅ 점수 계산 알고리즘 정확성
+- ✅ 다양한 입력 형식 처리
+- ✅ 알림 시스템 통합 테스트
+- ✅ 성능 테스트 (1년 데이터 60초 이내 처리)
+- ✅ 오류 처리 및 복구 시나리오
+
+### 사용 시나리오
+
+#### 1. 정기 연간 리포트 생성 (매년 12월)
+
+```bash
+# 1. 연간 데이터 수집 및 분석
+./scripts/yearly_ops_report.sh --year 2024 --format markdown > reports/yearly_2024.md
+
+# 2. 자동 알림 전송 (Python 스크립트를 통해)
+python -c "
+import asyncio
+from mcp.utils.notifier import NotificationManager
+
+async def send_yearly():
+    notifier = NotificationManager()
+    # 스크립트 실행 결과를 파싱하여 yearly_data 생성
+    yearly_data = {'year': 2024, 'overall_score': 87}
+    await notifier.send_yearly_ops_report(yearly_data)
+
+asyncio.run(send_yearly())
+"
+```
+
+#### 2. 대시보드를 통한 즉석 분석
+
+1. **관리자 대시보드 접속**: `http://localhost:5000/admin_dashboard.html`
+2. **연간 운영 리포트 패널 확인**: 페이지 하단의 📅 패널로 이동
+3. **연도 선택**: 드롭다운에서 분석하고 싶은 연도 선택 (2019~현재)
+4. **리포트 생성**: "📊 리포트 생성" 버튼 클릭
+5. **결과 확인**: 실시간으로 업데이트되는 점수, 차트, 이벤트 정보 확인
+6. **다운로드**: 필요시 📄 Markdown 또는 📊 JSON 형태로 다운로드
+7. **알림 전송**: 🔔 알림 전송 버튼으로 팀에게 결과 공유
+
+#### 3. CI/CD 파이프라인 통합
+
+```yaml
+# .github/workflows/yearly-report.yml
+name: Yearly Operations Report
+on:
+  schedule:
+    - cron: '0 9 1 1 *'  # 매년 1월 1일 오전 9시
+  workflow_dispatch:
+
+jobs:
+  yearly-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate Yearly Report
+        run: |
+          chmod +x scripts/yearly_ops_report.sh
+          ./scripts/yearly_ops_report.sh --year $(date --date='1 year ago' +%Y) --format json > yearly_report.json
+
+      - name: Send Notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          python -c "
+          import asyncio, json
+          from mcp.utils.notifier import NotificationManager
+
+          with open('yearly_report.json') as f:
+              data = json.load(f)
+
+          async def notify():
+              notifier = NotificationManager()
+              await notifier.send_yearly_ops_report(data)
+
+          asyncio.run(notify())
+          "
+```
+
+### 설정 및 환경변수
+
+#### 필수 환경변수
+
+```bash
+# 알림 채널 설정 (최소 1개 필요)
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/..."
+export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
+export EMAIL_SMTP_HOST="smtp.gmail.com"
+export EMAIL_SMTP_USER="ops@company.com"
+export EMAIL_SMTP_PASS="password"
+
+# 데이터 경로 설정 (선택사항, 기본값 사용 가능)
+export LOGS_DIR="/var/log/mcp-map"
+export REPORTS_DIR="/opt/mcp-map/reports"
+export BACKUP_DIR="/backup/mcp-map"
+```
+
+#### 스크립트 설정 파일
+
+```bash
+# scripts/yearly_ops_report.sh 내부 설정
+CURRENT_YEAR=$(date +%Y)
+LOGS_BASE_DIR="${LOGS_DIR:-./logs}"
+SECURITY_LOG="${LOGS_BASE_DIR}/security.log"
+BACKUP_LOG="${LOGS_BASE_DIR}/backup.log"
+SYSTEM_LOG="${LOGS_BASE_DIR}/system.log"
+CI_REPORTS_DIR="${REPORTS_DIR:-./reports}/ci"
+
+# 점수 계산 가중치
+SECURITY_WEIGHT=0.3      # 보안 30%
+BACKUP_WEIGHT=0.25       # 백업 25%
+SYSTEM_WEIGHT=0.25       # 시스템 25%
+CI_CD_WEIGHT=0.2         # CI/CD 20%
+```
+
+### 문제 해결
+
+#### 일반적인 문제들
+
+1. **스크립트 권한 에러**
+   ```bash
+   chmod +x scripts/yearly_ops_report.sh
+   ```
+
+2. **로그 파일 접근 권한 부족**
+   ```bash
+   sudo chown -R $USER:$USER logs/
+   chmod -R 755 logs/
+   ```
+
+3. **알림 전송 실패**
+   ```bash
+   # 환경변수 확인
+   echo $SLACK_WEBHOOK_URL
+   echo $DISCORD_WEBHOOK_URL
+
+   # 네트워크 연결 테스트
+   curl -X POST $SLACK_WEBHOOK_URL -d '{"text":"test"}'
+   ```
+
+4. **차트 표시 안됨 (대시보드)**
+   - Chart.js CDN 로딩 확인: F12 개발자 도구에서 네트워크 탭 확인
+   - 브라우저 캐시 클리어: Ctrl+F5 (Windows) / Cmd+Shift+R (Mac)
+
+5. **성능 이슈 (대용량 로그)**
+   ```bash
+   # 로그 파일 크기 확인
+   du -sh logs/*.log
+
+   # 필요시 로그 로테이션
+   logrotate /etc/logrotate.d/mcp-map
+   ```
+
 ### 확장 계획
 
 #### 1. 모바일 대시보드 테스트
