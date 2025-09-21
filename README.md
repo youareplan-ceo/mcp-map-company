@@ -2610,3 +2610,443 @@ asyncio.run(test())
 - 오프라인 알림 큐
 
 이 운영 알림 통합 시스템을 통해 관리자는 보안 이벤트와 백업 작업을 통합적으로 모니터링하고, 실시간으로 시스템 상태를 파악할 수 있습니다.
+
+## 🖥️ 운영 대시보드 테스트 자동화
+
+### 개요
+운영 대시보드 테스트 자동화 시스템은 관리자 대시보드의 모든 패널과 기능을 자동으로 검증하는 포괄적인 테스트 솔루션입니다.
+pytest + Selenium 기반의 UI 테스트와 curl 기반의 API 엔드포인트 헬스체크를 통해 대시보드의 안정성을 보장합니다.
+
+### 주요 구성 요소
+
+#### 1. 포괄적 대시보드 패널 테스트 (tests/test_ops_dashboard.py)
+
+**🎯 테스트 범위:**
+- 🔔 **운영 알림 통합 패널**: 필터링, 모달, 통계 카드 기능 검증
+- 🔒 **보안 모니터링 패널**: 차단 IP, 화이트리스트, 실시간 차트 검증
+- 💾 **백업 관리 패널**: 백업 상태, 작업 버튼, 통계 표시 검증
+- 📊 **시스템 모니터링**: 자원 사용률, 성능 차트 검증
+
+**테스트 클래스 구조:**
+
+```python
+class TestOpsDashboardPanels:
+    """운영 대시보드 패널 UI 테스트"""
+
+    def test_dashboard_page_load(self):
+        """대시보드 페이지 로드 및 주요 섹션 존재 확인"""
+
+    def test_ops_notification_panel_elements(self):
+        """운영 알림 통합 패널의 모든 UI 요소 검증"""
+
+    def test_security_monitoring_panel(self):
+        """보안 모니터링 패널 구성 요소 검증"""
+
+    def test_filter_button_interactions(self):
+        """필터 버튼 클릭 및 상태 변경 검증"""
+
+    def test_json_modal_functionality(self):
+        """JSON 데이터 모달 표시/숨김 기능 검증"""
+
+class TestDashboardAPIIntegration:
+    """대시보드 API 통합 테스트"""
+
+    def test_security_api_endpoint_structure(self):
+        """보안 API 응답 구조 및 필수 필드 검증"""
+
+    def test_notification_api_endpoint_structure(self):
+        """알림 API 응답 구조 및 데이터 형식 검증"""
+
+class TestDashboardMockDataInteraction:
+    """모의 데이터 상호작용 테스트"""
+
+    def test_mock_notification_filtering(self):
+        """모의 알림 데이터 타입별/심각도별 필터링 로직 검증"""
+
+    def test_mock_security_event_processing(self):
+        """모의 보안 이벤트 처리 및 심각도 판정 로직 검증"""
+
+class TestDashboardPerformance:
+    """대시보드 성능 테스트"""
+
+    def test_page_load_performance(self):
+        """페이지 로드 시간 (< 5초) 검증"""
+
+    def test_javascript_initialization_time(self):
+        """JavaScript 초기화 시간 (< 3초) 검증"""
+```
+
+**헤드리스 브라우저 설정:**
+```python
+@pytest.fixture(scope="class")
+def browser_setup(self):
+    """Chrome 헤드리스 브라우저 설정"""
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--window-size=1920,1080")
+
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.implicitly_wait(10)
+    yield driver
+    driver.quit()
+```
+
+#### 2. API 엔드포인트 스모크 테스트 (scripts/dashboard_smoke_test.sh)
+
+**🔍 테스트 대상 엔드포인트:**
+- `/admin_dashboard.html` - 관리자 대시보드 페이지
+- `/health` - 헬스체크 엔드포인트
+- `/api/v1/security/stats` - 보안 통계 API
+- `/api/v1/metrics` - 시스템 메트릭 API
+- `/api/v1/notifications` - 운영 알림 API
+
+**주요 기능:**
+- 🌐 **HTTP 상태 코드 검증**: 200, 404, 500 등 예상 응답 코드 확인
+- 📊 **JSON 구조 검증**: jq를 이용한 응답 데이터 구조 검증
+- ⏱️ **응답 시간 측정**: 각 엔드포인트별 응답 시간 모니터링
+- 📝 **보안 로그 기록**: 모든 테스트 결과를 security.log에 자동 기록
+
+**스크립트 옵션:**
+
+```bash
+# 기본 실행 (요약 정보)
+./scripts/dashboard_smoke_test.sh
+
+# 상세 로그 출력
+./scripts/dashboard_smoke_test.sh --verbose
+
+# JSON 형식 결과 출력
+./scripts/dashboard_smoke_test.sh --json
+
+# 커스텀 호스트 및 타임아웃 설정
+./scripts/dashboard_smoke_test.sh --host http://production.example.com --timeout 30
+
+# 전체 옵션 조합
+./scripts/dashboard_smoke_test.sh --verbose --json --timeout 15
+```
+
+**출력 예시 (JSON 형식):**
+```json
+{
+    "timestamp": "2024-01-15T14:30:00Z",
+    "host": "http://localhost:8088",
+    "timeout": 10,
+    "summary": {
+        "total_tests": 5,
+        "passed": 4,
+        "failed": 1,
+        "success_rate": 80.0
+    },
+    "test_results": [
+        {
+            "name": "관리자 대시보드",
+            "url": "http://localhost:8088/admin_dashboard.html",
+            "status": "PASSED",
+            "http_status": 200
+        },
+        {
+            "name": "보안 통계 API",
+            "url": "http://localhost:8088/api/v1/security/stats",
+            "status": "FAILED",
+            "http_status": 404,
+            "note": "서버 미실행 가능성"
+        }
+    ]
+}
+```
+
+### 테스트 실행 방법
+
+#### pytest 기반 UI 테스트 실행
+
+```bash
+# 전체 대시보드 테스트 실행
+python -m pytest tests/test_ops_dashboard.py -v
+
+# 특정 테스트 클래스 실행
+python -m pytest tests/test_ops_dashboard.py::TestOpsDashboardPanels -v
+
+# 헤드리스 모드에서 실행 (기본값)
+python -m pytest tests/test_ops_dashboard.py -v --tb=short
+
+# 성능 테스트만 실행
+python -m pytest tests/test_ops_dashboard.py::TestDashboardPerformance -v
+
+# 실패 시 즉시 중단
+python -m pytest tests/test_ops_dashboard.py -x -v
+
+# 상세 출력 (pytest + 브라우저 로그)
+python -m pytest tests/test_ops_dashboard.py -v -s --tb=long
+```
+
+**필수 종속성 설치:**
+```bash
+# Selenium WebDriver 및 관련 패키지
+pip install selenium pytest pytest-asyncio
+
+# Chrome WebDriver 설치 (macOS)
+brew install chromedriver
+
+# 또는 직접 다운로드
+# https://chromedriver.chromium.org/
+```
+
+#### 스모크 테스트 스크립트 실행
+
+```bash
+# 기본 스모크 테스트
+./scripts/dashboard_smoke_test.sh
+
+# 상세 로그와 함께 실행
+./scripts/dashboard_smoke_test.sh --verbose
+
+# 프로덕션 환경 테스트
+./scripts/dashboard_smoke_test.sh --host https://admin.mcp-map.company --timeout 30
+
+# JSON 출력으로 CI/CD 통합
+./scripts/dashboard_smoke_test.sh --json > dashboard_test_results.json
+
+# 로컬 개발 서버 테스트
+./scripts/dashboard_smoke_test.sh --host http://localhost:8088 --verbose
+```
+
+### CI/CD 통합
+
+#### GitHub Actions 워크플로 통합
+
+```yaml
+# .github/workflows/dashboard-tests.yml
+name: 🖥️ 대시보드 테스트 자동화
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * *'  # 매일 새벽 2시 실행
+
+jobs:
+  dashboard-ui-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: 🐍 Python 설정
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: 🚀 Chrome 브라우저 설치
+      uses: browser-actions/setup-chrome@latest
+
+    - name: 📦 종속성 설치
+      run: |
+        pip install selenium pytest pytest-asyncio
+        pip install -r requirements.txt
+
+    - name: 🖥️ 대시보드 UI 테스트 실행
+      run: |
+        echo "🖥️ 대시보드 패널 테스트 실행..."
+        python -m pytest tests/test_ops_dashboard.py -v --tb=short
+      continue-on-error: true
+
+    - name: 📊 테스트 결과 아티팩트 업로드
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: dashboard-test-results
+        path: |
+          pytest-results.xml
+          logs/
+
+  dashboard-smoke-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: 🔧 스모크 테스트 스크립트 권한 설정
+      run: chmod +x scripts/dashboard_smoke_test.sh
+
+    - name: 🌐 대시보드 스모크 테스트 실행
+      run: |
+        echo "🌐 대시보드 엔드포인트 헬스체크 실행..."
+        ./scripts/dashboard_smoke_test.sh --json --verbose
+      continue-on-error: true
+
+    - name: 📋 테스트 결과 보고서 생성
+      run: |
+        echo "📋 스모크 테스트 결과 요약 생성..."
+        ./scripts/dashboard_smoke_test.sh --json > smoke_test_results.json
+        cat smoke_test_results.json
+```
+
+#### 기존 CI 파이프라인 통합
+
+```yaml
+# .github/workflows/ci.yml 에 추가
+- name: 🖥️ 대시보드 패널 통합 테스트
+  run: |
+    echo "🖥️ 대시보드 UI 및 API 테스트 실행..."
+
+    # UI 테스트 실행
+    python -m pytest tests/test_ops_dashboard.py::TestOpsDashboardPanels -v
+
+    # API 스모크 테스트 실행
+    ./scripts/dashboard_smoke_test.sh --verbose
+
+    # 결과 로그 확인
+    if [ -f logs/security.log ]; then
+      echo "📝 보안 로그 확인:"
+      tail -20 logs/security.log
+    fi
+  continue-on-error: false
+```
+
+### cron 스케줄링 (정기 모니터링)
+
+#### 시스템 crontab 설정
+
+```bash
+# crontab 편집
+crontab -e
+
+# 매일 새벽 2시 대시보드 헬스체크 실행
+0 2 * * * cd /path/to/mcp-map-company && ./scripts/dashboard_smoke_test.sh --json >> logs/daily_dashboard_check.log 2>&1
+
+# 매시간 간단한 헬스체크 실행
+0 * * * * cd /path/to/mcp-map-company && ./scripts/dashboard_smoke_test.sh --timeout 5 >/dev/null 2>&1
+
+# 주간 포괄적 UI 테스트 실행 (매주 일요일 오전 3시)
+0 3 * * 0 cd /path/to/mcp-map-company && python -m pytest tests/test_ops_dashboard.py -v >> logs/weekly_ui_tests.log 2>&1
+```
+
+#### 모니터링 스크립트 생성
+
+```bash
+# scripts/dashboard_monitor.sh
+#!/bin/bash
+
+# 대시보드 상태 모니터링 및 알림
+result=$(./scripts/dashboard_smoke_test.sh --json)
+success_rate=$(echo "$result" | jq -r '.summary.success_rate')
+
+if (( $(echo "$success_rate < 80" | bc -l) )); then
+    # 성공률이 80% 미만일 때 알림 발송
+    python -c "
+    import asyncio
+    from mcp.utils.notifier import send_ops_integration_alert, NotificationLevel
+
+    asyncio.run(send_ops_integration_alert(
+        event_type='dashboard_health_check',
+        security_events=[],
+        backup_results=[{'dashboard_success_rate': $success_rate}],
+        level=NotificationLevel.WARNING
+    ))
+    "
+fi
+```
+
+### 문제 해결
+
+#### 일반적인 문제
+
+1. **"Chrome WebDriver를 찾을 수 없습니다"**
+   ```bash
+   # macOS에서 ChromeDriver 설치
+   brew install chromedriver
+
+   # 또는 수동 설치
+   wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE
+   LATEST=$(cat LATEST_RELEASE)
+   wget https://chromedriver.storage.googleapis.com/$LATEST/chromedriver_mac64.zip
+   unzip chromedriver_mac64.zip
+   sudo mv chromedriver /usr/local/bin/
+   ```
+
+2. **"Selenium 테스트가 타임아웃됩니다"**
+   ```python
+   # 명시적 대기 시간 증가
+   WebDriverWait(driver, 20).until(
+       EC.presence_of_element_located((By.ID, "opsNotificationsList"))
+   )
+
+   # 페이지 로드 대기 시간 증가
+   driver.set_page_load_timeout(30)
+   ```
+
+3. **"API 엔드포인트 테스트 실패"**
+   ```bash
+   # 서버 실행 상태 확인
+   curl -I http://localhost:8088/health
+
+   # 방화벽 및 포트 확인
+   netstat -an | grep 8088
+
+   # 로그 확인
+   tail -f logs/api.log
+   ```
+
+4. **"JSON 응답 파싱 오류"**
+   ```bash
+   # jq 설치 확인
+   which jq || brew install jq
+
+   # JSON 응답 수동 확인
+   curl -s http://localhost:8088/api/v1/security/stats | jq .
+   ```
+
+#### 디버깅 모드
+
+```bash
+# 상세 디버그 모드로 pytest 실행
+python -m pytest tests/test_ops_dashboard.py -v -s --tb=long --log-cli-level=DEBUG
+
+# 스모크 테스트 디버그 모드
+DEBUG=1 ./scripts/dashboard_smoke_test.sh --verbose
+
+# 브라우저 헤드풀 모드 (화면 보이게)
+HEADLESS=false python -m pytest tests/test_ops_dashboard.py::TestOpsDashboardPanels::test_dashboard_page_load -v -s
+```
+
+### 확장 계획
+
+#### 1. 모바일 대시보드 테스트
+```python
+# 모바일 뷰포트 테스트
+mobile_emulation = {"deviceName": "iPhone 12"}
+chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
+```
+
+#### 2. 접근성(A11y) 테스트
+```python
+# axe-core를 이용한 접근성 테스트
+from axe_selenium_python import Axe
+
+def test_dashboard_accessibility(self, browser_setup, dashboard_url):
+    driver = browser_setup
+    driver.get(dashboard_url)
+
+    axe = Axe(driver)
+    results = axe.run()
+    assert len(results["violations"]) == 0
+```
+
+#### 3. 시각적 회귀 테스트
+```python
+# Playwright를 이용한 스크린샷 비교
+def test_dashboard_visual_regression(self, browser_setup, dashboard_url):
+    driver = browser_setup
+    driver.get(dashboard_url)
+
+    screenshot = driver.get_screenshot_as_png()
+    # 기준 이미지와 비교 로직
+```
+
+이 대시보드 테스트 자동화 시스템을 통해 관리자는 대시보드의 모든 기능이 정상적으로 작동하는지 지속적으로 모니터링하고, 문제 발생 시 즉시 감지할 수 있습니다.
