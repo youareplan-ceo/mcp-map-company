@@ -1,0 +1,51 @@
+{
+  "id": "build-122",
+  "date": "2025-01-14",
+  "timestamp": "2025-01-14T15:45:00Z",
+  "status": "failed",
+  "execution_time": 189,
+  "test_results": {
+    "total": 154,
+    "passed": 142,
+    "failed": 12,
+    "skipped": 0
+  },
+  "coverage": {
+    "percentage": 82.1,
+    "lines_covered": 2056,
+    "lines_total": 2504
+  },
+  "build_info": {
+    "branch": "feature/user-auth",
+    "commit": "x9y8z7w",
+    "trigger": "pull_request",
+    "environment": "staging"
+  },
+  "stages": [
+    {
+      "name": "테스트",
+      "status": "failed",
+      "duration": 189,
+      "start_time": "2025-01-14T15:45:00Z",
+      "end_time": "2025-01-14T15:48:09Z",
+      "error": "12개의 테스트 실패"
+    }
+  ],
+  "failed_tests": [
+    {
+      "name": "test_user_login_invalid_credentials",
+      "error": "AssertionError: Expected 401, got 500",
+      "file": "tests/test_auth.py",
+      "line": 45
+    },
+    {
+      "name": "test_password_validation",
+      "error": "ValidationError: Password too weak",
+      "file": "tests/test_auth.py",
+      "line": 67
+    }
+  ],
+  "artifacts": {
+    "logs_url": "/logs/build-122.log"
+  }
+}

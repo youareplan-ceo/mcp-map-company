@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.stockpilot.collector</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/youareplan/Desktop/mcp-map-company/.venv/bin/python</string>
+    <string>-m</string>
+    <string>mcp.collect_once</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/youareplan/Desktop/mcp-map-company</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PYTHONPATH</key><string>/Users/youareplan/Desktop/mcp-map-company</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>StartInterval</key><integer>60</integer>
+  <key>KeepAlive</key><false/>
+  <key>StandardOutPath</key>
+  <string>/Users/youareplan/Desktop/mcp-map-company/logs/collector.out</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/youareplan/Desktop/mcp-map-company/logs/collector.err</string>
+</dict>
+</plist>

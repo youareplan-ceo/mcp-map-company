@@ -22,6 +22,8 @@ from pydantic import BaseModel
 # Import routers
 from .portfolio_api import router as portfolio_router
 from .recommend_api import router as recommend_router
+from .monthly_report_api import router as monthly_report_router  # 월간 운영 리포트 라우터
+from .ci_report_api import router as ci_report_router  # CI/CD 리포트 라우터
 
 # Import rate limiter
 from .utils.rate_limiter import rate_limit_middleware, get_security_stats, add_ip_to_whitelist
@@ -57,6 +59,8 @@ app.add_middleware(
 # Include routers
 app.include_router(portfolio_router, prefix="/api/v1/portfolio")
 app.include_router(recommend_router, prefix="/api/v1/recommend")
+app.include_router(monthly_report_router)  # 월간 리포트 라우터 (prefix는 라우터 내부에서 정의됨)
+app.include_router(ci_report_router)  # CI/CD 리포트 라우터 (prefix는 라우터 내부에서 정의됨)
 
 
 # ---------------------------------
@@ -103,7 +107,15 @@ def root() -> Dict[str, Any]:
     return {
         "service": "mcp-map-company",
         "version": app.version,
-        "endpoints": ["/health", "/api/v1/ai/signals"],
+        "endpoints": [
+            "/health",
+            "/api/v1/ai/signals",
+            "/api/v1/reports/monthly",
+            "/api/v1/portfolio",
+            "/api/v1/recommend",
+            "/api/v1/metrics",
+            "/api/v1/ci"
+        ],
     }
 
 # ---------------------------------
