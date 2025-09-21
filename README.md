@@ -5637,6 +5637,392 @@ def test_dashboard_visual_regression(self, browser_setup, dashboard_url):
 
 이 대시보드 테스트 자동화 시스템을 통해 관리자는 대시보드의 모든 기능이 정상적으로 작동하는지 지속적으로 모니터링하고, 문제 발생 시 즉시 감지할 수 있습니다.
 
+## 🧪 플래키 테스트 관리 대시보드
+
+### 개요
+플래키 테스트 관리 대시보드는 불안정한 테스트를 자동으로 감지하고 격리하여 CI/CD 파이프라인의 안정성을 보장하는 통합 관리 시스템입니다. 실시간 모니터링, 자동 격리, 재시도 관리, RBAC 기반 권한 제어를 통해 테스트 품질을 향상시킵니다.
+
+### 주요 기능
+
+#### 1. 🎯 실시간 플래키 테스트 모니터링
+- **통계 카드**: 격리된 테스트 수, 최근 7일간 실패율, 자동재시도 성공률, 미해결 테스트 수
+- **Chart.js 시각화**: 실패율 추이 차트, 격리 사유별 분포 도넛 차트
+- **실시간 업데이트**: 30초 간격 자동 데이터 갱신
+
+#### 2. 🔍 고급 필터링 및 검색
+- **날짜 필터**: 최근 7일/30일/90일 선택
+- **상태 필터**: 전체/격리됨/정상/재시도 중
+- **태그 필터**: auto-quarantined, manual-quarantined 등
+- **실시간 검색**: 테스트 이름 기반 즉시 필터링
+
+#### 3. 📊 테스트 목록 관리
+- **페이지네이션**: 10/25/50개씩 표시 옵션
+- **정렬**: 실패율, 격리 날짜, 마지막 실행 시간 기준
+- **상세 정보**: 테스트별 실행 횟수, 실패율, 격리 사유, 격리 날짜
+- **액션 버튼**: 재시도, 격리 해제, 상세 보기
+
+#### 4. 🔐 RBAC 기반 권한 관리
+- **VIEWER**: 조회 권한만 (기본값)
+- **OPERATOR**: 테스트 재시도 권한
+- **ADMIN**: 모든 권한 (격리 해제 포함)
+
+### API 엔드포인트
+
+#### 1. 테스트 재시도 (POST /api/v1/flaky/retry)
+**권한**: OPERATOR 이상 필요
+
+```http
+POST /api/v1/flaky/retry
+X-User-Role: OPERATOR
+Content-Type: application/json
+
+{
+  "test_names": ["test_flaky_login", "test_unstable_api"],
+  "retry_count": 3,
+  "priority": "high",
+  "environment": "staging",
+  "notes": "긴급 수정 후 재시도"
+}
+```
+
+**응답**:
+```json
+{
+  "success": true,
+  "message": "2개 테스트 재시도가 요청되었습니다.",
+  "retry_jobs": [
+    {
+      "job_id": "retry_test_flaky_login_20240921_143022",
+      "test_name": "test_flaky_login",
+      "retry_count": 3,
+      "priority": "high",
+      "environment": "staging",
+      "status": "queued",
+      "created_at": "2024-09-21T14:30:22Z",
+      "notes": "긴급 수정 후 재시도"
+    }
+  ]
+}
+```
+
+#### 2. 플래키 테스트 통계 (GET /api/v1/flaky/stats)
+```http
+GET /api/v1/flaky/stats?days=30
+```
+
+**응답**:
+```json
+{
+  "total_tests": 156,
+  "flaky_tests": 8,
+  "quarantined_tests": 3,
+  "flaky_rate": 0.051,
+  "total_runs_analyzed": 2340,
+  "period_start": "2024-08-22T00:00:00Z",
+  "period_end": "2024-09-21T14:30:22Z"
+}
+```
+
+#### 3. 격리된 테스트 목록 (GET /api/v1/flaky/isolated)
+```http
+GET /api/v1/flaky/isolated?limit=50
+```
+
+**응답**:
+```json
+[
+  {
+    "test_name": "test_flaky_login",
+    "total_runs": 42,
+    "fail_count": 29,
+    "pass_count": 13,
+    "failure_rate": 0.69,
+    "first_seen": "2024-09-15T09:00:00Z",
+    "last_seen": "2024-09-21T14:00:00Z",
+    "quarantined": true,
+    "quarantine_reason": "높은 실패율",
+    "quarantine_date": "2024-09-20T10:30:00Z",
+    "labels": ["auto-quarantined"],
+    "notes": "로그인 테스트 불안정"
+  }
+]
+```
+
+#### 4. 테스트 격리 해제 (DELETE /api/v1/flaky/{test_name})
+**권한**: ADMIN 필요
+
+```http
+DELETE /api/v1/flaky/test_flaky_login
+X-User-Role: ADMIN
+```
+
+**응답**:
+```json
+{
+  "success": true,
+  "message": "테스트 'test_flaky_login'의 격리가 해제되었습니다.",
+  "test_name": "test_flaky_login"
+}
+```
+
+### 대시보드 접속 방법
+
+#### 로컬 환경
+```bash
+# 서버 시작
+uvicorn mcp.run:app --reload --port 8088
+
+# 브라우저에서 접속
+http://localhost:8088/web/admin_dashboard.html
+```
+
+#### 운영 환경
+```bash
+# 관리자 대시보드 URL
+https://your-domain.com/web/admin_dashboard.html
+```
+
+### JavaScript 기능 상세
+
+#### 1. FlakyTestManager 클래스
+```javascript
+class FlakyTestManager {
+    constructor() {
+        this.isLoading = false;
+        this.currentData = null;
+        this.charts = {};
+        this.currentPage = 1;
+        this.perPage = 10;
+        this.filters = {
+            date: '30d',
+            status: 'all',
+            tag: 'all',
+            search: ''
+        };
+        this.init();
+    }
+}
+```
+
+#### 2. 주요 메서드
+- `loadDashboardData()`: 통계 및 테스트 목록 로드
+- `updateStatsCards()`: 통계 카드 업데이트
+- `createFailureRateChart()`: 실패율 추이 차트 생성
+- `createQuarantineReasonChart()`: 격리 사유 분포 차트 생성
+- `retryTests()`: 선택된 테스트 재시도
+- `unquarantineTest()`: 테스트 격리 해제
+
+### 테스트 코드
+
+#### 1. 종합 테스트 (tests/test_flaky_dashboard_api.py)
+```bash
+# 전체 테스트 실행
+pytest tests/test_flaky_dashboard_api.py -v
+
+# 특정 테스트 클래스 실행
+pytest tests/test_flaky_dashboard_api.py::TestFlakyRetryEndpoint -v
+
+# 권한 테스트만 실행
+pytest tests/test_flaky_dashboard_api.py::TestUserRoleAuthentication -v
+```
+
+#### 2. 테스트 범위
+- **사용자 인증**: RBAC 권한 계층 검증
+- **API 기능성**: 모든 엔드포인트 기능 테스트
+- **데이터 검증**: 요청/응답 데이터 스키마 검증
+- **에러 처리**: 권한 없음, 잘못된 데이터 등 예외 상황
+- **통합 워크플로우**: 전체 플래키 테스트 관리 과정
+
+#### 3. 테스트 예시
+```python
+def test_retry_with_operator_permission(client, temp_data_dir):
+    """OPERATOR 권한으로 테스트 재시도 요청"""
+    retry_data = {
+        "test_names": ["test_flaky_login"],
+        "retry_count": 3,
+        "priority": "high"
+    }
+
+    response = client.post(
+        "/api/v1/flaky/retry",
+        json=retry_data,
+        headers={"X-User-Role": "OPERATOR"}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["success"] is True
+```
+
+### 설정 및 구성
+
+#### 1. 플래키 테스트 설정 (data/flaky_tests/config.json)
+```json
+{
+  "min_runs": 5,
+  "failure_threshold": 0.3,
+  "auto_quarantine": true,
+  "auto_quarantine_threshold": 0.5,
+  "quarantine_duration_days": 7,
+  "retention_days": 30
+}
+```
+
+#### 2. 설정 옵션 설명
+- **min_runs**: 플래키 판정을 위한 최소 실행 횟수
+- **failure_threshold**: 플래키 판정 실패율 임계값 (0.3 = 30%)
+- **auto_quarantine**: 자동 격리 활성화 여부
+- **auto_quarantine_threshold**: 자동 격리 실패율 임계값 (0.5 = 50%)
+- **quarantine_duration_days**: 기본 격리 기간 (일)
+- **retention_days**: 테스트 히스토리 보관 기간 (일)
+
+### 데이터 파일 구조
+
+#### 1. 파일 위치
+```
+data/flaky_tests/
+├── config.json          # 플래키 테스트 설정
+├── quarantine.json       # 격리된 테스트 정보
+├── test_history.json     # 테스트 실행 히스토리
+└── retry_jobs.json       # 재시도 작업 로그
+```
+
+#### 2. 격리 데이터 구조 (quarantine.json)
+```json
+{
+  "test_flaky_login": {
+    "quarantined": true,
+    "reason": "높은 실패율",
+    "quarantine_date": "2024-09-21T10:30:00Z",
+    "duration_days": 7,
+    "quarantined_by": "system",
+    "notes": "로그인 테스트 불안정",
+    "labels": ["auto-quarantined"]
+  }
+}
+```
+
+#### 3. 테스트 히스토리 구조 (test_history.json)
+```json
+[
+  {
+    "test_name": "test_flaky_login",
+    "status": "fail",
+    "duration": 2.5,
+    "timestamp": "2024-09-21T14:00:00Z",
+    "build_id": "build_123",
+    "branch": "main",
+    "environment": "staging",
+    "error_message": "Connection timeout"
+  }
+]
+```
+
+### 모니터링 및 알림
+
+#### 1. 자동 모니터링
+- **백그라운드 분석**: 새로운 테스트 결과 기록 시 자동 플래키 테스트 분석
+- **자동 격리**: 설정된 임계값 초과 시 자동으로 테스트 격리
+- **알림 시스템**: 새로운 플래키 테스트 감지 시 알림 전송
+
+#### 2. 수동 모니터링
+- **대시보드 실시간 업데이트**: 30초 간격 자동 데이터 갱신
+- **필터링 및 검색**: 다양한 조건으로 테스트 상태 모니터링
+- **차트 시각화**: 추이 분석을 통한 패턴 파악
+
+### 확장 기능
+
+#### 1. CI/CD 파이프라인 통합
+```yaml
+# .github/workflows/ci.yml에 추가
+- name: Record Test Results
+  run: |
+    curl -X POST http://localhost:8088/api/v1/flaky-tests/test-results \
+      -H "Content-Type: application/json" \
+      -d '{
+        "test_name": "${{ matrix.test }}",
+        "status": "${{ job.status }}",
+        "duration": 2.5,
+        "build_id": "${{ github.run_id }}",
+        "branch": "${{ github.ref_name }}",
+        "environment": "ci"
+      }'
+```
+
+#### 2. 알림 시스템 확장
+```python
+# 플래키 테스트 감지 시 알림
+from mcp.utils.notifier import send_alert
+
+send_alert(
+    level="warning",
+    title="새로운 플래키 테스트 감지",
+    message=f"테스트 '{test_name}'이 {failure_rate:.1%} 실패율로 감지되었습니다.",
+    channels=["slack", "discord"]
+)
+```
+
+#### 3. 리포팅 확장
+```bash
+# 주간 플래키 테스트 리포트 생성
+make flaky-weekly-report
+
+# 월간 플래키 테스트 분석
+make flaky-monthly-analysis
+```
+
+### 모범 사례
+
+#### 1. 플래키 테스트 관리 원칙
+- **조기 감지**: 실패율 30% 이상 시 즉시 검토
+- **신속한 격리**: 50% 이상 실패 시 자동 격리
+- **체계적인 수정**: 근본 원인 분석 후 수정
+- **지속적인 모니터링**: 수정 후에도 안정성 확인
+
+#### 2. 권한 관리 가이드라인
+- **VIEWER**: 개발자, QA 팀 (조회만)
+- **OPERATOR**: 테스트 리드, DevOps (재시도 권한)
+- **ADMIN**: 팀 리더, 시스템 관리자 (모든 권한)
+
+#### 3. 데이터 관리
+- **정기적인 정리**: 30일 이상 된 히스토리 자동 삭제
+- **백업**: 격리 데이터 주간 백업
+- **모니터링**: 디스크 사용량 정기 확인
+
+### 문제 해결
+
+#### 1. 일반적인 문제
+**Q: 대시보드에 데이터가 표시되지 않음**
+A: API 엔드포인트 연결 상태 확인:
+```bash
+curl http://localhost:8088/api/v1/flaky/stats
+```
+
+**Q: 권한 오류 발생**
+A: 헤더에 올바른 역할 설정 확인:
+```javascript
+headers: { "X-User-Role": "OPERATOR" }
+```
+
+**Q: 테스트 자동 격리가 작동하지 않음**
+A: config.json에서 auto_quarantine 설정 확인:
+```json
+{ "auto_quarantine": true }
+```
+
+#### 2. 디버깅 도구
+```bash
+# API 로그 확인
+tail -f logs/api.log | grep flaky
+
+# 데이터 파일 확인
+cat data/flaky_tests/quarantine.json | jq .
+
+# 테스트 실행 로그
+pytest tests/test_flaky_dashboard_api.py -v -s
+```
+
+이 플래키 테스트 관리 대시보드를 통해 개발팀은 불안정한 테스트를 체계적으로 관리하고, CI/CD 파이프라인의 안정성을 크게 향상시킬 수 있습니다.
+
 ## 🔎 이상탐지 고도화: 원인분석·계절성·정책·백테스트
 
 ### 📊 개요
@@ -6220,4 +6606,286 @@ python -m pytest tests/test_autoremediate_and_flaky.py::TestFlakyTestsAPI -v
 # 전체 자동 완화 및 플래키 테스트 시스템 테스트
 python -m pytest tests/test_autoremediate_and_flaky.py -v
 ```
+
+## 🧪 CI 안정성 시뮬레이션 시스템
+
+CI/CD 파이프라인의 안정성을 측정하고 최적화하기 위한 종합적인 시뮬레이션 및 검증 시스템입니다. 실패율과 플래키 테스트 비율을 시뮬레이션하여 CI 성능을 예측하고, 런북 시스템의 무결성을 검증합니다.
+
+### 🎯 주요 기능
+
+#### 1. 📊 CI 안정성 시뮬레이션 (`scripts/ci_stability_sim.sh`)
+
+설정 가능한 매개변수로 CI/CD 파이프라인의 실패 패턴을 시뮬레이션합니다.
+
+**핵심 기능:**
+- **매개변수 조정**: 실패율(0-100%), 플래키율(0-100%), 실행 횟수 설정
+- **실시간 통계**: 성공/실패/플래키 실행 분포 분석
+- **안정성 점수**: 종합적인 CI 안정성 평가 (0-100점)
+- **다중 출력**: JSON, Markdown, 텍스트 포맷 지원
+- **시뮬레이션 모드**: 안전한 드라이런 실행
+
+```bash
+# 기본 시뮬레이션 실행 (실패율 15%, 플래키율 5%, 100회 실행)
+./scripts/ci_stability_sim.sh
+
+# 매개변수 커스터마이징
+./scripts/ci_stability_sim.sh --fail-rate 20 --flaky-rate 8 --runs 200
+
+# 출력 포맷 지정
+./scripts/ci_stability_sim.sh --output-format json --output-file ci_results.json
+
+# 상세 분석 모드
+./scripts/ci_stability_sim.sh --verbose --seed 12345
+```
+
+**시뮬레이션 결과 예시:**
+```json
+{
+  "simulation_config": {
+    "fail_rate_target": 15,
+    "flaky_rate_target": 5,
+    "total_runs": 100
+  },
+  "results": {
+    "successful_runs": 82,
+    "failed_runs": 13,
+    "flaky_runs": 5,
+    "success_rate": "82.00",
+    "actual_fail_rate": "13.20",
+    "flaky_reproduce_rate": "4.80",
+    "stability_score": "79.60"
+  },
+  "execution_stats": {
+    "avg_execution_time": "1.25",
+    "min_execution_time": "0.80",
+    "max_execution_time": "2.30"
+  }
+}
+```
+
+#### 2. 📚 런북 시스템 검증 (`scripts/runbook_validator.sh`)
+
+자동 완화 시스템의 런북과 에러 매핑 무결성을 검증합니다.
+
+**검증 항목:**
+- **에러 타입 매핑**: 모든 에러 유형이 적절한 런북에 매핑되는지 확인
+- **훅 파일 존재성**: 참조된 모든 훅 스크립트 파일 존재 검증
+- **중복 매핑 탐지**: 동일한 에러에 대한 중복 정의 검출
+- **권한 검증**: 스크립트 실행 권한 및 접근성 확인
+
+```bash
+# 전체 런북 시스템 검증
+./scripts/runbook_validator.sh
+
+# 특정 런북 디렉토리 검증
+./scripts/runbook_validator.sh --runbook-dir custom_runbooks/
+
+# JSON 형태로 검증 결과 출력
+./scripts/runbook_validator.sh --output-format json --output-file validation_results.json
+
+# 상세 검증 모드
+./scripts/runbook_validator.sh --verbose
+```
+
+**검증 결과 예시:**
+```json
+{
+  "validation_status": "PASSED",
+  "timestamp": "2025-09-21T10:30:45Z",
+  "summary": {
+    "total_runbook_templates": 15,
+    "total_error_mappings": 28,
+    "total_hook_files": 12,
+    "issues_found": 0
+  },
+  "validation_results": {
+    "unmapped_error_types": [],
+    "missing_hooks": [],
+    "duplicate_mappings": [],
+    "permission_issues": []
+  }
+}
+```
+
+### 🎛️ 웹 대시보드 통합
+
+#### 1. 📊 실시간 시뮬레이션 패널
+
+관리자 대시보드(`web/admin_dashboard.html`)에 통합된 CI 안정성 시뮬레이션 도구:
+
+**주요 컴포넌트:**
+- **매개변수 슬라이더**: 실시간 실패율/플래키율 조정
+- **실시간 미리보기**: 설정 변경 시 즉시 예상 결과 표시
+- **차트 시각화**: Chart.js 기반 도넛/바 차트
+- **결과 다운로드**: JSON/Markdown 포맷으로 결과 다운로드
+- **권장사항 생성**: AI 기반 CI 개선 제안
+
+**대시보드 기능:**
+```javascript
+// CIStabilitySimulationManager 클래스 제공
+- 실시간 매개변수 조정 (슬라이더)
+- 시뮬레이션 실행 및 결과 표시
+- 런북 검증 실행
+- 결과 공유 및 다운로드
+- 다크/라이트 모드 지원
+```
+
+#### 2. 📈 성능 메트릭 카드
+
+실시간으로 업데이트되는 핵심 지표:
+- **성공률**: 전체 실행 대비 성공한 실행 비율
+- **실패율**: 실제 측정된 실패 빈도
+- **플래키율**: 불안정한 테스트 재현 비율
+- **안정성 점수**: 종합적인 CI 건강도 (0-100점)
+
+### 🧪 테스트 및 검증
+
+#### 종합 테스트 스위트 (`tests/test_ci_stability_and_runbook.py`)
+
+자동화된 테스트로 시뮬레이션 및 검증 시스템의 정확성을 보장합니다.
+
+**테스트 범위:**
+1. **스크립트 존재성 및 권한 검증**
+2. **매개변수 유효성 검사**
+3. **출력 포맷 정확성 검증**
+4. **에러 처리 시나리오**
+5. **대용량 시뮬레이션 성능**
+6. **런북 검증 정확성**
+
+```bash
+# CI 안정성 시뮬레이션 테스트 실행
+python -m pytest tests/test_ci_stability_and_runbook.py::TestCIStabilitySimulation -v
+
+# 런북 검증 시스템 테스트 실행
+python -m pytest tests/test_ci_stability_and_runbook.py::TestRunbookValidator -v
+
+# 전체 테스트 스위트 실행
+python -m pytest tests/test_ci_stability_and_runbook.py -v
+
+# 커버리지와 함께 실행
+python -m pytest tests/test_ci_stability_and_runbook.py --cov=scripts --cov-report=html
+```
+
+**테스트 시나리오:**
+```python
+# 시뮬레이션 정확성 검증
+def test_simulation_accuracy():
+    # 알려진 매개변수로 시뮬레이션 실행
+    # 결과가 예상 범위 내에 있는지 검증
+
+# 극한 상황 테스트
+def test_edge_cases():
+    # 100% 실패율, 0% 성공률 등 극한 시나리오
+    # 시스템이 적절히 처리하는지 확인
+
+# 런북 검증 정확성
+def test_runbook_validation_accuracy():
+    # 의도적으로 손상된 런북 설정으로 테스트
+    # 검증 시스템이 올바르게 이슈를 탐지하는지 확인
+```
+
+### 🚀 사용 시나리오
+
+#### 시나리오 1: CI/CD 파이프라인 건강도 평가
+
+```bash
+# 현재 CI 상태를 반영한 시뮬레이션 실행
+./scripts/ci_stability_sim.sh --fail-rate 12 --flaky-rate 3 --runs 500
+
+# 웹 대시보드에서 실시간 모니터링
+# http://localhost:8088/admin_dashboard.html#ci-simulation
+```
+
+#### 시나리오 2: 플래키 테스트 영향도 분석
+
+```bash
+# 플래키율 증가에 따른 안정성 변화 측정
+for rate in 5 10 15 20; do
+    ./scripts/ci_stability_sim.sh --flaky-rate $rate --output-file "flaky_${rate}_analysis.json"
+done
+```
+
+#### 시나리오 3: 런북 시스템 무결성 점검
+
+```bash
+# 정기적인 런북 검증 (일일/주간)
+./scripts/runbook_validator.sh --output-format json | \
+    jq '.validation_status' | \
+    grep -q "PASSED" || echo "런북 시스템 점검 필요"
+```
+
+### 🔧 고급 설정
+
+#### 1. 환경 변수 설정
+
+```bash
+# 시뮬레이션 기본값 커스터마이징
+export CI_SIM_DEFAULT_FAIL_RATE=10
+export CI_SIM_DEFAULT_FLAKY_RATE=3
+export CI_SIM_DEFAULT_RUNS=200
+
+# 런북 검증 경로 설정
+export RUNBOOK_BASE_DIR="/custom/path/to/runbooks"
+export AUTOREMEDIATE_HOOKS_DIR="/custom/hooks"
+```
+
+#### 2. 통계 분석 통합
+
+```bash
+# 시뮬레이션 결과를 시계열 데이터로 수집
+./scripts/ci_stability_sim.sh --output-format json | \
+    jq '.results + {timestamp: now}' >> ci_stability_history.jsonl
+
+# 추세 분석을 위한 데이터 집계
+cat ci_stability_history.jsonl | \
+    jq -s 'group_by(.timestamp | strftime("%Y-%m-%d")) |
+           map({date: .[0].timestamp | strftime("%Y-%m-%d"),
+                avg_stability: (map(.stability_score | tonumber) | add / length)})'
+```
+
+### 📊 성과 지표
+
+**안정성 측정 기준:**
+- **우수 (95% 이상)**: 🟢 프로덕션 준비 완료
+- **양호 (85-94%)**: 🟡 경미한 개선 권장
+- **개선 필요 (85% 미만)**: 🔴 즉시 최적화 필요
+
+**플래키 테스트 관리 기준:**
+- **낮음 (5% 미만)**: ✨ 훌륭한 테스트 품질
+- **보통 (5-9%)**: 📊 지속적인 모니터링 권장
+- **높음 (10% 이상)**: 🔧 즉시 격리 및 수정 필요
+
+### 🔄 CI/CD 파이프라인 통합
+
+```yaml
+# .github/workflows/ci-stability-check.yml
+name: CI Stability Analysis
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # 매주 월요일 오전 9시
+
+jobs:
+  stability-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run CI Stability Simulation
+        run: |
+          ./scripts/ci_stability_sim.sh --fail-rate 15 --runs 100 \
+            --output-format json --output-file stability-report.json
+
+      - name: Validate Runbook System
+        run: |
+          ./scripts/runbook_validator.sh --output-format json \
+            --output-file runbook-validation.json
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: stability-reports
+          path: |
+            stability-report.json
+            runbook-validation.json
+```
+
+이 CI 안정성 시뮬레이션 시스템을 통해 개발팀은 CI/CD 파이프라인의 성능을 사전에 예측하고, 최적화 전략을 수립하여 전체적인 개발 생산성을 향상시킬 수 있습니다.
 

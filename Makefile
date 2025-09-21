@@ -138,6 +138,132 @@ test-flaky-isolation:
 	@echo "🔍 플래키 테스트 격리 시스템 테스트"
 	@python3 -m pytest tests/test_autoremediate_and_flaky.py::TestFlakyTestsAPI -v
 
+# 🧪 플래키 테스트 관리 대시보드 명령어
+
+# 플래키 테스트 통계 조회
+flaky-stats:
+	@echo "📊 플래키 테스트 통계 조회"
+	@curl -s "http://localhost:8088/api/v1/flaky/stats?days=30" \
+		-H "Content-Type: application/json" \
+		| python3 -m json.tool || echo "⚠️ API 서버가 실행 중인지 확인하세요"
+
+# 격리된 테스트 목록 조회
+flaky-isolated:
+	@echo "🔒 격리된 플래키 테스트 목록 조회"
+	@curl -s "http://localhost:8088/api/v1/flaky/isolated?limit=20" \
+		-H "Content-Type: application/json" \
+		| python3 -m json.tool || echo "⚠️ API 서버가 실행 중인지 확인하세요"
+
+# 플래키 테스트 재시도 (OPERATOR 권한 필요)
+flaky-retry:
+	@echo "🔄 플래키 테스트 재시도 (예시: test_flaky_login)"
+	@if [ -z "$(TEST_NAME)" ]; then \
+		echo "❌ 사용법: make flaky-retry TEST_NAME=test_name [RETRY_COUNT=3] [PRIORITY=normal]"; \
+		echo "   예시: make flaky-retry TEST_NAME=test_flaky_login RETRY_COUNT=3 PRIORITY=high"; \
+	else \
+		curl -s -X POST "http://localhost:8088/api/v1/flaky/retry" \
+			-H "Content-Type: application/json" \
+			-H "X-User-Role: OPERATOR" \
+			-d '{"test_names": ["$(TEST_NAME)"], "retry_count": $(or $(RETRY_COUNT),3), "priority": "$(or $(PRIORITY),normal)", "notes": "Makefile을 통한 재시도"}' \
+			| python3 -m json.tool || echo "⚠️ API 서버가 실행 중인지 확인하세요"; \
+	fi
+
+# 플래키 테스트 격리 해제 (ADMIN 권한 필요)
+flaky-unquarantine:
+	@echo "🔓 플래키 테스트 격리 해제"
+	@if [ -z "$(TEST_NAME)" ]; then \
+		echo "❌ 사용법: make flaky-unquarantine TEST_NAME=test_name"; \
+		echo "   예시: make flaky-unquarantine TEST_NAME=test_flaky_login"; \
+	else \
+		curl -s -X DELETE "http://localhost:8088/api/v1/flaky/$(TEST_NAME)" \
+			-H "X-User-Role: ADMIN" \
+			| python3 -m json.tool || echo "⚠️ API 서버가 실행 중인지 확인하세요"; \
+	fi
+
+# 플래키 테스트 대시보드 API 테스트
+test-flaky-dashboard:
+	@echo "🧪 플래키 테스트 대시보드 API 테스트"
+	@python3 -m pytest tests/test_flaky_dashboard_api.py -v --tb=short
+
+# 플래키 테스트 권한 시스템 테스트
+test-flaky-auth:
+	@echo "🔐 플래키 테스트 권한 시스템 테스트"
+	@python3 -m pytest tests/test_flaky_dashboard_api.py::TestUserRoleAuthentication -v
+
+# 플래키 테스트 API 엔드포인트 테스트
+test-flaky-endpoints:
+	@echo "🚀 플래키 테스트 API 엔드포인트 테스트"
+	@python3 -m pytest tests/test_flaky_dashboard_api.py::TestFlakyRetryEndpoint -v
+	@python3 -m pytest tests/test_flaky_dashboard_api.py::TestFlakyStatsEndpoint -v
+	@python3 -m pytest tests/test_flaky_dashboard_api.py::TestIsolatedTestsEndpoint -v
+	@python3 -m pytest tests/test_flaky_dashboard_api.py::TestDeleteFlakyTestEndpoint -v
+
+# 플래키 테스트 통합 워크플로우 테스트
+test-flaky-workflow:
+	@echo "🔄 플래키 테스트 통합 워크플로우 테스트"
+	@python3 -m pytest tests/test_flaky_dashboard_api.py::TestEndToEndWorkflow -v
+
+# 플래키 테스트 데이터 정리
+flaky-clean:
+	@echo "🧹 플래키 테스트 데이터 정리"
+	@if [ -d "data/flaky_tests" ]; then \
+		echo "🗑️ 테스트 히스토리 백업 생성..."; \
+		cp -r data/flaky_tests data/flaky_tests_backup_$(shell date +%Y%m%d_%H%M%S) 2>/dev/null || true; \
+		echo "🧹 30일 이상 된 히스토리 정리..."; \
+		curl -s -X DELETE "http://localhost:8088/api/v1/flaky-tests/test-history?older_than_days=30" \
+			| python3 -m json.tool || echo "⚠️ API 서버가 실행 중인지 확인하세요"; \
+	else \
+		echo "📁 플래키 테스트 데이터 디렉토리가 없습니다."; \
+	fi
+
+# 플래키 테스트 설정 확인
+flaky-config:
+	@echo "⚙️ 플래키 테스트 설정 확인"
+	@if [ -f "data/flaky_tests/config.json" ]; then \
+		echo "📄 현재 설정:"; \
+		cat data/flaky_tests/config.json | python3 -m json.tool; \
+	else \
+		echo "❌ 설정 파일이 없습니다. 기본 설정 생성 중..."; \
+		mkdir -p data/flaky_tests; \
+		echo '{"min_runs": 5, "failure_threshold": 0.3, "auto_quarantine": true, "auto_quarantine_threshold": 0.5, "quarantine_duration_days": 7, "retention_days": 30}' \
+			| python3 -m json.tool > data/flaky_tests/config.json; \
+		echo "✅ 기본 설정 파일이 생성되었습니다."; \
+	fi
+
+# 플래키 테스트 시스템 헬스체크
+flaky-health-check:
+	@echo "🏥 플래키 테스트 시스템 헬스체크"
+	@echo "1️⃣ API 엔드포인트 확인..."
+	@curl -s "http://localhost:8088/api/v1/flaky/stats" > /dev/null && echo "✅ 통계 API 정상" || echo "❌ 통계 API 오류"
+	@curl -s "http://localhost:8088/api/v1/flaky/isolated" > /dev/null && echo "✅ 격리 목록 API 정상" || echo "❌ 격리 목록 API 오류"
+	@echo "2️⃣ 데이터 파일 확인..."
+	@test -f data/flaky_tests/config.json && echo "✅ 설정 파일 존재" || echo "❌ 설정 파일 없음"
+	@test -f mcp/flaky_tests_api.py && echo "✅ API 모듈 존재" || echo "❌ API 모듈 없음"
+	@echo "3️⃣ 테스트 스위트 확인..."
+	@test -f tests/test_flaky_dashboard_api.py && echo "✅ 대시보드 테스트 존재" || echo "❌ 대시보드 테스트 없음"
+	@echo "4️⃣ 웹 대시보드 확인..."
+	@test -f web/admin_dashboard.html && echo "✅ 관리자 대시보드 존재" || echo "❌ 관리자 대시보드 없음"
+	@echo "🏥 헬스체크 완료"
+
+# 플래키 테스트 데모 실행
+flaky-demo:
+	@echo "🎭 플래키 테스트 관리 시스템 데모 실행"
+	@echo "1️⃣ 시스템 헬스체크..."
+	@make flaky-health-check
+	@echo "2️⃣ 설정 확인..."
+	@make flaky-config
+	@echo "3️⃣ 통계 조회..."
+	@make flaky-stats
+	@echo "4️⃣ 격리된 테스트 조회..."
+	@make flaky-isolated
+	@echo "5️⃣ 핵심 기능 테스트..."
+	@make test-flaky-auth
+	@echo "🎭 데모 완료! 전체 시스템 테스트를 위해서는 'make test-flaky-dashboard' 명령을 사용하세요."
+	@echo "💡 사용 팁:"
+	@echo "   - 테스트 재시도: make flaky-retry TEST_NAME=test_name"
+	@echo "   - 격리 해제: make flaky-unquarantine TEST_NAME=test_name"
+	@echo "   - 웹 대시보드: http://localhost:8088/web/admin_dashboard.html"
+
 # 자동 완화 시스템 전체 테스트
 test-autoremediation:
 	@echo "🛠️ 자동 완화 시스템 전체 테스트"
@@ -298,6 +424,172 @@ anomaly-demo:
 .PHONY: ci-autofix-dry ci-autofix ci-test-hooks ci-clear-cache ci-retry-tests
 .PHONY: test-flaky-isolation test-autoremediation test-runbooks test-dashboard-remediation
 .PHONY: monitor-autoremediation autoremediation-stats ci-remediation-health ci-remediation-demo
+
+# .PHONY 선언 (플래키 테스트 관리 대시보드 관련)
+.PHONY: flaky-stats flaky-isolated flaky-retry flaky-unquarantine flaky-clean flaky-config
+.PHONY: test-flaky-dashboard test-flaky-auth test-flaky-endpoints test-flaky-workflow
+.PHONY: flaky-health-check flaky-demo
+
+# 🧪 CI 안정성 시뮬레이션 시스템 명령어
+
+# CI 안정성 시뮬레이션 실행 (기본 설정: 실패율 15%, 플래키율 5%, 100회 실행)
+ci-stability-sim:
+	@echo "🧪 CI 안정성 시뮬레이션 실행 (기본 설정)"
+	@chmod +x scripts/ci_stability_sim.sh
+	@./scripts/ci_stability_sim.sh --verbose
+
+# CI 안정성 시뮬레이션 (커스텀 매개변수)
+ci-stability-sim-custom:
+	@echo "🧪 CI 안정성 시뮬레이션 (커스텀 매개변수)"
+	@if [ -z "$(FAIL_RATE)" ] || [ -z "$(FLAKY_RATE)" ] || [ -z "$(RUNS)" ]; then \
+		echo "❌ 사용법: make ci-stability-sim-custom FAIL_RATE=15 FLAKY_RATE=5 RUNS=100"; \
+		echo "   예시: make ci-stability-sim-custom FAIL_RATE=20 FLAKY_RATE=8 RUNS=200"; \
+	else \
+		chmod +x scripts/ci_stability_sim.sh; \
+		./scripts/ci_stability_sim.sh --fail-rate $(FAIL_RATE) --flaky-rate $(FLAKY_RATE) --runs $(RUNS) --verbose; \
+	fi
+
+# CI 안정성 시뮬레이션 (JSON 출력)
+ci-stability-sim-json:
+	@echo "🧪 CI 안정성 시뮬레이션 (JSON 출력)"
+	@chmod +x scripts/ci_stability_sim.sh
+	@./scripts/ci_stability_sim.sh --output-format json --output-file ci_stability_results.json --verbose
+
+# CI 안정성 시뮬레이션 (Markdown 출력)
+ci-stability-sim-md:
+	@echo "🧪 CI 안정성 시뮬레이션 (Markdown 출력)"
+	@chmod +x scripts/ci_stability_sim.sh
+	@./scripts/ci_stability_sim.sh --output-format markdown --output-file ci_stability_report.md --verbose
+
+# 런북 시스템 검증 실행
+runbook-validate:
+	@echo "📚 런북 시스템 검증 실행"
+	@chmod +x scripts/runbook_validator.sh
+	@./scripts/runbook_validator.sh --verbose
+
+# 런북 시스템 검증 (JSON 출력)
+runbook-validate-json:
+	@echo "📚 런북 시스템 검증 (JSON 출력)"
+	@chmod +x scripts/runbook_validator.sh
+	@./scripts/runbook_validator.sh --output-format json --output-file runbook_validation_results.json --verbose
+
+# CI 안정성 + 런북 검증 통합 실행
+ci-stability-full:
+	@echo "🔄 CI 안정성 시뮬레이션 + 런북 검증 통합 실행"
+	@make ci-stability-sim-json
+	@make runbook-validate-json
+	@echo "✅ 통합 실행 완료. 결과 파일: ci_stability_results.json, runbook_validation_results.json"
+
+# CI 안정성 시뮬레이션 테스트 실행
+test-ci-stability:
+	@echo "🧪 CI 안정성 시뮬레이션 테스트 실행"
+	@python3 -m pytest tests/test_ci_stability_and_runbook.py::TestCIStabilitySimulation -v
+
+# 런북 검증 시스템 테스트 실행
+test-runbook-validation:
+	@echo "📚 런북 검증 시스템 테스트 실행"
+	@python3 -m pytest tests/test_ci_stability_and_runbook.py::TestRunbookValidator -v
+
+# CI 안정성 시뮬레이션 전체 테스트 실행
+test-ci-stability-full:
+	@echo "🧪 CI 안정성 시뮬레이션 전체 테스트 스위트 실행"
+	@python3 -m pytest tests/test_ci_stability_and_runbook.py -v
+
+# CI 안정성 시뮬레이션 테스트 (커버리지 포함)
+test-ci-stability-coverage:
+	@echo "🧪 CI 안정성 시뮬레이션 테스트 (커버리지 포함)"
+	@python3 -m pytest tests/test_ci_stability_and_runbook.py --cov=scripts --cov-report=html --cov-report=term
+
+# 플래키 테스트 영향도 분석 (다양한 플래키율로 시뮬레이션)
+ci-flaky-impact-analysis:
+	@echo "📊 플래키 테스트 영향도 분석 실행"
+	@mkdir -p analysis_results
+	@for rate in 5 10 15 20 25; do \
+		echo "🔄 플래키율 $$rate% 시뮬레이션 실행..."; \
+		chmod +x scripts/ci_stability_sim.sh; \
+		./scripts/ci_stability_sim.sh --flaky-rate $$rate --runs 200 \
+			--output-format json --output-file "analysis_results/flaky_$$rate.json" --seed 12345; \
+	done
+	@echo "✅ 플래키 테스트 영향도 분석 완료. 결과: analysis_results/flaky_*.json"
+
+# CI 실패율 영향도 분석 (다양한 실패율로 시뮬레이션)
+ci-failure-impact-analysis:
+	@echo "📊 CI 실패율 영향도 분석 실행"
+	@mkdir -p analysis_results
+	@for rate in 5 10 15 20 25 30; do \
+		echo "🔄 실패율 $$rate% 시뮬레이션 실행..."; \
+		chmod +x scripts/ci_stability_sim.sh; \
+		./scripts/ci_stability_sim.sh --fail-rate $$rate --runs 200 \
+			--output-format json --output-file "analysis_results/failure_$$rate.json" --seed 12345; \
+	done
+	@echo "✅ CI 실패율 영향도 분석 완료. 결과: analysis_results/failure_*.json"
+
+# CI 안정성 시뮬레이션 시스템 헬스체크
+ci-stability-health:
+	@echo "🏥 CI 안정성 시뮬레이션 시스템 헬스체크"
+	@echo "1️⃣ 스크립트 파일 존재 확인..."
+	@test -f scripts/ci_stability_sim.sh && echo "✅ CI 안정성 시뮬레이션 스크립트 존재" || echo "❌ CI 안정성 시뮬레이션 스크립트 없음"
+	@test -f scripts/runbook_validator.sh && echo "✅ 런북 검증 스크립트 존재" || echo "❌ 런북 검증 스크립트 없음"
+	@echo "2️⃣ 테스트 스위트 확인..."
+	@test -f tests/test_ci_stability_and_runbook.py && echo "✅ 테스트 스위트 존재" || echo "❌ 테스트 스위트 없음"
+	@echo "3️⃣ 스크립트 실행 권한 확인..."
+	@test -x scripts/ci_stability_sim.sh && echo "✅ CI 시뮬레이션 스크립트 실행 가능" || (chmod +x scripts/ci_stability_sim.sh && echo "🔧 실행 권한 부여")
+	@test -x scripts/runbook_validator.sh && echo "✅ 런북 검증 스크립트 실행 가능" || (chmod +x scripts/runbook_validator.sh && echo "🔧 실행 권한 부여")
+	@echo "4️⃣ 웹 대시보드 통합 확인..."
+	@test -f web/admin_dashboard.html && echo "✅ 관리자 대시보드 존재 (CI 시뮬레이션 패널 포함)" || echo "❌ 관리자 대시보드 없음"
+	@echo "5️⃣ 출력 디렉토리 확인..."
+	@test -d analysis_results || (mkdir -p analysis_results && echo "📁 분석 결과 디렉토리 생성")
+	@echo "🏥 CI 안정성 시뮬레이션 시스템 헬스체크 완료"
+
+# CI 안정성 시뮬레이션 데모 실행
+ci-stability-demo:
+	@echo "🎭 CI 안정성 시뮬레이션 시스템 데모 실행"
+	@echo "1️⃣ 시스템 헬스체크..."
+	@make ci-stability-health
+	@echo "2️⃣ 기본 시뮬레이션 실행..."
+	@make ci-stability-sim
+	@echo "3️⃣ 런북 시스템 검증..."
+	@make runbook-validate
+	@echo "4️⃣ JSON 출력 시뮬레이션..."
+	@make ci-stability-sim-json
+	@echo "5️⃣ 핵심 기능 테스트..."
+	@make test-ci-stability
+	@echo "🎭 데모 완료! 전체 시스템 테스트를 위해서는 'make test-ci-stability-full' 명령을 사용하세요."
+	@echo "💡 사용 팁:"
+	@echo "   - 커스텀 매개변수: make ci-stability-sim-custom FAIL_RATE=20 FLAKY_RATE=8 RUNS=200"
+	@echo "   - 플래키 영향도 분석: make ci-flaky-impact-analysis"
+	@echo "   - 실패율 영향도 분석: make ci-failure-impact-analysis"
+	@echo "   - 웹 대시보드: http://localhost:8088/web/admin_dashboard.html"
+
+# 결과 파일 정리
+ci-stability-clean:
+	@echo "🧹 CI 안정성 시뮬레이션 결과 파일 정리"
+	@if [ -d analysis_results ]; then \
+		echo "🗑️ 분석 결과 백업 생성..."; \
+		mv analysis_results analysis_results_backup_$(shell date +%Y%m%d_%H%M%S) 2>/dev/null || true; \
+		echo "✅ 백업 생성 완료"; \
+	fi
+	@rm -f ci_stability_results.json runbook_validation_results.json ci_stability_report.md
+	@mkdir -p analysis_results
+	@echo "🧹 정리 완료"
+
+# CI 안정성 성과 벤치마크 (대용량 시뮬레이션)
+ci-stability-benchmark:
+	@echo "📊 CI 안정성 시뮬레이션 성능 벤치마크"
+	@echo "🔄 소규모 (100회)..."
+	@time make ci-stability-sim-custom FAIL_RATE=15 FLAKY_RATE=5 RUNS=100
+	@echo "🔄 중규모 (500회)..."
+	@time make ci-stability-sim-custom FAIL_RATE=15 FLAKY_RATE=5 RUNS=500
+	@echo "🔄 대규모 (1000회)..."
+	@time make ci-stability-sim-custom FAIL_RATE=15 FLAKY_RATE=5 RUNS=1000
+	@echo "📊 벤치마크 완료"
+
+# .PHONY 선언 (CI 안정성 시뮬레이션 관련)
+.PHONY: ci-stability-sim ci-stability-sim-custom ci-stability-sim-json ci-stability-sim-md
+.PHONY: runbook-validate runbook-validate-json ci-stability-full
+.PHONY: test-ci-stability test-runbook-validation test-ci-stability-full test-ci-stability-coverage
+.PHONY: ci-flaky-impact-analysis ci-failure-impact-analysis ci-stability-health ci-stability-demo
+.PHONY: ci-stability-clean ci-stability-benchmark
 
 # .PHONY 선언 (이상탐지 고도화 관련)
 .PHONY: anomaly-rca-sample anomaly-decompose-sample anomaly-policies-list
