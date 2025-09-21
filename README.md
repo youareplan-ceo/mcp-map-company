@@ -3555,6 +3555,141 @@ python -m pytest tests/test_ci_report_api.py::TestCIReportAPIIntegration -v
 
 이 CI/CD 성능 리포트 대시보드를 통해 관리자는 직관적인 웹 인터페이스에서 실시간으로 CI/CD 파이프라인의 성과를 모니터링하고, 성능 개선이 필요한 영역을 빠르게 식별할 수 있습니다.
 
+## 🚨 CI/CD 에러 로그 분석 및 알림
+
+### 개요
+CI/CD 에러 로그 분석 시스템은 최근 CI/CD 실행에서 발생한 에러를 자동으로 수집, 분석하고 패턴을 파악하여 실패 원인을 신속하게 식별할 수 있는 종합적인 분석 도구입니다. 스크립트 기반 자동화와 웹 대시보드를 통한 시각화, 실패율 기반 자동 알림 시스템을 제공합니다.
+
+### 주요 기능
+- **자동 에러 로그 수집**: GitHub Actions 워크플로우 실패 로그 자동 다운로드
+- **지능형 에러 분석**: 패턴 매칭을 통한 에러 유형 분류 (빌드, 테스트, 배포, 타임아웃 등)
+- **Top 10 에러 추출**: 빈도 기반 주요 실패 원인 순위 제공
+- **대용량 로그 압축**: 1MB 이상 로그 파일 자동 압축으로 저장 공간 최적화
+- **다양한 리포트 형식**: JSON, Markdown, 텍스트 형식 지원
+- **실패율 기반 알림**: Critical(>10%), Error(5-10%), Warning(1-5%) 단계별 자동 알림
+- **웹 대시보드 통합**: 실시간 에러 통계, 차트, 알림 임계치 설정 UI
+
+### 스크립트 사용법
+
+#### 기본 실행
+```bash
+# 최근 7일간 CI/CD 에러 분석 (기본값)
+./scripts/ci_error_analyzer.sh
+
+# 최근 14일간 분석, JSON 형식 출력
+./scripts/ci_error_analyzer.sh --days 14 --format json
+
+# 드라이런 모드 (실제 변경 없이 시뮬레이션)
+./scripts/ci_error_analyzer.sh --dry-run --verbose
+
+# 알림 없이 마크다운 리포트 생성
+./scripts/ci_error_analyzer.sh --format markdown --no-alert
+```
+
+#### 고급 옵션
+```bash
+# 압축 임계치 2MB, 출력 디렉토리 지정
+./scripts/ci_error_analyzer.sh --compress-mb 2 --output-dir /custom/path
+
+# 환경 변수를 통한 설정
+export CI_ERROR_ANALYZER_DAYS=30
+export CI_ERROR_ANALYZER_FORMAT=json
+export CI_ERROR_ANALYZER_VERBOSE=true
+./scripts/ci_error_analyzer.sh
+```
+
+### 웹 대시보드 기능
+
+#### 에러 통계 카드
+- **실패율**: 현재 CI/CD 실패율 (%) - 10% 초과 시 자동 경고
+- **총 에러 수**: 분석 기간 내 총 에러 발생 수
+- **에러 유형**: 고유한 에러 패턴 수
+- **분석 기간**: 현재 설정된 분석 일수
+
+#### 시각화 차트
+- **에러 유형별 분포**: Chart.js 도넛 차트로 에러 유형별 비율 표시
+- **일별 에러 발생 추이**: 최근 7일간 에러 발생 트렌드 라인 차트
+
+#### 에러 사례 목록
+- **Top 10 실패 사례**: 최근 발생한 주요 에러 사례 상세 정보
+- **에러 유형 필터**: 빌드, 테스트, 타임아웃, 모듈 에러 등 유형별 필터링
+- **파일 및 라인 정보**: 에러 발생 소스 파일과 라인 번호 표시
+
+#### 알림 임계치 설정
+- **🚨 Critical**: 실패율 10% 초과 시 즉시 알림
+- **❌ Error**: 실패율 5-10% 시 에러 알림
+- **⚠️ Warning**: 실패율 1-5% 시 경고 알림
+- **💾 설정 저장**: 로컬 스토리지를 통한 임계치 저장
+
+### 알림 시스템
+
+#### 실패율 기반 자동 알림
+```bash
+# Critical (>10%): 🚨 즉시 개발팀 에스컬레이션
+# Error (5-10%):   ❌ CI/CD 파이프라인 점검 필요
+# Warning (1-5%):  ⚠️ 실패율 모니터링 강화
+# Info (≤1%):      ℹ️ 현재 CI/CD 상태 양호
+```
+
+#### 다중 채널 알림
+- **Slack**: 개발팀 채널로 실시간 알림
+- **Discord**: 운영팀 서버 알림
+- **Email**: Critical/Error 레벨 시 이메일 알림 (HTML 형식)
+
+### 대시보드 접속 방법
+
+#### 로컬 환경
+```bash
+# 서버 실행
+cd ~/Desktop/mcp-map-company
+uvicorn mcp.run:app --host 0.0.0.0 --port 8088
+
+# 브라우저에서 접속
+open http://localhost:8088/web/admin_dashboard.html
+```
+
+#### 실행 예시
+```bash
+# 기본 분석 실행
+./scripts/ci_error_analyzer.sh
+
+# 결과 확인 (예시)
+🚨 MCP-MAP CI/CD 에러 로그 분석기 시작
+========================================
+분석 설정:
+  - 분석 기간: 7일
+  - 출력 형식: text
+  - 압축 임계치: 1MB
+  - 알림 전송: true
+
+✅ GitHub Actions 워크플로우 실행 정보 수집 완료
+✅ 총 3개 실패 로그 다운로드 완료
+✅ 에러 분석 완료: logs/ci_errors/error_analysis.json
+✅ 총 2개 파일 압축 완료 (절약: 1.2MB)
+✅ 텍스트 리포트 생성: logs/ci_errors/reports/ci_error_report_20240115_143025.txt
+✅ 알림 전송 완료
+
+🎉 CI/CD 에러 분석 완료!
+========================================
+실행 시간: 45초
+출력 디렉토리: logs/ci_errors
+생성된 리포트: logs/ci_errors/reports/
+```
+
+### 테스트 실행
+```bash
+# 전체 테스트
+python -m pytest tests/test_ci_error_analyzer.py -v
+
+# 성능 테스트
+python -m pytest tests/test_ci_error_analyzer.py::TestCIErrorAnalyzerPerformance -v
+
+# 알림 시스템 테스트
+python -m pytest tests/test_ci_error_analyzer.py::TestCIErrorAnalyzerNotificationIntegration -v
+```
+
+이 CI/CD 에러 로그 분석 시스템을 통해 개발팀은 CI/CD 파이프라인의 실패 패턴을 신속하게 파악하고, 품질 개선을 위한 데이터 기반 의사결정을 수행할 수 있습니다.
+
 ## 🔔 운영 알림 통합 시스템
 
 ### 개요
