@@ -95,3 +95,119 @@ quarterly-report-dry:
 quarterly-report-test:
 	@echo "🧪 분기별 운영 리포트 테스트 실행..."
 	python3 -m pytest tests/test_quarterly_ops_report.py -v
+
+# 🛠️ CI 자동 완화 시스템 명령어
+
+# CI 자동 완화 실행 (드라이런 모드)
+ci-autofix-dry:
+	@echo "🛠️ CI 자동 완화 시스템 (드라이런 모드)"
+	@chmod +x scripts/ci_autoremediate.sh scripts/hooks/*.sh
+	@./scripts/ci_autoremediate.sh --dry-run --error-type dependency_install_failed
+	@./scripts/ci_autoremediate.sh --dry-run --error-type test_timeout
+	@./scripts/ci_autoremediate.sh --dry-run --error-type build_timeout
+
+# CI 자동 완화 실행 (실제 액션)
+ci-autofix:
+	@echo "🛠️ CI 자동 완화 시스템 (실제 실행)"
+	@chmod +x scripts/ci_autoremediate.sh scripts/hooks/*.sh
+	@./scripts/ci_autoremediate.sh --error-type dependency_install_failed --max-actions 3
+	@./scripts/ci_autoremediate.sh --error-type test_timeout --max-actions 5
+
+# 개별 완화 액션 테스트
+ci-test-hooks:
+	@echo "🔧 완화 훅 테스트 실행"
+	@chmod +x scripts/hooks/*.sh
+	@./scripts/hooks/clear_ci_cache.sh --dry-run
+	@./scripts/hooks/retry_failed_tests.sh --dry-run --test-framework pytest
+	@./scripts/hooks/restart_worker.sh --dry-run --platform github-actions
+
+# CI 캐시 정리
+ci-clear-cache:
+	@echo "🧹 CI 캐시 정리"
+	@./scripts/hooks/clear_ci_cache.sh
+
+# 실패한 테스트 재시도
+ci-retry-tests:
+	@echo "🔄 실패한 테스트 재시도"
+	@./scripts/hooks/retry_failed_tests.sh --test-framework pytest
+
+# 🔍 플래키 테스트 격리 시스템 명령어
+
+# 플래키 테스트 격리 시스템 테스트
+test-flaky-isolation:
+	@echo "🔍 플래키 테스트 격리 시스템 테스트"
+	@python3 -m pytest tests/test_autoremediate_and_flaky.py::TestFlakyTestsAPI -v
+
+# 자동 완화 시스템 전체 테스트
+test-autoremediation:
+	@echo "🛠️ 자동 완화 시스템 전체 테스트"
+	@python3 -m pytest tests/test_autoremediate_and_flaky.py -v --tb=short
+
+# 런북 시스템 테스트
+test-runbooks:
+	@echo "📚 런북 시스템 테스트"
+	@python3 -m pytest tests/test_autoremediate_and_flaky.py::TestRunbookSystem -v
+
+# 웹 대시보드 자동 완화 패널 테스트
+test-dashboard-remediation:
+	@echo "🖥️ 대시보드 자동 완화 패널 테스트"
+	@python3 -m pytest tests/test_autoremediate_and_flaky.py::TestAdminDashboardIntegration -v
+
+# 📈 자동 완화 모니터링 명령어
+
+# 자동 완화 상태 모니터링
+monitor-autoremediation:
+	@echo "📊 자동 완화 시스템 상태 모니터링"
+	@if [ -f scripts/monitor_autoremediation.sh ]; then \
+		chmod +x scripts/monitor_autoremediation.sh && \
+		./scripts/monitor_autoremediation.sh; \
+	else \
+		echo "⚠️ 모니터링 스크립트가 없습니다. README.md의 샘플을 참조하여 생성하세요."; \
+	fi
+
+# 완화 통계 JSON 출력
+autoremediation-stats:
+	@echo "📈 자동 완화 시스템 통계 조회"
+	@if [ -f logs/remediation_stats.json ]; then \
+		echo "📊 최근 완화 통계:"; \
+		cat logs/remediation_stats.json | python3 -m json.tool; \
+	else \
+		echo "📊 통계 파일이 없습니다. 먼저 모니터링을 실행하세요: make monitor-autoremediation"; \
+	fi
+
+# 🚀 통합 CI 완화 워크플로
+
+# 전체 CI 자동 완화 시스템 헬스체크
+ci-remediation-health:
+	@echo "🏥 CI 자동 완화 시스템 헬스체크"
+	@echo "1️⃣ 스크립트 파일 존재 확인..."
+	@test -f scripts/ci_autoremediate.sh && echo "✅ 메인 스크립트 존재" || echo "❌ 메인 스크립트 없음"
+	@test -f scripts/hooks/clear_ci_cache.sh && echo "✅ 캐시 정리 훅 존재" || echo "❌ 캐시 정리 훅 없음"
+	@test -f scripts/hooks/retry_failed_tests.sh && echo "✅ 테스트 재시도 훅 존재" || echo "❌ 테스트 재시도 훅 없음"
+	@test -f scripts/hooks/restart_worker.sh && echo "✅ 워커 재시작 훅 존재" || echo "❌ 워커 재시작 훅 없음"
+	@echo "2️⃣ Python 모듈 존재 확인..."
+	@test -f mcp/utils/runbook.py && echo "✅ 런북 시스템 존재" || echo "❌ 런북 시스템 없음"
+	@test -f mcp/flaky_tests_api.py && echo "✅ 플래키 테스트 API 존재" || echo "❌ 플래키 테스트 API 없음"
+	@echo "3️⃣ 테스트 스위트 존재 확인..."
+	@test -f tests/test_autoremediate_and_flaky.py && echo "✅ 통합 테스트 스위트 존재" || echo "❌ 통합 테스트 스위트 없음"
+	@echo "4️⃣ 로그 디렉토리 확인..."
+	@test -d logs && echo "✅ 로그 디렉토리 존재" || (mkdir -p logs && echo "📁 로그 디렉토리 생성")
+	@echo "🏥 헬스체크 완료"
+
+# 빠른 CI 완화 데모 실행
+ci-remediation-demo:
+	@echo "🎭 CI 자동 완화 시스템 데모 실행"
+	@echo "1️⃣ 드라이런 모드로 모든 에러 타입 테스트..."
+	@make ci-autofix-dry
+	@echo "2️⃣ 개별 훅 테스트..."
+	@make ci-test-hooks
+	@echo "3️⃣ 런북 시스템 테스트..."
+	@make test-runbooks
+	@echo "4️⃣ 플래키 테스트 API 테스트..."
+	@make test-flaky-isolation
+	@echo "🎭 데모 완료! 실제 사용을 위해서는 'make ci-autofix' 명령을 사용하세요."
+
+# .PHONY 선언 (CI 자동 완화 관련)
+.PHONY: ci-autofix-dry ci-autofix ci-test-hooks ci-clear-cache ci-retry-tests
+.PHONY: test-flaky-isolation test-autoremediation test-runbooks test-dashboard-remediation
+.PHONY: monitor-autoremediation autoremediation-stats ci-remediation-health ci-remediation-demo

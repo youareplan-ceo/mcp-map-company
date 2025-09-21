@@ -4295,6 +4295,349 @@ brew install chromedriver
 ./scripts/dashboard_smoke_test.sh --host http://localhost:8088 --verbose
 ```
 
+### CI/CD 자동 완화 및 플래키 테스트 격리 시스템
+
+#### 개요
+CI/CD 파이프라인에서 발생하는 빌드 실패, 테스트 타임아웃, 의존성 설치 오류 등을 자동으로 감지하고 완화하는 시스템입니다. 플래키 테스트를 격리하여 안정적인 CI/CD 환경을 유지합니다.
+
+#### 🛠️ 핵심 구성 요소
+
+**1. 자동 완화 스크립트 (`scripts/ci_autoremediate.sh`)**
+- 에러 유형별 자동 감지 및 완화 액션 실행
+- 안전한 드라이런 모드 기본 제공
+- 훅 기반 아키텍처로 확장 가능
+
+```bash
+# 드라이런 모드로 의존성 설치 실패 완화
+./scripts/ci_autoremediate.sh --dry-run --error-type dependency_install_failed
+
+# 실제 완화 액션 실행 (권한 필요)
+./scripts/ci_autoremediate.sh --error-type test_timeout --max-actions 5
+```
+
+**2. 완화 훅 시스템 (`scripts/hooks/`)**
+- `clear_ci_cache.sh`: CI 캐시 정리 및 재빌드
+- `retry_failed_tests.sh`: 실패한 테스트 재시도 및 플래그 최적화
+- `restart_worker.sh`: CI 워커 재시작 및 리소스 해제
+
+```bash
+# 개별 훅 테스트 실행
+./scripts/hooks/clear_ci_cache.sh --dry-run
+./scripts/hooks/retry_failed_tests.sh --test-framework pytest
+./scripts/hooks/restart_worker.sh --platform github-actions
+```
+
+**3. 런북 시스템 (`mcp/utils/runbook.py`)**
+- 에러 유형별 한국어 트러블슈팅 가이드
+- 자동 생성되는 HTML 런북 문서
+- 카테고리별 검색 및 필터링 지원
+
+```python
+from mcp.utils.runbook import RunbookManager, generate_runbook_html
+
+# 의존성 설치 실패 런북 생성
+html_guide = generate_runbook_html("dependency_install_failed")
+
+# 카테고리별 런북 조회
+build_runbooks = get_runbook_by_category("BUILD")
+test_runbooks = get_runbook_by_category("TEST")
+```
+
+**4. 플래키 테스트 격리 API (`mcp/flaky_tests_api.py`)**
+- 테스트 결과 추적 및 실패율 분석
+- 자동 격리 및 해제 기능
+- 통계 및 리포팅 API
+
+```python
+# FastAPI 엔드포인트 사용 예시
+POST /api/v1/flaky-tests/record     # 테스트 결과 기록
+GET  /api/v1/flaky-tests/stats      # 플래키 테스트 통계
+POST /api/v1/flaky-tests/{id}/quarantine  # 격리 설정
+```
+
+**5. 웹 대시보드 통합 (`web/admin_dashboard.html`)**
+- 🛠️ 자동 완화 & 런북 패널
+- 실시간 완화 상태 모니터링
+- 런북 뷰어 및 빠른 액세스
+- 플래키 테스트 격리 관리
+
+#### 🚀 GitHub Actions 통합
+
+**자동 완화 워크플로 설정**
+
+```yaml
+# .github/workflows/ci-autoremediation.yml
+name: 🛠️ CI 자동 완화 시스템
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  auto-remediation:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: 🔧 자동 완화 스크립트 권한 설정
+      run: chmod +x scripts/ci_autoremediate.sh scripts/hooks/*.sh
+
+    - name: 🛠️ CI 오류 감지 및 완화
+      run: |
+        echo "🛠️ CI 자동 완화 시스템 실행..."
+
+        # GitHub Actions 로그에서 에러 타입 감지
+        ERROR_TYPE="unknown"
+        if [[ "${{ github.event.workflow_run.conclusion }}" == "failure" ]]; then
+          # 에러 로그 분석 (실제 구현에서는 더 정교한 분석 필요)
+          if grep -q "dependency.*failed\|npm.*install.*failed" <<< "$GITHUB_EVENT_PAYLOAD"; then
+            ERROR_TYPE="dependency_install_failed"
+          elif grep -q "test.*timeout\|jest.*timeout" <<< "$GITHUB_EVENT_PAYLOAD"; then
+            ERROR_TYPE="test_timeout"
+          elif grep -q "build.*timeout\|webpack.*timeout" <<< "$GITHUB_EVENT_PAYLOAD"; then
+            ERROR_TYPE="build_timeout"
+          fi
+        fi
+
+        # 자동 완화 실행 (드라이런 모드)
+        ./scripts/ci_autoremediate.sh --dry-run --error-type "$ERROR_TYPE" --verbose
+      continue-on-error: true
+
+    - name: 📊 완화 결과 업로드
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: auto-remediation-logs
+        path: |
+          logs/autoremediate_*.log
+          logs/hook_execution_*.log
+
+  flaky-test-isolation:
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: 🐍 Python 설정
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: 📦 종속성 설치
+      run: |
+        pip install fastapi uvicorn pytest pytest-json-report
+        pip install -r requirements.txt
+
+    - name: 🔍 플래키 테스트 감지 및 격리
+      run: |
+        echo "🔍 플래키 테스트 분석 시작..."
+
+        # 테스트 결과 JSON 파싱 (pytest-json-report 사용)
+        if [ -f "test-results.json" ]; then
+          python -c "
+          import json
+          import requests
+          import os
+
+          # 테스트 결과 로드
+          with open('test-results.json', 'r') as f:
+              results = json.load(f)
+
+          # API 서버 시작 (백그라운드)
+          os.system('uvicorn mcp.run:app --host 0.0.0.0 --port 8088 &')
+
+          # 각 테스트 결과를 플래키 테스트 API에 기록
+          for test in results.get('tests', []):
+              test_data = {
+                  'test_name': test['nodeid'],
+                  'file_path': test.get('file', 'unknown'),
+                  'status': 'PASSED' if test['outcome'] == 'passed' else 'FAILED',
+                  'execution_time': test.get('duration', 0),
+                  'error_message': test.get('longrepr', ''),
+                  'runner': 'pytest',
+                  'branch': os.environ.get('GITHUB_REF_NAME', 'main'),
+                  'commit_hash': os.environ.get('GITHUB_SHA', 'unknown'),
+                  'metadata': {
+                      'ci_job_id': os.environ.get('GITHUB_RUN_ID'),
+                      'os': 'ubuntu-latest',
+                      'python_version': '3.11'
+                  }
+              }
+
+              try:
+                  response = requests.post(
+                      'http://localhost:8088/api/v1/flaky-tests/record',
+                      json=test_data,
+                      timeout=5
+                  )
+                  print(f'테스트 결과 기록: {test[\"nodeid\"]} -> {response.status_code}')
+              except Exception as e:
+                  print(f'테스트 결과 기록 실패: {e}')
+          "
+        fi
+      continue-on-error: true
+
+    - name: 📈 플래키 테스트 통계 조회
+      run: |
+        echo "📈 플래키 테스트 통계 조회..."
+        curl -s http://localhost:8088/api/v1/flaky-tests/stats | jq . || echo "통계 조회 실패"
+```
+
+#### 🔧 Makefile 통합
+
+```makefile
+# CI 자동 완화 관련 명령어
+.PHONY: ci-autofix ci-test-remediation ci-clear-cache ci-retry-tests
+
+# CI 자동 완화 실행 (드라이런)
+ci-autofix-dry:
+	@echo "🛠️ CI 자동 완화 시스템 (드라이런 모드)"
+	@chmod +x scripts/ci_autoremediate.sh scripts/hooks/*.sh
+	@./scripts/ci_autoremediate.sh --dry-run --error-type dependency_install_failed
+	@./scripts/ci_autoremediate.sh --dry-run --error-type test_timeout
+	@./scripts/ci_autoremediate.sh --dry-run --error-type build_timeout
+
+# CI 자동 완화 실행 (실제 액션)
+ci-autofix:
+	@echo "🛠️ CI 자동 완화 시스템 (실제 실행)"
+	@chmod +x scripts/ci_autoremediate.sh scripts/hooks/*.sh
+	@./scripts/ci_autoremediate.sh --error-type dependency_install_failed --max-actions 3
+	@./scripts/ci_autoremediate.sh --error-type test_timeout --max-actions 5
+
+# 개별 완화 액션 테스트
+ci-test-hooks:
+	@echo "🔧 완화 훅 테스트 실행"
+	@chmod +x scripts/hooks/*.sh
+	@./scripts/hooks/clear_ci_cache.sh --dry-run
+	@./scripts/hooks/retry_failed_tests.sh --dry-run --test-framework pytest
+	@./scripts/hooks/restart_worker.sh --dry-run --platform github-actions
+
+# CI 캐시 정리
+ci-clear-cache:
+	@echo "🧹 CI 캐시 정리"
+	@./scripts/hooks/clear_ci_cache.sh
+
+# 실패한 테스트 재시도
+ci-retry-tests:
+	@echo "🔄 실패한 테스트 재시도"
+	@./scripts/hooks/retry_failed_tests.sh --test-framework pytest
+
+# 플래키 테스트 격리 시스템 테스트
+test-flaky-isolation:
+	@echo "🔍 플래키 테스트 격리 시스템 테스트"
+	@python -m pytest tests/test_autoremediate_and_flaky.py::TestFlakyTestsAPI -v
+
+# 자동 완화 시스템 전체 테스트
+test-autoremediation:
+	@echo "🛠️ 자동 완화 시스템 전체 테스트"
+	@python -m pytest tests/test_autoremediate_and_flaky.py -v --tb=short
+
+# 런북 시스템 테스트
+test-runbooks:
+	@echo "📚 런북 시스템 테스트"
+	@python -m pytest tests/test_autoremediate_and_flaky.py::TestRunbookSystem -v
+
+# 웹 대시보드 자동 완화 패널 테스트
+test-dashboard-remediation:
+	@echo "🖥️ 대시보드 자동 완화 패널 테스트"
+	@python -m pytest tests/test_autoremediate_and_flaky.py::TestAdminDashboardIntegration -v
+```
+
+#### 📊 모니터링 및 알림
+
+**자동 완화 상태 모니터링**
+
+```bash
+# scripts/monitor_autoremediation.sh
+#!/bin/bash
+
+LOG_FILE="logs/autoremediate_monitor.log"
+STATS_FILE="logs/remediation_stats.json"
+
+# 최근 24시간 완화 액션 통계
+echo "📊 자동 완화 시스템 통계 (최근 24시간)" | tee -a "$LOG_FILE"
+
+# 성공률 계산
+SUCCESS_COUNT=$(grep -c "REMEDIATION_SUCCESS" logs/autoremediate_*.log || echo "0")
+TOTAL_COUNT=$(grep -c "REMEDIATION_ATTEMPT" logs/autoremediate_*.log || echo "1")
+SUCCESS_RATE=$(( SUCCESS_COUNT * 100 / TOTAL_COUNT ))
+
+# 통계 JSON 생성
+cat > "$STATS_FILE" << EOF
+{
+  "timestamp": "$(date -Iseconds)",
+  "success_count": $SUCCESS_COUNT,
+  "total_attempts": $TOTAL_COUNT,
+  "success_rate": $SUCCESS_RATE,
+  "most_common_errors": [
+    $(grep -o "ERROR_TYPE=[a-z_]*" logs/autoremediate_*.log | sort | uniq -c | sort -nr | head -3 | while read count error; do
+      echo "\"$error\""
+    done | paste -sd ',' -)
+  ]
+}
+EOF
+
+# 성공률이 낮을 때 알림
+if [ $SUCCESS_RATE -lt 70 ]; then
+  python -c "
+  import asyncio
+  from mcp.utils.notifier import send_ops_integration_alert, NotificationLevel
+
+  asyncio.run(send_ops_integration_alert(
+      event_type='auto_remediation_low_success',
+      security_events=[],
+      backup_results=[{'success_rate': $SUCCESS_RATE, 'total_attempts': $TOTAL_COUNT}],
+      level=NotificationLevel.WARNING
+  ))
+  "
+fi
+```
+
+#### 💡 사용 시나리오
+
+**시나리오 1: 의존성 설치 실패 자동 완화**
+```bash
+# CI에서 npm install 실패 시
+ERROR: npm ERR! network timeout
+
+# 자동 완화 시스템 작동
+./scripts/ci_autoremediate.sh --error-type dependency_install_failed
+# 1. 캐시 정리 (clear_ci_cache.sh)
+# 2. 재시도 with --force-reinstall
+# 3. 알림 발송 및 런북 제공
+```
+
+**시나리오 2: 플래키 테스트 자동 격리**
+```bash
+# test_network_connection이 간헐적으로 실패
+# API를 통해 자동 감지 및 격리
+curl -X POST http://localhost:8088/api/v1/flaky-tests/{test_id}/quarantine
+
+# 격리된 테스트는 CI에서 제외되어 안정성 향상
+```
+
+**시나리오 3: 빌드 타임아웃 완화**
+```bash
+# CI 빌드가 타임아웃으로 실패
+ERROR: Build timed out after 30 minutes
+
+# 자동 완화 액션
+./scripts/ci_autoremediate.sh --error-type build_timeout
+# 1. 워커 리소스 확인 및 재시작
+# 2. 빌드 캐시 최적화
+# 3. 병렬 빌드 설정 조정
+```
+
 ### CI/CD 통합
 
 #### GitHub Actions 워크플로 통합

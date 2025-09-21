@@ -24,6 +24,9 @@ from .portfolio_api import router as portfolio_router
 from .recommend_api import router as recommend_router
 from .monthly_report_api import router as monthly_report_router  # 월간 운영 리포트 라우터
 from .ci_report_api import router as ci_report_router  # CI/CD 리포트 라우터
+from .flaky_tests_api import router as flaky_tests_router  # 플래키 테스트 격리 라우터
+from .anomaly_api import router as anomaly_router  # 이상탐지 & 예측 라우터
+from .anomaly_policy_api import router as anomaly_policy_router  # 이상탐지 정책 라우터
 
 # Import rate limiter
 from .utils.rate_limiter import rate_limit_middleware, get_security_stats, add_ip_to_whitelist
@@ -61,6 +64,9 @@ app.include_router(portfolio_router, prefix="/api/v1/portfolio")
 app.include_router(recommend_router, prefix="/api/v1/recommend")
 app.include_router(monthly_report_router)  # 월간 리포트 라우터 (prefix는 라우터 내부에서 정의됨)
 app.include_router(ci_report_router)  # CI/CD 리포트 라우터 (prefix는 라우터 내부에서 정의됨)
+app.include_router(flaky_tests_router)  # 플래키 테스트 격리 라우터 (prefix는 라우터 내부에서 정의됨)
+app.include_router(anomaly_router, prefix="/api/v1/anomaly", tags=["anomaly"])  # 이상탐지 & 예측 라우터
+app.include_router(anomaly_policy_router, prefix="/api/v1/anomaly", tags=["anomaly-policy"])  # 이상탐지 정책 라우터
 
 
 # ---------------------------------
@@ -114,7 +120,9 @@ def root() -> Dict[str, Any]:
             "/api/v1/portfolio",
             "/api/v1/recommend",
             "/api/v1/metrics",
-            "/api/v1/ci"
+            "/api/v1/ci",
+            "/api/v1/flaky-tests",
+            "/api/v1/anomaly"
         ],
     }
 
