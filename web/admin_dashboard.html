@@ -874,6 +874,68 @@
             </div>
         </div>
 
+        <!-- 🔐 보안 로그 패널 -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">🔐</span>
+                    보안 로그 모니터링
+                </h2>
+                <button id="refreshSecurityLogsBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                    <span class="mr-2">🔄</span>
+                    새로고침
+                </button>
+            </div>
+
+            <!-- 보안 로그 통계 카드 -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+                <div class="bg-red-500/20 dark:bg-red-600/20 border border-red-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">🚫</div>
+                    <div class="text-red-300 dark:text-red-200 text-sm font-medium">차단된 IP</div>
+                    <div id="securityLogBlockedIpCount" class="text-red-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-yellow-500/20 dark:bg-yellow-600/20 border border-yellow-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">⚠️</div>
+                    <div class="text-yellow-300 dark:text-yellow-200 text-sm font-medium">Rate Limit 위반</div>
+                    <div id="securityLogRateLimitCount" class="text-yellow-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-green-500/20 dark:bg-green-600/20 border border-green-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">✅</div>
+                    <div class="text-green-300 dark:text-green-200 text-sm font-medium">화이트리스트</div>
+                    <div id="securityLogWhitelistCount" class="text-green-100 text-2xl font-bold">0</div>
+                </div>
+                <div class="bg-blue-500/20 dark:bg-blue-600/20 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">👀</div>
+                    <div class="text-blue-300 dark:text-blue-200 text-sm font-medium">모니터링 IP</div>
+                    <div id="securityLogMonitoringCount" class="text-blue-100 text-2xl font-bold">0</div>
+                </div>
+            </div>
+
+            <!-- 보안 로그 차트 -->
+            <div class="bg-white/10 dark:bg-gray-700/50 rounded-lg p-4 backdrop-filter backdrop-blur-sm mb-6">
+                <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                    <span class="mr-2">📊</span>
+                    보안 이벤트 추이
+                </h3>
+                <div class="relative chart-wrapper" style="height: 120px;">
+                    <canvas id="securityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 보안 로그 목록 -->
+            <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg overflow-hidden">
+                <div class="p-4 border-b border-white/10 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-white dark:text-gray-100 font-semibold">최근 보안 로그</h3>
+                    <div class="text-sm text-white/60">실시간 업데이트</div>
+                </div>
+                <div id="securityLogList" class="max-h-64 overflow-y-auto text-sm">
+                    <div class="p-4 text-center text-white/60 dark:text-gray-400">
+                        보안 로그를 불러오는 중...
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- System Logs Panel -->
         <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
             <div class="flex items-center justify-between mb-4">
@@ -2968,6 +3030,124 @@
         }
 
         // =============================================
+        // 보안 로그 패널 Functions
+        // =============================================
+
+        // 보안 로그 데이터 가져오기
+        async function fetchSecurityLogs() {
+            try {
+                const res = await fetch("/api/v1/security/logs", {
+                    headers: {"X-API-KEY": localStorage.getItem("api_key")}
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+
+                    // UI 업데이트
+                    document.getElementById("securityLogBlockedIpCount").innerText = data.blocked || 0;
+                    document.getElementById("securityLogRateLimitCount").innerText = data.violations || 0;
+                    document.getElementById("securityLogWhitelistCount").innerText = data.whitelist || 0;
+                    document.getElementById("securityLogMonitoringCount").innerText = data.monitoring || 0;
+
+                    // 로그 리스트 렌더링
+                    const list = data.logs.map(log => `<div class="p-2 border-b border-white/10 text-white/80">[${log.level}] ${log.time} - ${log.msg}</div>`).join("");
+                    document.getElementById("securityLogList").innerHTML = list || '<div class="p-4 text-center text-white/60">보안 로그가 없습니다.</div>';
+
+                    addLog('보안 로그 업데이트 완료', 'info');
+                } else {
+                    // Mock 데이터 사용
+                    updateSecurityLogsMockData();
+                }
+            } catch (err) {
+                console.error("보안 로그 불러오기 실패", err);
+                addLog(`보안 로그 불러오기 실패: ${err.message}`, 'error');
+                // Mock 데이터로 대체
+                updateSecurityLogsMockData();
+            }
+        }
+
+        // Mock 데이터로 보안 로그 업데이트
+        function updateSecurityLogsMockData() {
+            // Mock 통계 데이터
+            document.getElementById("securityLogBlockedIpCount").innerText = Math.floor(Math.random() * 50);
+            document.getElementById("securityLogRateLimitCount").innerText = Math.floor(Math.random() * 25);
+            document.getElementById("securityLogWhitelistCount").innerText = Math.floor(Math.random() * 10) + 5;
+            document.getElementById("securityLogMonitoringCount").innerText = Math.floor(Math.random() * 100);
+
+            // Mock 로그 데이터
+            const mockLogs = [
+                { level: 'INFO', time: new Date().toLocaleTimeString(), msg: '정상적인 API 요청 처리' },
+                { level: 'WARN', time: new Date(Date.now() - 60000).toLocaleTimeString(), msg: 'Rate limit 임계값 근접 (IP: 192.168.1.100)' },
+                { level: 'ERROR', time: new Date(Date.now() - 120000).toLocaleTimeString(), msg: '의심스러운 IP 차단됨 (IP: 10.0.0.1)' },
+                { level: 'INFO', time: new Date(Date.now() - 180000).toLocaleTimeString(), msg: '화이트리스트 IP 접근 허용' },
+                { level: 'WARN', time: new Date(Date.now() - 240000).toLocaleTimeString(), msg: '비정상적인 요청 패턴 감지' }
+            ];
+
+            const logElements = mockLogs.map(log =>
+                `<div class="p-2 border-b border-white/10 text-white/80 flex">
+                    <span class="w-16 text-xs ${log.level === 'ERROR' ? 'text-red-400' : log.level === 'WARN' ? 'text-yellow-400' : 'text-green-400'}">[${log.level}]</span>
+                    <span class="w-20 text-xs text-white/60">${log.time}</span>
+                    <span class="flex-1 text-sm">${log.msg}</span>
+                </div>`
+            ).join("");
+
+            document.getElementById("securityLogList").innerHTML = logElements;
+        }
+
+        // 보안 로그 차트 초기화
+        function initSecurityLogChart() {
+            const ctx = document.getElementById('securityChart');
+            if (!ctx) return;
+
+            const isDark = darkModeManager?.isDarkMode() || false;
+            const textColor = isDark ? '#f3f4f6' : '#ffffff';
+            const gridColor = isDark ? 'rgba(156, 163, 175, 0.2)' : 'rgba(255, 255, 255, 0.1)';
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1시간 전', '50분 전', '40분 전', '30분 전', '20분 전', '10분 전', '현재'],
+                    datasets: [{
+                        label: '차단된 요청',
+                        data: [12, 8, 15, 6, 20, 3, 7],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Rate Limit 위반',
+                        data: [5, 12, 8, 14, 9, 6, 11],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        // =============================================
         // Initialization
         // =============================================
 
@@ -3051,11 +3231,21 @@
                 }
             });
 
+            // 보안 로그 패널 이벤트 리스너 추가
+            document.getElementById('refreshSecurityLogsBtn').addEventListener('click', fetchSecurityLogs);
+
             // Initial load
             await refreshAll();
 
             // 시스템 자원 메트릭 초기 로드
             await fetchSystemMetrics();
+
+            // 보안 로그 패널 초기화
+            initSecurityLogChart();
+            await fetchSecurityLogs();
+
+            // 보안 로그 30초마다 자동 새로고침
+            setInterval(fetchSecurityLogs, 30000);
 
             // Set up uptime counter
             let startTime = Date.now();
