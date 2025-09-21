@@ -29,3 +29,37 @@ backup-maintenance:
 	@echo "♻️ 백업 검증 + 정리 통합 실행..."
 	./scripts/backup_verifier.sh --verbose
 	./scripts/cleanup_old_backups.sh --yes
+
+# 🔄 일일 운영 자동화 명령어
+
+# 일일 운영 작업 실행 (보안 로그 회전 + 백업 검증 + 정리)
+daily-ops:
+	@echo "🔄 일일 운영 자동화 작업 실행..."
+	./scripts/daily_ops.sh --verbose
+
+# 일일 운영 시뮬레이션 (변경 사항 없음)
+daily-ops-dry:
+	@echo "🔄 일일 운영 자동화 시뮬레이션..."
+	./scripts/daily_ops.sh --dry-run --verbose
+
+# 일일 운영 JSON 출력
+daily-ops-json:
+	@echo "🔄 일일 운영 작업 실행 (JSON 출력)..."
+	./scripts/daily_ops.sh --json
+
+# 🧹 CI 클린업 자동화 명령어
+
+# CI 클린업 실행 (로그 압축, 오래된 리포트 삭제, 백업 검증)
+ci-clean:
+	@echo "🧹 CI 클린업 자동화 작업 실행..."
+	./scripts/ci_cleanup.sh --verbose
+
+# CI 클린업 시뮬레이션 (변경 사항 없음)
+ci-clean-dry:
+	@echo "🧹 CI 클린업 시뮬레이션 실행..."
+	./scripts/ci_cleanup.sh --dry-run --verbose
+
+# CI 클린업 JSON 출력
+ci-clean-json:
+	@echo "🧹 CI 클린업 작업 실행 (JSON 출력)..."
+	./scripts/ci_cleanup.sh --json

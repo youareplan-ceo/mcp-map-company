@@ -954,3 +954,242 @@ tests/test_integration_backup_security.py::TestPerformanceAndStress::test_large_
 - 사용자 친화적인 한국어 에러 메시지 제공
 
 이 통합 테스트 시스템을 통해 보안 로그부터 백업 관리까지의 전체 운영 워크플로우가 CI/CD 파이프라인에서 자동으로 검증되며, 시스템의 신뢰성과 안정성을 보장합니다.
+
+## 🔄 일일 운영 자동화
+
+### 📋 daily_ops.sh 스크립트 개요
+일일 운영 자동화 스크립트는 보안 로그 회전, 백업 검증, 정리 작업을 자동화하여 시스템 관리 효율성을 극대화합니다.
+
+### 🎯 자동화 작업 내용
+1. **🔄 보안 로그 회전 및 압축**
+   - `logs/security.log` 파일을 일별로 회전
+   - gzip 압축하여 `security.log.YYYYMMDD.gz` 형태로 보관
+   - 원본 파일 초기화로 디스크 공간 관리
+
+2. **🔍 백업 무결성 검증**
+   - `scripts/backup_verifier.sh` 실행
+   - 백업 파일 존재 및 크기 확인
+   - 손상된 백업 파일 감지 및 보고
+
+3. **🧹 오래된 백업 정리**
+   - `scripts/cleanup_old_backups.sh` 실행
+   - 설정된 기간 이후 백업 파일 자동 삭제
+   - 디스크 공간 최적화
+
+4. **📊 결과 로그 저장**
+   - 모든 작업 결과를 `logs/daily_ops.log`에 기록
+   - 성공/실패 상태 및 상세 정보 저장
+
+### 🛠️ 사용법
+
+#### 기본 실행
+```bash
+# 일일 운영 작업 실행
+./scripts/daily_ops.sh
+
+# 상세 출력과 함께 실행
+./scripts/daily_ops.sh --verbose
+```
+
+#### 시뮬레이션 모드
+```bash
+# 변경 사항 없이 시뮬레이션
+./scripts/daily_ops.sh --dry-run
+
+# 시뮬레이션 + 상세 출력
+./scripts/daily_ops.sh --dry-run --verbose
+```
+
+#### JSON 출력
+```bash
+# JSON 형식으로 결과 출력
+./scripts/daily_ops.sh --json
+
+# 시뮬레이션 + JSON 출력
+./scripts/daily_ops.sh --dry-run --json
+```
+
+### 🎛️ Makefile 통합
+
+#### 사용 가능한 명령어
+```bash
+# 일일 운영 작업 실행
+make daily-ops
+
+# 시뮬레이션 모드
+make daily-ops-dry
+
+# JSON 출력 모드
+make daily-ops-json
+```
+
+#### 통합 백업 관리
+```bash
+# 백업 검증만 실행
+make verify-backups
+
+# 오래된 백업 정리만 실행
+make clean-backups
+
+# 백업 검증 + 정리 통합
+make backup-maintenance
+```
+
+### 📊 실행 예시 및 예상 출력
+
+#### 일반 실행 예시
+```bash
+$ ./scripts/daily_ops.sh --verbose
+
+🔄 일일 운영 자동화 스크립트 실행...
+[2024-09-21 14:30:25] INFO: 일일 운영 작업 시작 (모드: 실제)
+[2024-09-21 14:30:26] INFO: 보안 로그 회전 완료: logs/security.log.20240921.gz (크기: 15248B)
+[2024-09-21 14:30:28] INFO: 백업 검증 완료
+[2024-09-21 14:30:30] INFO: 백업 정리 완료
+[2024-09-21 14:30:30] INFO: 일일 운영 작업 완료
+
+🎉 일일 운영 작업 완료
+   완료 시간: 2024-09-21 14:30:30
+   소요 시간: 5초
+   로그 파일: logs/daily_ops.log
+```
+
+#### JSON 출력 예시
+```json
+{
+  "timestamp": "2024-09-21T14:30:30+09:00",
+  "duration_seconds": 5,
+  "dry_run": false,
+  "tasks_completed": [
+    "security_log_rotation",
+    "backup_verification",
+    "backup_cleanup"
+  ],
+  "log_file": "logs/daily_ops.log",
+  "status": "completed"
+}
+```
+
+### 🧪 테스트 실행
+
+#### daily_ops.sh 테스트
+```bash
+# 일일 운영 스크립트 테스트
+python -m pytest tests/test_daily_ops.py -v
+
+# 성능 테스트 포함
+python -m pytest tests/test_daily_ops.py::TestDailyOpsPerformance -v
+
+# 통합 테스트
+python -m pytest tests/test_daily_ops.py::TestDailyOpsIntegration -v
+```
+
+#### 테스트 시나리오
+1. **스크립트 기본 검증**
+   - 파일 존재 및 실행 권한 확인
+   - 도움말 옵션 정상 동작 검증
+
+2. **기능별 테스트**
+   - 시뮬레이션 모드 정상 동작
+   - JSON 출력 형식 검증
+   - 로그 파일 생성 및 내용 확인
+
+3. **통합 테스트**
+   - Makefile 명령어 연동 확인
+   - 전체 워크플로우 시뮬레이션
+   - 에러 처리 및 복구 시나리오
+
+4. **성능 테스트**
+   - 30초 이내 실행 완료 검증
+   - 메모리 사용량 최적화 확인
+
+### 🔧 CI/CD 파이프라인 연동
+
+#### GitHub Actions 워크플로우
+daily_ops.sh 스크립트는 CI/CD 파이프라인에서 자동으로 테스트됩니다:
+
+```yaml
+# 일일 운영 스크립트 테스트
+- name: 🔄 일일 운영 자동화 테스트
+  run: |
+    echo "🔄 일일 운영 스크립트 테스트 실행..."
+    if [ -f tests/test_daily_ops.py ]; then
+      python -m pytest tests/test_daily_ops.py -v --tb=short
+    fi
+
+    # 시뮬레이션 모드로 실제 실행 테스트
+    ./scripts/daily_ops.sh --dry-run --json
+```
+
+#### 정기 실행 설정
+cron을 통한 정기 실행 설정:
+
+```bash
+# 매일 새벽 2시에 일일 운영 작업 실행
+0 2 * * * /path/to/mcp-map-company/scripts/daily_ops.sh >> /var/log/daily_ops_cron.log 2>&1
+
+# 주간 백업 정리 (일요일 새벽 3시)
+0 3 * * 0 cd /path/to/mcp-map-company && make backup-maintenance >> /var/log/weekly_backup.log 2>&1
+```
+
+### 🔒 보안 및 권한 관리
+
+#### 필요한 권한
+- 스크립트 실행 권한: `chmod +x scripts/daily_ops.sh`
+- 로그 디렉토리 쓰기 권한: `logs/` 디렉토리
+- 백업 디렉토리 접근 권한: `backups/` 디렉토리
+
+#### 보안 고려사항
+- 스크립트는 항상 시뮬레이션 모드로 먼저 테스트
+- 중요한 백업 파일 삭제 전 확인 과정 포함
+- 모든 작업 내역을 상세 로그로 기록
+
+### 📈 모니터링 및 알림
+
+#### 로그 모니터링
+```bash
+# 일일 운영 로그 실시간 모니터링
+tail -f logs/daily_ops.log
+
+# 최근 실행 결과 확인
+tail -20 logs/daily_ops.log | grep -E "(완료|실패|ERROR)"
+
+# JSON 형식 로그 분석
+./scripts/daily_ops.sh --json | jq '.status'
+```
+
+#### 실패 시 알림
+daily_ops.sh 스크립트는 기존 알림 시스템과 연동되어 실패 시 자동 알림을 전송할 수 있습니다:
+
+```python
+# 일일 운영 실패 알림 연동 예시
+from mcp.utils.notifier import send_daily_ops_alert
+
+# 실패 시 자동 알림
+if daily_ops_result != 0:
+    await send_daily_ops_alert(
+        status="failed",
+        log_file="logs/daily_ops.log",
+        error_details=error_message
+    )
+```
+
+### 💡 모범 사례
+
+1. **정기적인 테스트**
+   - 매주 시뮬레이션 모드로 검증
+   - 새로운 환경에서는 단계별 테스트
+
+2. **로그 관리**
+   - 일일 운영 로그는 최대 90일 보관
+   - 중요한 이벤트는 별도 보고서 생성
+
+3. **백업 정책**
+   - 중요 백업은 다중 위치 보관
+   - 정기적인 복원 테스트 수행
+
+4. **자동화 확장**
+   - 필요에 따라 추가 운영 작업 통합
+   - 모니터링 지표 수집 기능 확장
+
+이 일일 운영 자동화 시스템을 통해 보안 로그 관리부터 백업 유지보수까지의 모든 운영 작업이 자동화되어 시스템 관리자의 업무 효율성을 크게 향상시킵니다.
