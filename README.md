@@ -1193,3 +1193,319 @@ if daily_ops_result != 0:
    - 모니터링 지표 수집 기능 확장
 
 이 일일 운영 자동화 시스템을 통해 보안 로그 관리부터 백업 유지보수까지의 모든 운영 작업이 자동화되어 시스템 관리자의 업무 효율성을 크게 향상시킵니다.
+
+## 🧹 CI 클린업 자동화
+
+### 📋 ci_cleanup.sh 스크립트 개요
+CI 클린업 자동화 스크립트는 CI 실행 후 남은 아티팩트와 임시 파일을 효율적으로 정리하여 시스템 리소스를 최적화합니다.
+
+### 🎯 주요 기능
+
+#### 1. 📦 로그 파일 압축
+- **대상 파일**: `security.log`, `api.log`, `scheduler.log`, `app.log`, `error.log`
+- **압축 조건**: 1MB 이상인 로그 파일만 압축
+- **압축 형식**: gzip 압축으로 `filename_YYYYMMDD_HHMMSS.gz` 형태 저장
+- **원본 처리**: 실행 중인 프로세스를 위해 원본 파일은 비움 (삭제하지 않음)
+
+#### 2. 🗑️ 오래된 리포트 자동 삭제
+- **대상 디렉토리**: `reports/` 하위 모든 파일
+- **삭제 기준**: 기본 30일 이상 된 파일 (--days 옵션으로 조정 가능)
+- **용량 추적**: 삭제된 파일 크기 합계 및 절약된 용량 계산
+- **안전 모드**: --dry-run 옵션으로 삭제 대상 미리 확인 가능
+
+#### 3. 🔍 백업 디렉토리 무결성 검증
+- **검증 항목**: 백업 파일 수, 최신 백업 크기, 마지막 수정일
+- **경고 알림**: 24시간 이내 백업 없음, 파일 크기 1KB 미만 경고
+- **상태 보고**: 백업 상태 요약 및 무결성 검증 결과 출력
+
+#### 4. 📊 다양한 출력 형식 지원
+- **텍스트 모드**: 사람이 읽기 쉬운 상세 출력
+- **JSON 모드**: 자동화 파이프라인 연동용 구조화된 데이터
+- **상세 모드**: --verbose 옵션으로 모든 과정 실시간 표시
+
+### 🛠️ 사용법
+
+#### 기본 실행
+```bash
+# CI 클린업 실행 (실제 변경 적용)
+./scripts/ci_cleanup.sh
+
+# 상세 출력과 함께 실행
+./scripts/ci_cleanup.sh --verbose
+```
+
+#### 시뮬레이션 모드 (안전한 테스트)
+```bash
+# 변경 사항 없이 시뮬레이션
+./scripts/ci_cleanup.sh --dry-run
+
+# 시뮬레이션 + 상세 출력
+./scripts/ci_cleanup.sh --dry-run --verbose
+```
+
+#### JSON 출력 (자동화 연동)
+```bash
+# JSON 형식으로 결과 출력
+./scripts/ci_cleanup.sh --json
+
+# 시뮬레이션 + JSON 출력
+./scripts/ci_cleanup.sh --dry-run --json
+```
+
+#### 커스텀 보관 기간 설정
+```bash
+# 7일 이상 된 파일만 삭제
+./scripts/ci_cleanup.sh --days 7
+
+# 60일 이상 된 파일만 삭제 (시뮬레이션)
+./scripts/ci_cleanup.sh --days 60 --dry-run --verbose
+```
+
+### 🎛️ Makefile 통합
+
+#### 사용 가능한 명령어
+```bash
+# CI 클린업 실행
+make ci-clean
+
+# CI 클린업 시뮬레이션
+make ci-clean-dry
+
+# CI 클린업 JSON 출력
+make ci-clean-json
+```
+
+#### 통합 운영 워크플로우
+```bash
+# 전체 백업 + CI 클린업 통합 실행
+make backup-maintenance && make ci-clean
+
+# 일일 운영 + CI 클린업 조합
+make daily-ops && make ci-clean-dry
+```
+
+### 📊 실행 예시 및 예상 출력
+
+#### 일반 실행 예시
+```bash
+$ ./scripts/ci_cleanup.sh --verbose
+
+🧹 MCP-MAP CI 클린업 자동화 시작
+⏰ 실행 시간: 2024-09-21 14:30:25
+🔧 모드: 실제 실행
+
+ℹ️  로그 파일 압축 작업 시작...
+✅ security.log 압축 완료 → security.log_20240921_143025.gz
+✅ api.log 압축 완료 → api.log_20240921_143025.gz
+ℹ️  app.log: 크기가 작아 압축 생략 (512000 bytes)
+
+ℹ️  오래된 리포트 파일 정리 작업 시작...
+✅ reports/old_report_20240820.txt 삭제 완료 (15248 bytes)
+✅ reports/ci_summary_20240815.json 삭제 완료 (2048 bytes)
+
+ℹ️  백업 디렉토리 무결성 검증 시작...
+✅ 최신 백업: backup_20240921.tar.gz (1048576 bytes, 2024-09-21 12:30:15)
+
+🧹 CI 클린업 실행 요약
+======================
+
+⏰ 실행 시간: 2024-09-21 14:30:25
+🔧 실행 모드: 실제 실행
+
+📊 클린업 결과:
+  📦 압축된 로그: 2개
+  🗑️ 삭제된 리포트: 2개
+  💾 절약된 용량: 1357 KB
+  📁 백업 파일: 5개
+
+🎉 CI 클린업 완료!
+```
+
+#### JSON 출력 예시
+```json
+{
+  "timestamp": "2024-09-21 14:30:25",
+  "dry_run": false,
+  "cleanup_results": {
+    "compressed_logs": 2,
+    "deleted_reports": 2,
+    "total_saved_bytes": 1389568,
+    "backup_files_count": 5
+  },
+  "directories": {
+    "logs_dir": "logs",
+    "reports_dir": "reports",
+    "backups_dir": "backups"
+  },
+  "settings": {
+    "cleanup_days": 30,
+    "verbose": false
+  }
+}
+```
+
+#### 시뮬레이션 모드 출력 예시
+```bash
+$ ./scripts/ci_cleanup.sh --dry-run --verbose
+
+🧹 MCP-MAP CI 클린업 자동화 시작
+⏰ 실행 시간: 2024-09-21 14:30:25
+🔧 모드: 시뮬레이션
+
+✅ 시뮬레이션: security.log 압축 → security.log_20240921_143025.gz
+✅ 시뮬레이션: api.log 압축 → api.log_20240921_143025.gz
+✅ 시뮬레이션: reports/old_report_20240820.txt 삭제 예정 (15248 bytes)
+✅ 최신 백업: backup_20240921.tar.gz (1048576 bytes, 2024-09-21 12:30:15)
+
+🎉 CI 클린업 완료!
+```
+
+### 🧪 테스트 실행
+
+#### ci_cleanup.sh 테스트
+```bash
+# CI 클린업 스크립트 테스트
+python -m pytest tests/test_ci_cleanup.py -v
+
+# 특정 테스트 클래스만 실행
+python -m pytest tests/test_ci_cleanup.py::TestCICleanup -v
+
+# 통합 테스트 실행
+python -m pytest tests/test_ci_cleanup.py::TestCICleanupIntegration -v
+
+# 성능 테스트 포함
+python -m pytest tests/test_ci_cleanup.py::TestCICleanupPerformance -v
+```
+
+#### 테스트 시나리오
+1. **스크립트 기본 검증**
+   - 파일 존재 및 실행 권한 확인
+   - 도움말 옵션 정상 동작 검증
+   - 잘못된 옵션 에러 처리 확인
+
+2. **기능별 테스트**
+   - 시뮬레이션 모드 정상 동작
+   - JSON 출력 형식 스키마 검증
+   - 로그 압축 대상 파일 감지 확인
+
+3. **통합 테스트**
+   - Makefile 명령어 연동 확인
+   - 여러 옵션 조합 테스트
+   - 대규모 환경 시뮬레이션
+
+4. **성능 테스트**
+   - 30초 이내 실행 완료 검증
+   - 대량 파일 처리 성능 확인
+
+### 🔧 GitHub Actions 워크플로우 연동
+
+#### CI 파이프라인 통합
+ci_cleanup.sh 스크립트는 GitHub Actions에서 자동으로 테스트됩니다:
+
+```yaml
+# CI 클린업 스크립트 테스트
+- name: 🧹 CI 클린업 자동화 테스트
+  run: |
+    echo "🧹 CI 클린업 스크립트 테스트 실행..."
+    chmod +x scripts/ci_cleanup.sh
+
+    # 테스트용 환경 생성
+    mkdir -p logs reports backups
+    echo "테스트 로그 내용" > logs/test.log
+    echo "테스트 리포트 내용" > reports/test_report.txt
+
+    # 시뮬레이션 모드로 실행 테스트
+    ./scripts/ci_cleanup.sh --dry-run --json
+
+    # pytest 테스트 실행
+    python -m pytest tests/test_ci_cleanup.py -v --tb=short
+
+# CI 후처리 단계에서 실제 클린업 실행
+- name: 🧹 CI 아티팩트 정리
+  if: always()
+  run: |
+    echo "🧹 CI 실행 후 아티팩트 정리..."
+    ./scripts/ci_cleanup.sh --verbose
+  continue-on-error: true
+```
+
+#### 정기 실행 설정 (cron)
+```bash
+# 매일 새벽 3시에 CI 클린업 실행
+0 3 * * * cd /path/to/mcp-map-company && ./scripts/ci_cleanup.sh >> /var/log/ci_cleanup.log 2>&1
+
+# 주간 대용량 정리 (일요일 새벽 4시)
+0 4 * * 0 cd /path/to/mcp-map-company && ./scripts/ci_cleanup.sh --days 7 >> /var/log/weekly_cleanup.log 2>&1
+```
+
+### 📈 모니터링 및 알림
+
+#### 로그 모니터링
+```bash
+# CI 클린업 결과 JSON 분석
+./scripts/ci_cleanup.sh --json | jq '.cleanup_results.total_saved_bytes'
+
+# 압축된 로그 파일 목록 확인
+ls -la logs/*.gz | tail -10
+
+# 절약된 용량 계산
+du -sh logs/ reports/ backups/
+```
+
+#### 알림 시스템 연동
+기존 알림 시스템과 연동하여 CI 클린업 결과를 자동 알림:
+
+```python
+# CI 클린업 결과 알림 연동 예시
+from mcp.utils.notifier import send_ci_cleanup_report
+
+# 클린업 완료 알림
+cleanup_result = subprocess.run(["scripts/ci_cleanup.sh", "--json"],
+                               capture_output=True, text=True)
+result_data = json.loads(cleanup_result.stdout)
+
+await send_ci_cleanup_report(
+    compressed_logs=result_data["cleanup_results"]["compressed_logs"],
+    deleted_reports=result_data["cleanup_results"]["deleted_reports"],
+    saved_bytes=result_data["cleanup_results"]["total_saved_bytes"],
+    backup_status="정상"
+)
+```
+
+### 🔒 보안 및 권한 관리
+
+#### 필요한 권한
+- 스크립트 실행 권한: `chmod +x scripts/ci_cleanup.sh`
+- 로그 디렉토리 쓰기 권한: `logs/` 디렉토리
+- 리포트 디렉토리 쓰기 권한: `reports/` 디렉토리
+- 백업 디렉토리 읽기 권한: `backups/` 디렉토리
+
+#### 보안 고려사항
+- 항상 시뮬레이션 모드로 먼저 테스트
+- 중요한 로그 파일 압축 전 백업 확인
+- 삭제 대상 파일 목록 사전 검토
+- 권한 없는 디렉토리 접근 시 적절한 에러 처리
+
+### 💡 모범 사례
+
+#### 1. 정기적인 모니터링
+- 주간 단위로 절약된 용량 확인
+- 월간 단위로 클린업 정책 검토
+- 계절별로 보관 기간 조정
+
+#### 2. 안전한 운영
+- 새로운 환경에서는 반드시 --dry-run 먼저 실행
+- 중요한 데이터는 클린업 대상에서 제외
+- 정기적인 백업 무결성 검증
+
+#### 3. 자동화 확장
+- CI/CD 파이프라인에 클린업 단계 포함
+- 모니터링 지표 수집 기능 연동
+- 알림 시스템과 통합하여 실시간 상태 확인
+
+#### 4. 성능 최적화
+- 대용량 환경에서는 --days 옵션 활용
+- 네트워크 스토리지 사용 시 로컬 압축 우선
+- 시스템 리소스 사용량 모니터링
+
+이 CI 클린업 자동화 시스템을 통해 CI/CD 파이프라인 실행 후 생성되는 아티팩트와 로그 파일을 효율적으로 관리하여 시스템 성능과 저장 공간을 최적화할 수 있습니다.
