@@ -2417,6 +2417,148 @@ async def test_monthly_report_notification():
 # CI/CD 모니터링 알림 시스템 (CI Monitoring Alerts)
 # ================================================
 
+# CI/CD 성능 리포트 알림 전송 (신규 함수)
+async def send_ci_report_alert(
+    report_summary: Dict[str, Any],
+    level: NotificationLevel = NotificationLevel.INFO
+) -> Dict[str, bool]:
+    """
+    CI/CD 성능 리포트 알림 전송 (한국어 메시지)
+
+    Args:
+        report_summary: 성능 리포트 요약 데이터
+        level: 알림 심각도 레벨
+
+    Returns:
+        Dict[str, bool]: 채널별 전송 성공 여부
+    """
+    try:
+        # 성능 지표 추출
+        total_runs = report_summary.get('total_runs', 0)
+        success_count = report_summary.get('success_count', 0)
+        failure_count = report_summary.get('failure_count', 0)
+        success_rate = report_summary.get('success_rate', 0.0)
+        failure_rate = report_summary.get('failure_rate', 0.0)
+        avg_duration = report_summary.get('avg_duration_minutes', 0.0)
+        analysis_days = report_summary.get('analysis_days', 7)
+        timestamp = report_summary.get('timestamp', '알 수 없음')
+
+        # 심각도별 제목 및 메시지 설정
+        if failure_rate >= 20.0 or failure_count >= 5:
+            level = NotificationLevel.CRITICAL
+            title = "🚨 CI/CD 심각한 성능 이슈 감지"
+            status_emoji = "🚨"
+        elif failure_rate >= 10.0 or failure_count >= 3:
+            level = NotificationLevel.ERROR
+            title = "❌ CI/CD 성능 문제 발생"
+            status_emoji = "❌"
+        elif failure_rate >= 5.0 or avg_duration > 30.0:
+            level = NotificationLevel.WARNING
+            title = "⚠️ CI/CD 성능 저하 감지"
+            status_emoji = "⚠️"
+        else:
+            level = NotificationLevel.INFO
+            title = "📊 CI/CD 성능 리포트"
+            status_emoji = "✅"
+
+        # 메시지 본문 구성
+        message = f"""{status_emoji} **CI/CD 성능 리포트 요약**
+
+📅 **분석 기간**: 최근 {analysis_days}일
+⏰ **생성 시간**: {timestamp}
+
+📊 **성능 지표**:
+• 총 실행: {total_runs}개
+• ✅ 성공: {success_count}개 ({success_rate:.1f}%)
+• ❌ 실패: {failure_count}개 ({failure_rate:.1f}%)
+• ⏱️ 평균 실행 시간: {avg_duration:.1f}분
+
+"""
+
+        # 심각도별 추가 정보
+        if level in [NotificationLevel.CRITICAL, NotificationLevel.ERROR]:
+            message += f"""🔍 **주요 이슈**:
+• 실패율이 {failure_rate:.1f}%로 임계값을 초과
+• 즉시 확인 및 조치가 필요합니다
+
+"""
+
+        elif level == NotificationLevel.WARNING:
+            message += f"""⚠️ **주의사항**:
+• 성능 지표가 정상 범위를 벗어남
+• 모니터링 강화를 권장합니다
+
+"""
+
+        # 권장 조치사항 추가
+        if failure_count > 0:
+            message += f"""💡 **권장 조치**:
+• 실패한 워크플로우 로그 확인
+• 테스트 환경 및 의존성 점검
+• 코드 리뷰 강화 고려
+
+"""
+
+        message += f"""📋 **상세 정보**:
+• GitHub Actions: https://github.com/youareplan/mcp-map-company/actions
+• 리포트 로그: logs/ci_reports.log
+
+#CI #Performance #Report"""
+
+        # 추가 필드 정보
+        fields = {
+            "총 실행": f"{total_runs}개",
+            "성공률": f"{success_rate:.1f}%",
+            "실패율": f"{failure_rate:.1f}%",
+            "평균 실행 시간": f"{avg_duration:.1f}분",
+            "분석 기간": f"{analysis_days}일"
+        }
+
+        # 모든 채널로 알림 전송
+        results = {}
+
+        # Slack 알림
+        slack = SlackNotifier()
+        results['slack'] = await slack.send_notification(
+            message=message,
+            level=level,
+            title=title,
+            fields=fields,
+            attach_logs=True
+        )
+
+        # Discord 알림
+        discord = DiscordNotifier()
+        results['discord'] = await discord.send_notification(
+            message=message,
+            level=level,
+            title=title,
+            fields=fields,
+            attach_logs=True
+        )
+
+        # Email 알림
+        email = EmailNotifier()
+        results['email'] = await email.send_notification(
+            message=message,
+            level=level,
+            title=title,
+            fields=fields,
+            attach_logs=True
+        )
+
+        success_count = sum(results.values())
+        logger.info(f"CI 성능 리포트 알림 전송 완료: {success_count}/{len(results)}개 채널 성공")
+        notifier_logger.info(f"CI 성능 리포트 알림 전송: {success_count}/{len(results)}개 채널 성공, 실패율: {failure_rate:.1f}%")
+
+        return results
+
+    except Exception as e:
+        logger.error(f"CI 성능 리포트 알림 전송 실패: {e}")
+        notifier_logger.error(f"CI 성능 리포트 알림 전송 실패: {e}")
+        return {"slack": False, "discord": False, "email": False}
+
+
 async def send_ci_alerts(
     failed_workflows: List[Dict[str, Any]],
     level: NotificationLevel = NotificationLevel.ERROR

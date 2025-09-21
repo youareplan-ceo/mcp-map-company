@@ -1744,6 +1744,280 @@ python -m pytest tests/test_ci_monitor.py::TestCIMonitorPerformance -v
    - 30초 이내 실행 완료 검증
    - 옵션 파싱 1초 이내 완료 확인
 
+## 📊 CI/CD 성능 리포트 자동화
+
+### 🎯 개요
+
+`scripts/ci_reporter.sh`는 GitHub Actions 워크플로우의 성능 지표를 자동으로 수집하고 분석하여 상세한 리포트를 생성하는 스크립트입니다. 실패한 테스트 필터링, 성능 이슈 감지, 다양한 출력 형식 지원으로 CI/CD 파이프라인의 효율성을 극대화합니다.
+
+### 🚀 주요 기능
+
+#### 1. 포괄적 데이터 수집
+- **워크플로우 실행 기록**: 최근 N개 실행 상세 정보 수집
+- **성능 지표 계산**: 성공률, 실패율, 평균 실행 시간 자동 계산
+- **실패 원인 분석**: 실패한 테스트만 필터링하여 상세 분석
+- **성능 이슈 감지**: 장시간 실행, 반복 실패 패턴 자동 감지
+
+#### 2. 다양한 출력 형식
+- **터미널**: 컬러 코딩된 실시간 요약 정보
+- **JSON**: 자동화 파이프라인 연동용 구조화 데이터
+- **Markdown**: 문서화 및 공유용 리포트 형식
+
+#### 3. 지능형 알림 시스템
+- **실시간 알림**: 성능 이슈 감지 시 즉시 알림 전송
+- **다채널 지원**: Slack, Discord, Email 동시 알림
+- **심각도 분류**: 이슈 유형별 알림 레벨 자동 조정
+
+### 📋 사용법
+
+#### 기본 사용법
+```bash
+# 기본 리포트 생성 (최근 20개 워크플로우, 7일간)
+./scripts/ci_reporter.sh
+
+# 상세 정보 포함
+./scripts/ci_reporter.sh --verbose
+
+# JSON 형식 출력
+./scripts/ci_reporter.sh --json
+
+# Markdown 리포트 생성
+./scripts/ci_reporter.sh --md
+
+# 알림 포함 실행
+./scripts/ci_reporter.sh --notify --verbose
+```
+
+#### 고급 옵션
+```bash
+# 분석 범위 확장 (최근 50개 워크플로우, 30일간)
+./scripts/ci_reporter.sh --runs 50 --days 30 --json
+
+# 월간 리포트 생성 및 파일 저장
+./scripts/ci_reporter.sh --md --days 30 --runs 100 > reports/monthly_ci_report_$(date +%Y%m).md
+
+# 실시간 모니터링용 JSON 출력
+./scripts/ci_reporter.sh --json --runs 20 > reports/ci_report_$(date +%Y%m%d).json
+```
+
+#### 옵션 상세 설명
+| 옵션 | 설명 | 기본값 | 예시 |
+|------|------|--------|------|
+| `--json` | JSON 형식 출력 | false | `--json` |
+| `--md, --markdown` | Markdown 형식 출력 | false | `--md` |
+| `--verbose` | 상세 정보 표시 | false | `--verbose` |
+| `--runs NUMBER` | 분석할 워크플로우 수 | 20 | `--runs 50` |
+| `--days NUMBER` | 분석 기간 (일) | 7 | `--days 30` |
+| `--notify` | 알림 전송 활성화 | false | `--notify` |
+| `--help` | 도움말 표시 | - | `--help` |
+
+### 📈 리포트 구성 요소
+
+#### 성능 요약 지표
+- **총 실행 수**: 분석 기간 내 전체 워크플로우 실행 횟수
+- **성공률**: 성공한 워크플로우 비율 (%)
+- **실패율**: 실패한 워크플로우 비율 (%)
+- **평균 실행 시간**: 완료된 워크플로우의 평균 소요 시간 (분)
+- **취소율**: 취소된 워크플로우 비율 (%)
+
+#### 실패 분석 정보
+- **실패한 워크플로우 목록**: 브랜치, 실행 시간, 링크 포함
+- **실패 패턴 분석**: 반복적 실패 브랜치 식별
+- **실패 원인 요약**: 실패한 스텝별 상세 정보
+
+#### 성능 이슈 감지
+- **장시간 실행**: 30분 이상 소요된 워크플로우 감지
+- **반복 실패**: 동일 브랜치 3회 이상 연속 실패 감지
+- **성능 저하**: 평균 대비 현저히 느린 실행 감지
+
+### 🔄 자동화 통합
+
+#### Cron 스케줄링
+```bash
+# 매일 오전 9시 일간 리포트 생성
+0 9 * * * cd /path/to/mcp-map-company && ./scripts/ci_reporter.sh --json --notify > logs/daily_ci_report_$(date +%Y%m%d).json
+
+# 매주 월요일 오전 8시 주간 리포트
+0 8 * * 1 cd /path/to/mcp-map-company && ./scripts/ci_reporter.sh --md --days 7 --runs 50 --notify > reports/weekly_ci_report_$(date +%Y%m%d).md
+
+# 매월 1일 오전 7시 월간 리포트
+0 7 1 * * cd /path/to/mcp-map-company && ./scripts/ci_reporter.sh --md --days 30 --runs 200 --notify > reports/monthly_ci_report_$(date +%Y%m).md
+```
+
+#### GitHub Actions 워크플로우 통합
+```yaml
+# .github/workflows/ci-report.yml
+name: CI Performance Report
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 매일 오전 9시
+  workflow_dispatch:     # 수동 실행 가능
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Generate CI Report
+      run: |
+        chmod +x scripts/ci_reporter.sh
+        ./scripts/ci_reporter.sh --json --notify --runs 30
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+```
+
+#### CI/CD 파이프라인 통합
+```bash
+# 빌드 완료 후 자동 리포트 생성
+#!/bin/bash
+echo "🚀 빌드 완료 - CI 성능 리포트 생성 중..."
+./scripts/ci_reporter.sh --json --runs 10 > artifacts/ci_report.json
+
+# 성능 임계값 확인
+FAILURE_RATE=$(cat artifacts/ci_report.json | jq '.performance_summary.failure_rate')
+if (( $(echo "$FAILURE_RATE > 10.0" | bc -l) )); then
+    echo "⚠️ 실패율이 10%를 초과했습니다: ${FAILURE_RATE}%"
+    ./scripts/ci_reporter.sh --notify --verbose
+fi
+```
+
+### 🔔 알림 시스템 통합
+
+#### notifier.py 연동
+CI 리포터는 `mcp/utils/notifier.py`의 `send_ci_report_alert()` 함수를 통해 자동 알림을 전송합니다.
+
+**알림 발송 조건:**
+- **🚨 Critical**: 실패율 20% 이상 또는 5개 이상 연속 실패
+- **❌ Error**: 실패율 10% 이상 또는 3개 이상 연속 실패
+- **⚠️ Warning**: 실패율 5% 이상 또는 평균 실행 시간 2배 초과
+- **ℹ️ Info**: 정상 상태 복구 또는 성과 개선
+
+#### 알림 내용
+- 성능 요약 지표 (성공률, 실패율, 평균 실행 시간)
+- 주요 성능 이슈 목록
+- 실패한 워크플로우 상위 3개
+- 권장 조치사항 자동 생성
+- 상세 리포트 파일 링크 포함
+
+### 🧪 테스트 실행
+
+#### ci_reporter.sh 테스트
+```bash
+# CI 리포터 스크립트 테스트
+python -m pytest tests/test_ci_reporter.py -v
+
+# 특정 테스트 클래스만 실행
+python -m pytest tests/test_ci_reporter.py::TestCIReporter -v
+
+# 통합 테스트 실행
+python -m pytest tests/test_ci_reporter.py::TestCIReporterIntegration -v
+
+# 성능 테스트 포함
+python -m pytest tests/test_ci_reporter.py::TestCIReporterPerformance -v
+
+# 알림 연동 테스트
+python -m pytest tests/test_ci_reporter.py::TestCIReporterNotification -v
+```
+
+#### 테스트 시나리오
+1. **스크립트 기본 검증**
+   - 파일 존재 및 실행 권한 확인
+   - 도움말 옵션 정상 동작 검증
+   - 잘못된 옵션 에러 처리 확인
+
+2. **출력 형식 검증**
+   - JSON 스키마 및 필수 필드 확인
+   - Markdown 구조 및 형식 검증
+   - 터미널 컬러 출력 테스트
+
+3. **성능 지표 계산**
+   - 성공률/실패율 계산 정확성
+   - 평균 실행 시간 계산 검증
+   - 성능 이슈 감지 알고리즘 테스트
+
+4. **통합 테스트**
+   - notifier.py 연동 확인
+   - 알림 함수 호출 및 데이터 전달 검증
+   - GitHub API 모킹 테스트
+
+5. **성능 테스트**
+   - 60초 이내 실행 완료 검증
+   - 대용량 데이터 처리 안정성
+   - 동시 실행 안전성 확인
+
+### 🛠️ 고급 설정
+
+#### 성능 최적화
+```bash
+# 대용량 리포지토리용 설정
+export CI_REPORTER_CACHE_ENABLED=true
+export CI_REPORTER_PARALLEL_JOBS=4
+
+# 메모리 사용량 제한
+export CI_REPORTER_MAX_MEMORY=2G
+export CI_REPORTER_TIMEOUT=300
+```
+
+#### 커스텀 필터링
+```bash
+# 특정 워크플로우만 분석
+export CI_REPORTER_WORKFLOW_FILTER="CI,Deploy,Test"
+
+# 특정 브랜치 제외
+export CI_REPORTER_EXCLUDE_BRANCHES="dependabot/*,renovate/*"
+```
+
+#### 리포트 저장 위치
+```bash
+# 자동 리포트 저장 설정
+export CI_REPORTS_DIR="/path/to/reports"
+export CI_LOGS_DIR="/path/to/logs"
+
+# 클라우드 스토리지 업로드 (선택사항)
+export CI_REPORT_S3_BUCKET="my-ci-reports"
+export CI_REPORT_UPLOAD_ENABLED=true
+```
+
+### 📁 파일 구조
+
+#### 생성되는 리포트 파일
+```
+reports/
+├── ci_report_20241201.json     # 일간 JSON 리포트
+├── ci_report_20241201.md       # 일간 Markdown 리포트
+├── weekly_ci_report_20241201.md # 주간 리포트
+└── monthly_ci_report_202412.md  # 월간 리포트
+
+logs/
+├── ci_reports.log              # 리포트 생성 로그
+└── ci_reporter_errors.log      # 에러 및 경고 로그
+```
+
+#### 리포트 예시 (JSON 스키마)
+```json
+{
+  "report_metadata": {
+    "generated_at": "2024-12-01 09:00:00",
+    "report_date": "20241201",
+    "analysis_period_days": 7,
+    "workflow_count": 45
+  },
+  "performance_summary": {
+    "total_runs": 45,
+    "success_count": 38,
+    "failure_count": 5,
+    "cancelled_count": 2,
+    "success_rate": 84.44,
+    "failure_rate": 11.11,
+    "avg_duration_seconds": 892.3
+  },
+  "failed_tests": [...],
+  "performance_issues": [...],
+  "recent_workflows": [...]
+}
+```
+
 ### 🔧 환경변수 설정
 
 #### GitHub Actions 알림
