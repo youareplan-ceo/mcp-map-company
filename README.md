@@ -3201,7 +3201,10 @@ CI/CD 성능 리포트 대시보드는 관리자 웹 인터페이스를 통해 C
 - **Chart.js 기반 시각화**: 실행 시간 추이, 실패율 트렌드 차트
 - **인터랙티브 대시보드**: 다크모드 지원, 반응형 디자인
 - **CI 리포트 관리**: 최근 CI 리포트 목록, 상태 필터링 기능
-- **JSON 데이터 뷰어**: 클립보드 복사, JSON 형식으로 데이터 확인
+- **성능 이슈 감지**: 실패율 10% 초과 시 자동 경고 알림
+- **다운로드 기능**: Markdown/JSON 형식 리포트 다운로드
+- **캐시 기반 최적화**: 5분 캐시로 빠른 응답 및 서버 부하 최적화
+- **폴백 데이터**: 스크립트 실행 실패 시 기본 데이터 제공
 - **자동 새로고침**: 주기적 데이터 갱신 및 실시간 모니터링
 
 ### 대시보드 구성 요소
@@ -3235,75 +3238,97 @@ CI/CD 성능 리포트 대시보드는 관리자 웹 인터페이스를 통해 C
 
 ### API 엔드포인트
 
-#### CI 리포트 목록 조회
+#### CI/CD 성능 요약 조회
 ```http
-GET /api/v1/ci/reports?limit=50&status=success
+GET /api/v1/reports/ci/summary?runs=20&days=7
+```
+
+**응답 예시:**
+```json
+{
+    "total_runs": 150,
+    "success_rate": 92.5,
+    "failure_rate": 7.5,
+    "avg_execution_time": 245.7,
+    "last_execution": "2024-01-15T10:30:00Z",
+    "generated_at": "2024-01-15T10:30:05.123456"
+}
+```
+
+#### 최근 CI 실행 목록 조회
+```http
+GET /api/v1/reports/ci/recent?limit=50
 ```
 
 **응답 예시:**
 ```json
 [
     {
-        "id": "build-123",
-        "date": "2025-01-15",
-        "timestamp": "2025-01-15T10:30:00Z",
+        "id": "run-001",
         "status": "success",
-        "execution_time": 245,
-        "test_results": {
-            "total": 156,
-            "passed": 156,
-            "failed": 0,
-            "skipped": 2
-        },
-        "coverage": {
-            "percentage": 85.7,
-            "lines_covered": 2145,
-            "lines_total": 2504
-        },
-        "build_info": {
-            "branch": "main",
-            "commit": "a1b2c3d",
-            "trigger": "push",
-            "environment": "production"
-        }
+        "start_time": "2024-01-15T09:00:00Z",
+        "duration": 180,
+        "branch": "main",
+        "commit": "a1b2c3d",
+        "environment": "production"
     }
 ]
 ```
 
-#### 최신 CI 리포트 조회
+#### 실패한 CI 실행 조회
 ```http
-GET /api/v1/ci/reports/latest
+GET /api/v1/reports/ci/failures?limit=20
 ```
 
-#### CI 성능 통계
+#### JSON 리포트 다운로드
 ```http
-GET /api/v1/ci/stats?days=30
+GET /api/v1/reports/ci/json
+```
+
+**다운로드 헤더:**
+```
+Content-Type: application/json
+Content-Disposition: attachment; filename="ci-report-20240115-103000.json"
+```
+
+#### Markdown 리포트 다운로드
+```http
+GET /api/v1/reports/ci/markdown
+```
+
+**다운로드 헤더:**
+```
+Content-Type: text/markdown; charset=utf-8
+Content-Disposition: attachment; filename="ci-report-20240115-103000.md"
+```
+
+#### 캐시 새로고침
+```http
+POST /api/v1/reports/ci/refresh
 ```
 
 **응답 예시:**
 ```json
 {
-    "period_days": 30,
-    "total_builds": 45,
-    "successful_builds": 38,
-    "failed_builds": 7,
-    "success_rate": 84.4,
-    "failure_rate": 15.6,
-    "avg_execution_time": 234.5,
-    "avg_coverage": 83.2,
-    "latest_execution": "2025-01-15T10:30:00Z",
-    "calculated_at": "2025-01-15T11:00:00.123456"
+    "success": true,
+    "message": "캐시가 성공적으로 새로고침되었습니다.",
+    "timestamp": "2024-01-15T10:30:00Z"
 }
 ```
 
-#### 실패한 테스트 요약
+#### 헬스체크
 ```http
-GET /api/v1/ci/failed-tests?days=7
+GET /api/v1/reports/ci/health
 ```
 
-#### 특정 리포트 마크다운 조회
-```http
-GET /api/v1/ci/reports/{report_id}/markdown
+**응답 예시:**
+```json
+{
+    "status": "healthy",
+    "service": "CI Report Service",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0.0"
+}
 ```
 
 ### JavaScript 기능
