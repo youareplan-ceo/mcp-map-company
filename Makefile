@@ -11,3 +11,21 @@ load-test: ; @echo "부하 테스트를 위해 Locust 설치가 필요합니다:
 deploy-status: ; ./scripts/deploy_status.sh
 deploy-status-k8s: ; ./scripts/deploy_status.sh --detailed
 deploy-status-full: ; ./scripts/deploy_status.sh --detailed --nginx --ssl --logs
+
+# 🔐 백업 관리 명령어
+
+# 백업 검증 실행
+verify-backups:
+	@echo "🔍 백업 무결성 검증 시작..."
+	./scripts/backup_verifier.sh --verbose
+
+# 오래된 백업 자동 정리
+clean-backups:
+	@echo "🗑️ 오래된 백업 자동 정리..."
+	./scripts/cleanup_old_backups.sh --yes
+
+# 백업 검증 + 정리 통합 실행
+backup-maintenance:
+	@echo "♻️ 백업 검증 + 정리 통합 실행..."
+	./scripts/backup_verifier.sh --verbose
+	./scripts/cleanup_old_backups.sh --yes
