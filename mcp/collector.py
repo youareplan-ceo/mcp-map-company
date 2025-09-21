@@ -59,7 +59,7 @@ def ensure_table():
 
 def insert_prices(rows: List[Dict[str, Any]]):
     con = get_conn()
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now(dt.timezone.utc)
     for r in rows:
         if r.get("ok"):
             con.execute("INSERT INTO prices (ts,symbol,price,source) VALUES (?,?,?,?)",
