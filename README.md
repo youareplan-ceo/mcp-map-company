@@ -3191,6 +3191,345 @@ trackDashboardUsage('report_downloaded', { format: 'markdown', date: '2024-09-21
 
 이 월간 운영 리포트 대시보드를 통해 관리자는 직관적인 웹 인터페이스에서 실시간으로 시스템 성과를 모니터링하고, 필요한 리포트를 즉시 다운로드할 수 있습니다.
 
+## 📊 CI/CD 성능 리포트 대시보드
+
+### 개요
+CI/CD 성능 리포트 대시보드는 관리자 웹 인터페이스를 통해 CI/CD 빌드 결과, 테스트 통계, 성능 메트릭을 시각적으로 표시하고, 실시간 빌드 성과를 모니터링할 수 있는 종합적인 웹 대시보드 시스템입니다.
+
+### 주요 기능
+- **실시간 CI/CD 통계 표시**: 실행 시간, 실패율, 테스트 커버리지, 최근 실행 날짜 실시간 업데이트
+- **Chart.js 기반 시각화**: 실행 시간 추이, 실패율 트렌드 차트
+- **인터랙티브 대시보드**: 다크모드 지원, 반응형 디자인
+- **CI 리포트 관리**: 최근 CI 리포트 목록, 상태 필터링 기능
+- **JSON 데이터 뷰어**: 클립보드 복사, JSON 형식으로 데이터 확인
+- **자동 새로고침**: 주기적 데이터 갱신 및 실시간 모니터링
+
+### 대시보드 구성 요소
+
+#### 1. CI/CD 통계 카드
+```html
+<!-- 실행 시간 카드 -->
+<div class="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/30 rounded-lg p-4 text-center">
+    <div class="flex items-center justify-center mb-2">
+        <span class="text-2xl mr-2">⏱️</span>
+        <div class="text-blue-300 text-sm font-medium">평균 실행 시간</div>
+    </div>
+    <div id="ciExecutionTime" class="text-blue-100 text-3xl font-bold mb-1">245</div>
+    <div class="text-blue-200 text-xs">초</div>
+</div>
+```
+
+#### 2. CI/CD 성능 차트
+- **실행 시간 추이**: 최근 30일간 CI 빌드 실행 시간 변화 추이
+- **실패율 트렌드**: 월별 빌드 실패율 변화 및 성공률 통계
+
+#### 3. 최근 CI 리포트 목록
+- **상태별 필터링**: 전체, 성공, 실패 상태별 리포트 필터링
+- **빌드 정보**: 빌드 ID, 브랜치, 실행 시간, 테스트 결과 표시
+- **인터랙티브 행**: 클릭으로 상세 정보 확인
+
+#### 4. JSON 데이터 뷰어
+- **JSON 토글**: JSON 형식으로 원본 데이터 확인
+- **클립보드 복사**: 데이터를 클립보드로 복사 기능
+- **포맷팅**: 보기 쉬운 JSON 들여쓰기 표시
+
+### API 엔드포인트
+
+#### CI 리포트 목록 조회
+```http
+GET /api/v1/ci/reports?limit=50&status=success
+```
+
+**응답 예시:**
+```json
+[
+    {
+        "id": "build-123",
+        "date": "2025-01-15",
+        "timestamp": "2025-01-15T10:30:00Z",
+        "status": "success",
+        "execution_time": 245,
+        "test_results": {
+            "total": 156,
+            "passed": 156,
+            "failed": 0,
+            "skipped": 2
+        },
+        "coverage": {
+            "percentage": 85.7,
+            "lines_covered": 2145,
+            "lines_total": 2504
+        },
+        "build_info": {
+            "branch": "main",
+            "commit": "a1b2c3d",
+            "trigger": "push",
+            "environment": "production"
+        }
+    }
+]
+```
+
+#### 최신 CI 리포트 조회
+```http
+GET /api/v1/ci/reports/latest
+```
+
+#### CI 성능 통계
+```http
+GET /api/v1/ci/stats?days=30
+```
+
+**응답 예시:**
+```json
+{
+    "period_days": 30,
+    "total_builds": 45,
+    "successful_builds": 38,
+    "failed_builds": 7,
+    "success_rate": 84.4,
+    "failure_rate": 15.6,
+    "avg_execution_time": 234.5,
+    "avg_coverage": 83.2,
+    "latest_execution": "2025-01-15T10:30:00Z",
+    "calculated_at": "2025-01-15T11:00:00.123456"
+}
+```
+
+#### 실패한 테스트 요약
+```http
+GET /api/v1/ci/failed-tests?days=7
+```
+
+#### 특정 리포트 마크다운 조회
+```http
+GET /api/v1/ci/reports/{report_id}/markdown
+```
+
+### JavaScript 기능
+
+#### CI 리포트 데이터 로드
+```javascript
+class CIReportManager {
+    async loadCIReports() {
+        try {
+            const response = await fetch('/api/v1/ci/reports?limit=20');
+            const data = await response.json();
+
+            this.reports = data;
+            this.updateReportsList();
+            this.updateStatistics();
+            this.updateCharts();
+        } catch (error) {
+            console.error('CI 리포트 로드 실패:', error);
+            this.showError('CI 리포트를 불러오는데 실패했습니다.');
+        }
+    }
+
+    updateStatistics() {
+        const stats = this.calculateStatistics();
+
+        document.getElementById('ciExecutionTime').textContent =
+            Math.round(stats.avgExecutionTime);
+        document.getElementById('ciFailureRate').textContent =
+            stats.failureRate.toFixed(1) + '%';
+        document.getElementById('ciTestCoverage').textContent =
+            stats.avgCoverage.toFixed(1) + '%';
+        document.getElementById('ciLastExecution').textContent =
+            this.formatDate(stats.lastExecution);
+    }
+}
+```
+
+#### 실시간 차트 업데이트
+```javascript
+updateExecutionTimeChart() {
+    const chartData = this.getChartData();
+
+    if (this.charts.executionTime) {
+        this.charts.executionTime.data.labels = chartData.labels;
+        this.charts.executionTime.data.datasets[0].data = chartData.executionTimes;
+        this.charts.executionTime.update('none');
+    } else {
+        this.createExecutionTimeChart(chartData);
+    }
+}
+
+createExecutionTimeChart(data) {
+    const ctx = document.getElementById('ciExecutionTimeChart').getContext('2d');
+    this.charts.executionTime = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: '실행 시간 (초)',
+                data: data.executionTimes,
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: '실행 시간 추이',
+                    color: '#e5e7eb'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    ticks: { color: '#9ca3af' }
+                },
+                x: {
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    ticks: { color: '#9ca3af' }
+                }
+            }
+        }
+    });
+}
+```
+
+#### 리포트 필터링 및 관리
+```javascript
+filterReports(status) {
+    this.currentFilter = status;
+
+    if (status === 'all') {
+        this.filteredReports = [...this.reports];
+    } else {
+        this.filteredReports = this.reports.filter(report =>
+            report.status === status
+        );
+    }
+
+    this.updateReportsList();
+    this.updateFilterButtons();
+}
+
+updateReportsList() {
+    const container = document.getElementById('ciReportsList');
+
+    if (this.filteredReports.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8">
+                <div class="text-gray-400 text-lg mb-2">📋</div>
+                <div class="text-gray-300">CI 리포트가 없습니다</div>
+            </div>
+        `;
+        return;
+    }
+
+    const reportsHtml = this.filteredReports.map(report => `
+        <div class="ci-report-row bg-white/5 border border-white/10 rounded-lg p-4 mb-3 hover:bg-white/10 transition-colors cursor-pointer"
+             onclick="ciReportManager.showReportDetails('${report.id}')">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center">
+                    <span class="text-lg mr-3">${this.getStatusIcon(report.status)}</span>
+                    <div>
+                        <div class="text-white font-medium">${report.id}</div>
+                        <div class="text-gray-400 text-sm">${report.build_info?.branch || 'N/A'}</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-white text-sm">${report.execution_time}초</div>
+                    <div class="text-gray-400 text-xs">${this.formatDate(report.timestamp)}</div>
+                </div>
+            </div>
+            <div class="flex justify-between text-sm">
+                <div class="text-gray-300">
+                    테스트: ${report.test_results?.total || 0}개
+                    (성공: ${report.test_results?.passed || 0}, 실패: ${report.test_results?.failed || 0})
+                </div>
+                <div class="text-gray-300">
+                    커버리지: ${report.coverage?.percentage || 0}%
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    container.innerHTML = reportsHtml;
+}
+```
+
+### 다크모드 지원
+CI/CD 대시보드는 전체 관리자 대시보드와 통합된 다크모드를 지원합니다:
+
+```css
+/* CI/CD 패널 다크모드 스타일 */
+.ci-report-panel {
+    @apply bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50;
+}
+
+.ci-stats-card {
+    @apply bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/30;
+}
+```
+
+### 반응형 디자인
+모바일 및 태블릿 환경에서도 최적화된 CI/CD 리포트 보기를 제공합니다.
+
+### 실시간 업데이트
+```javascript
+// 5분마다 자동 새로고침
+setInterval(() => {
+    if (document.visibilityState === 'visible') {
+        ciReportManager.loadCIReports();
+    }
+}, 5 * 60 * 1000);
+```
+
+### 접속 방법
+
+#### 로컬 환경
+```bash
+# 서버 시작
+cd mcp
+python run.py
+
+# 브라우저에서 접속
+open http://localhost:8088/web/admin_dashboard.html
+```
+
+#### 운영 환경
+```bash
+# 관리자 대시보드 URL
+https://your-domain.com/web/admin_dashboard.html
+```
+
+### 테스트 실행
+
+#### CI 리포트 API 테스트
+```bash
+# CI 리포트 API 테스트 실행
+python -m pytest tests/test_ci_report_api.py -v
+
+# 특정 테스트 클래스 실행
+python -m pytest tests/test_ci_report_api.py::TestCIReportAPI -v
+
+# 통합 테스트 실행
+python -m pytest tests/test_ci_report_api.py::TestCIReportAPIIntegration -v
+```
+
+### 사용 시나리오
+
+#### 시나리오 1: 일일 CI/CD 성과 모니터링
+관리자가 매일 아침 대시보드에 접속하여 전날의 CI/CD 빌드 현황을 확인하고, 실패한 빌드가 있는지 점검합니다.
+
+#### 시나리오 2: 성능 트렌드 분석
+월간 CI/CD 성능 추이를 차트로 확인하여 빌드 시간이 증가하는 추세가 있는지, 테스트 커버리지가 개선되고 있는지 분석합니다.
+
+#### 시나리오 3: 실패한 테스트 분석
+실패한 빌드의 테스트 결과를 상세히 분석하여 반복적으로 실패하는 테스트 케이스를 식별하고 개선 방안을 수립합니다.
+
+이 CI/CD 성능 리포트 대시보드를 통해 관리자는 직관적인 웹 인터페이스에서 실시간으로 CI/CD 파이프라인의 성과를 모니터링하고, 성능 개선이 필요한 영역을 빠르게 식별할 수 있습니다.
+
 ## 🔔 운영 알림 통합 시스템
 
 ### 개요

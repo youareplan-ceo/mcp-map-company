@@ -4211,6 +4211,10 @@
                 // JSON 복사 버튼
                 this.copyJsonBtn?.addEventListener('click', () => this.copyJsonToClipboard());
 
+                // 다운로드 버튼들
+                this.downloadMdBtn?.addEventListener('click', () => this.downloadReport('markdown'));
+                this.downloadJsonBtn?.addEventListener('click', () => this.downloadReport('json'));
+
                 // 필터 버튼들
                 this.filterAllBtn?.addEventListener('click', () => this.setFilter('all'));
                 this.filterSuccessBtn?.addEventListener('click', () => this.setFilter('success'));
@@ -4222,30 +4226,491 @@
                     // 로딩 상태 표시
                     this.showLoadingState();
 
-                    // API에서 CI 리포트 데이터 가져오기 (모의 데이터)
-                    await this.generateMockCIReports();
+                    // API에서 CI 리포트 데이터 가져오기
+                    const response = await fetch('/api/v1/reports/ci/summary');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
 
-                    // 통계 업데이트
-                    this.updateStatistics();
+                    const data = await response.json();
+                    this.currentData = data;
 
-                    // 필터링된 리포트 목록 표시
-                    this.displayReports();
+                    // 통계 카드 업데이트
+                    this.updateStatisticsCards(data);
 
                     // 차트 업데이트
-                    this.updateCharts();
+                    this.updateCharts(data);
 
-                    // JSON 뷰 업데이트
-                    this.updateJsonView();
+                    // 리포트 목록 업데이트
+                    this.updateReportsList(data.recent_workflows || []);
+
+                    // JSON 데이터 업데이트
+                    if (this.jsonContentEl) {
+                        this.jsonContentEl.textContent = JSON.stringify(data, null, 2);
+                    }
+
+                    addLog('✅ CI/CD 성능 리포트가 성공적으로 로드되었습니다.', 'info');
 
                     // 로딩 상태 해제
                     this.hideLoadingState();
-
-                    addLog('📊 CI/CD 리포트 데이터가 성공적으로 로드되었습니다.', 'info');
                 } catch (error) {
                     console.error('CI 리포트 로드 중 오류:', error);
                     addLog(`📊 CI 리포트 로드 실패: ${error.message}`, 'error');
                     this.hideLoadingState();
+
+                    // 오류 발생 시 모의 데이터 사용
+                    this.loadFallbackData();
                 }
+            }
+
+            // 통계 카드 업데이트
+            updateStatisticsCards(data) {
+                if (data.performance_summary) {
+                    const summary = data.performance_summary;
+
+                    // 성공률 업데이트
+                    if (this.successRateEl) {
+                        this.successRateEl.textContent = summary.success_rate ? summary.success_rate.toFixed(1) : '-';
+                    }
+
+                    // 실패율 업데이트 및 경고 표시
+                    if (this.failureRateEl) {
+                        const failureRate = summary.failure_rate || 0;
+                        this.failureRateEl.textContent = failureRate.toFixed(1);
+
+                        // 실패율이 10% 초과 시 경고 표시
+                        if (failureRate > 10) {
+                            this.failureRateCardEl?.classList.add('animate-pulse');
+                            this.failureWarningEl?.classList.remove('hidden');
+                            addLog(`⚠️ CI/CD 실패율이 임계값(10%)을 초과했습니다: ${failureRate.toFixed(1)}%`, 'warning');
+                        } else {
+                            this.failureRateCardEl?.classList.remove('animate-pulse');
+                            this.failureWarningEl?.classList.add('hidden');
+                        }
+                    }
+
+                    // 평균 실행 시간 업데이트 (초를 분으로 변환)
+                    if (this.avgExecutionTimeEl) {
+                        const avgMinutes = summary.avg_duration_seconds ? (summary.avg_duration_seconds / 60).toFixed(1) : '-';
+                        this.avgExecutionTimeEl.textContent = avgMinutes;
+                    }
+
+                    // 총 실행 횟수 업데이트
+                    if (this.totalRunsEl) {
+                        this.totalRunsEl.textContent = summary.total_runs || '-';
+                    }
+                }
+
+                // 최근 실행 시간 업데이트
+                if (data.recent_workflows && data.recent_workflows.length > 0) {
+                    const lastWorkflow = data.recent_workflows[0];
+                    if (this.lastExecutionEl && lastWorkflow.created_at) {
+                        const lastTime = new Date(lastWorkflow.created_at);
+                        const timeAgo = this.getTimeAgo(lastTime);
+                        this.lastExecutionEl.textContent = timeAgo;
+                    }
+                }
+            }
+
+            // 차트 업데이트
+            updateCharts(data) {
+                if (data.recent_workflows) {
+                    this.updateBuildTrendChart(data.recent_workflows);
+                    this.updateSuccessDistributionChart(data.performance_summary);
+                }
+            }
+
+            // 최근 빌드 트렌드 차트 업데이트 (Chart.js 라인 차트, 최근 10회 실행)
+            updateBuildTrendChart(workflows) {
+                const ctx = document.getElementById('ciBuildTrendChart');
+                if (!ctx) return;
+
+                // 기존 차트 제거
+                if (this.charts.buildTrend) {
+                    this.charts.buildTrend.destroy();
+                }
+
+                // 최근 10개만 선택
+                const recentWorkflows = workflows.slice(0, 10).reverse();
+
+                const labels = recentWorkflows.map((w, index) => `#${w.run_number || index + 1}`);
+                const executionTimes = recentWorkflows.map(w => (w.duration_seconds || 0) / 60); // 분 단위
+                const statusColors = recentWorkflows.map(w => {
+                    switch (w.conclusion) {
+                        case 'success': return '#10b981'; // 녹색
+                        case 'failure': return '#ef4444'; // 빨간색
+                        case 'cancelled': return '#f59e0b'; // 노란색
+                        default: return '#6b7280'; // 회색
+                    }
+                });
+
+                this.charts.buildTrend = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '실행 시간 (분)',
+                            data: executionTimes,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: statusColors,
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#ffffff'
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    afterBody: function(context) {
+                                        const index = context[0].dataIndex;
+                                        const workflow = recentWorkflows[index];
+                                        return [
+                                            `상태: ${workflow.conclusion || 'unknown'}`,
+                                            `브랜치: ${workflow.branch || 'N/A'}`,
+                                            `시간: ${new Date(workflow.created_at).toLocaleString('ko-KR')}`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#ffffff' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            y: {
+                                ticks: { color: '#ffffff' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                title: {
+                                    display: true,
+                                    text: '실행 시간 (분)',
+                                    color: '#ffffff'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 성공/실패 분포 도넛 차트 업데이트
+            updateSuccessDistributionChart(summary) {
+                const ctx = document.getElementById('ciSuccessDistributionChart');
+                if (!ctx || !summary) return;
+
+                // 기존 차트 제거
+                if (this.charts.successDistribution) {
+                    this.charts.successDistribution.destroy();
+                }
+
+                const data = [
+                    summary.success_count || 0,
+                    summary.failure_count || 0,
+                    summary.cancelled_count || 0
+                ];
+
+                this.charts.successDistribution = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['성공', '실패', '취소'],
+                        datasets: [{
+                            data: data,
+                            backgroundColor: [
+                                '#10b981', // 녹색 (성공)
+                                '#ef4444', // 빨간색 (실패)
+                                '#f59e0b'  // 노란색 (취소)
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#ffffff',
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                        return `${context.label}: ${context.parsed}개 (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 리포트 목록 업데이트
+            updateReportsList(workflows) {
+                if (!this.reportsListEl || !workflows) return;
+
+                if (workflows.length === 0) {
+                    this.reportsListEl.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="text-4xl mb-2">📊</div>
+                            <div>CI 리포트 데이터가 없습니다.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const reportsHtml = workflows.map(workflow => {
+                    const statusColor = this.getStatusColor(workflow.conclusion);
+                    const statusIcon = this.getStatusIcon(workflow.conclusion);
+                    const timeAgo = this.getTimeAgo(new Date(workflow.created_at));
+                    const duration = workflow.duration_seconds ?
+                        `${Math.floor(workflow.duration_seconds / 60)}분 ${workflow.duration_seconds % 60}초` :
+                        '알 수 없음';
+
+                    return `
+                        <div class="bg-white/5 dark:bg-gray-800/30 rounded-lg p-4 border border-white/10 dark:border-gray-700/50">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-lg">${statusIcon}</span>
+                                    <span class="font-semibold text-white dark:text-gray-100">${workflow.name || 'Workflow'}</span>
+                                    <span class="text-sm text-gray-400">#${workflow.run_number || 'N/A'}</span>
+                                </div>
+                                <span class="text-xs ${statusColor} font-medium px-2 py-1 rounded-full bg-black/20">
+                                    ${workflow.conclusion || 'unknown'}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-300 space-y-1">
+                                <div>브랜치: <span class="text-white">${workflow.branch || 'N/A'}</span></div>
+                                <div>실행 시간: <span class="text-white">${duration}</span></div>
+                                <div>시작: <span class="text-white">${timeAgo}</span></div>
+                                ${workflow.html_url ? `<a href="${workflow.html_url}" target="_blank" class="text-blue-400 hover:text-blue-300 text-xs">GitHub에서 보기 →</a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                this.reportsListEl.innerHTML = reportsHtml;
+            }
+
+            // 리포트 다운로드 기능
+            async downloadReport(format) {
+                try {
+                    const endpoint = format === 'markdown' ?
+                        '/api/v1/reports/ci/markdown' :
+                        '/api/v1/reports/ci/json';
+
+                    const response = await fetch(endpoint);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    let content, filename, mimeType;
+
+                    if (format === 'markdown') {
+                        content = await response.text();
+                        filename = `ci_report_${new Date().toISOString().split('T')[0]}.md`;
+                        mimeType = 'text/markdown';
+                    } else {
+                        content = JSON.stringify(await response.json(), null, 2);
+                        filename = `ci_report_${new Date().toISOString().split('T')[0]}.json`;
+                        mimeType = 'application/json';
+                    }
+
+                    // 파일 다운로드
+                    const blob = new Blob([content], { type: mimeType });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    addLog(`📥 CI 리포트 ${format.toUpperCase()} 파일이 다운로드되었습니다.`, 'info');
+                } catch (error) {
+                    console.error('리포트 다운로드 중 오류:', error);
+                    addLog(`📥 리포트 다운로드 실패: ${error.message}`, 'error');
+                }
+            }
+
+            // 폴백 데이터 로드 (API 오류 시)
+            loadFallbackData() {
+                const fallbackData = {
+                    performance_summary: {
+                        total_runs: 25,
+                        success_count: 20,
+                        failure_count: 3,
+                        cancelled_count: 2,
+                        success_rate: 80.0,
+                        failure_rate: 12.0,
+                        avg_duration_seconds: 420
+                    },
+                    recent_workflows: [
+                        {
+                            name: 'CI Pipeline',
+                            run_number: 123,
+                            conclusion: 'success',
+                            branch: 'main',
+                            duration_seconds: 380,
+                            created_at: new Date(Date.now() - 3600000).toISOString(),
+                            html_url: 'https://github.com/youareplan/mcp-map-company/actions'
+                        },
+                        {
+                            name: 'Security Scan',
+                            run_number: 122,
+                            conclusion: 'failure',
+                            branch: 'develop',
+                            duration_seconds: 280,
+                            created_at: new Date(Date.now() - 7200000).toISOString(),
+                            html_url: 'https://github.com/youareplan/mcp-map-company/actions'
+                        }
+                    ]
+                };
+
+                this.updateStatisticsCards(fallbackData);
+                this.updateCharts(fallbackData);
+                this.updateReportsList(fallbackData.recent_workflows);
+
+                if (this.jsonContentEl) {
+                    this.jsonContentEl.textContent = JSON.stringify(fallbackData, null, 2);
+                }
+            }
+
+            // 유틸리티 메서드들
+            getStatusColor(status) {
+                switch (status) {
+                    case 'success': return 'text-green-400';
+                    case 'failure': return 'text-red-400';
+                    case 'cancelled': return 'text-yellow-400';
+                    default: return 'text-gray-400';
+                }
+            }
+
+            getStatusIcon(status) {
+                switch (status) {
+                    case 'success': return '✅';
+                    case 'failure': return '❌';
+                    case 'cancelled': return '⏹️';
+                    case 'in_progress': return '🔄';
+                    default: return '⚪';
+                }
+            }
+
+            getTimeAgo(date) {
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMins / 60);
+                const diffDays = Math.floor(diffHours / 24);
+
+                if (diffMins < 1) return '방금 전';
+                if (diffMins < 60) return `${diffMins}분 전`;
+                if (diffHours < 24) return `${diffHours}시간 전`;
+                return `${diffDays}일 전`;
+            }
+
+            // 기존 메서드들 (필요에 따라 수정)
+            showLoadingState() {
+                if (this.reportsListEl) {
+                    this.reportsListEl.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="text-4xl mb-2 animate-spin">🔄</div>
+                            <div>CI 리포트 데이터를 로드하는 중...</div>
+                        </div>
+                    `;
+                }
+            }
+
+            hideLoadingState() {
+                // 로딩 상태는 updateReportsList에서 처리됨
+            }
+
+            toggleJsonView() {
+                this.jsonViewVisible = !this.jsonViewVisible;
+                if (this.jsonViewSectionEl) {
+                    this.jsonViewSectionEl.classList.toggle('hidden', !this.jsonViewVisible);
+                }
+
+                if (this.jsonToggleBtn) {
+                    this.jsonToggleBtn.innerHTML = this.jsonViewVisible ?
+                        '<span class="mr-2">👁️</span>JSON 숨기기' :
+                        '<span class="mr-2">👁️</span>JSON 보기';
+                }
+            }
+
+            copyJsonToClipboard() {
+                if (this.jsonContentEl && this.jsonContentEl.textContent) {
+                    navigator.clipboard.writeText(this.jsonContentEl.textContent).then(() => {
+                        addLog('📋 JSON 데이터가 클립보드에 복사되었습니다.', 'info');
+                    }).catch(err => {
+                        console.error('클립보드 복사 실패:', err);
+                        addLog('📋 클립보드 복사에 실패했습니다.', 'error');
+                    });
+                }
+            }
+
+            setFilter(filter) {
+                this.currentFilter = filter;
+                // 필터 버튼 스타일 업데이트
+                [this.filterAllBtn, this.filterSuccessBtn, this.filterFailureBtn].forEach(btn => {
+                    if (btn) {
+                        btn.classList.remove('bg-blue-600', 'text-white');
+                        btn.classList.add('bg-white/10', 'text-white/80');
+                    }
+                });
+
+                // 활성 버튼 스타일 적용
+                const activeBtn = filter === 'all' ? this.filterAllBtn :
+                                 filter === 'success' ? this.filterSuccessBtn : this.filterFailureBtn;
+                if (activeBtn) {
+                    activeBtn.classList.remove('bg-white/10', 'text-white/80');
+                    activeBtn.classList.add('bg-blue-600', 'text-white');
+                }
+
+                // 필터링 적용은 현재 데이터로 다시 리포트 목록 업데이트
+                if (this.currentData && this.currentData.recent_workflows) {
+                    let filteredWorkflows = this.currentData.recent_workflows;
+
+                    if (filter === 'success') {
+                        filteredWorkflows = filteredWorkflows.filter(w => w.conclusion === 'success');
+                    } else if (filter === 'failure') {
+                        filteredWorkflows = filteredWorkflows.filter(w => w.conclusion === 'failure');
+                    }
+
+                    this.updateReportsList(filteredWorkflows);
+                }
+            }
+
+            startAutoRefresh() {
+                this.autoRefreshInterval = setInterval(() => {
+                    this.loadCIReports();
+                }, 60000); // 60초마다 새로고침
+            }
+
+            stopAutoRefresh() {
+                if (this.autoRefreshInterval) {
+                    clearInterval(this.autoRefreshInterval);
+                    this.autoRefreshInterval = null;
+                }
+            }
+
+            initializeCharts() {
+                // 차트 초기화는 데이터 로드 후 updateCharts에서 처리
+            }
             }
 
             async generateMockCIReports() {
