@@ -1071,6 +1071,381 @@
             </div>
         </div>
 
+        <!-- 📊 CI/CD 성능 리포트 패널 -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">📊</span>
+                    CI/CD 성능 리포트
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <button id="refreshCIReportsBtn" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        새로고침
+                    </button>
+                    <button id="downloadCIReportMdBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📄</span>
+                        Markdown
+                    </button>
+                    <button id="downloadCIReportJsonBtn" class="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📋</span>
+                        JSON
+                    </button>
+                    <button id="toggleCIJsonViewBtn" class="bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">👁️</span>
+                        JSON 보기
+                    </button>
+                </div>
+            </div>
+
+            <!-- CI/CD 성능 통계 카드 -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <!-- 성공률 카드 -->
+                <div class="bg-green-500/20 dark:bg-green-600/20 border border-green-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">✅</div>
+                    <div class="text-green-300 dark:text-green-200 text-sm font-medium">성공률</div>
+                    <div id="ciSuccessRate" class="text-green-100 text-2xl font-bold">-</div>
+                    <div class="text-green-400 dark:text-green-300 text-xs">%</div>
+                </div>
+
+                <!-- 실패율 카드 (성능 이슈 하이라이트) -->
+                <div id="ciFailureRateCard" class="bg-red-500/20 dark:bg-red-600/20 border border-red-400/30 rounded-lg p-4 text-center transition-all duration-300">
+                    <div class="text-2xl mb-2">❌</div>
+                    <div class="text-red-300 dark:text-red-200 text-sm font-medium">실패율</div>
+                    <div id="ciFailureRate" class="text-red-100 text-2xl font-bold">-</div>
+                    <div class="text-red-400 dark:text-red-300 text-xs">%</div>
+                    <!-- 경고 표시 (실패율 >10% 시) -->
+                    <div id="ciFailureWarning" class="hidden mt-2 text-xs text-red-200 bg-red-500/30 rounded px-2 py-1">
+                        ⚠️ 임계값 초과
+                    </div>
+                </div>
+
+                <!-- 평균 실행 시간 카드 -->
+                <div class="bg-blue-500/20 dark:bg-blue-600/20 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">⏱️</div>
+                    <div class="text-blue-300 dark:text-blue-200 text-sm font-medium">평균 실행 시간</div>
+                    <div id="ciAvgExecutionTime" class="text-blue-100 text-2xl font-bold">-</div>
+                    <div class="text-blue-400 dark:text-blue-300 text-xs">분</div>
+                </div>
+
+                <!-- 총 실행 횟수 카드 -->
+                <div class="bg-purple-500/20 dark:bg-purple-600/20 border border-purple-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">🔄</div>
+                    <div class="text-purple-300 dark:text-purple-200 text-sm font-medium">총 실행</div>
+                    <div id="ciTotalRuns" class="text-purple-100 text-2xl font-bold">-</div>
+                    <div class="text-purple-400 dark:text-purple-300 text-xs">개</div>
+                </div>
+
+                <!-- 최근 실행 날짜 카드 -->
+                <div class="bg-gray-500/20 dark:bg-gray-600/20 border border-gray-400/30 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-2">📅</div>
+                    <div class="text-gray-300 dark:text-gray-200 text-sm font-medium">최근 실행</div>
+                    <div id="ciLastExecution" class="text-gray-100 text-lg font-bold">-</div>
+                    <div class="text-gray-400 dark:text-gray-300 text-xs">시간</div>
+                </div>
+            </div>
+
+            <!-- CI/CD 성능 차트 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- 최근 빌드 트렌드 차트 (Chart.js 라인 차트, 최근 10회 실행) -->
+                <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📈</span>
+                        최근 빌드 트렌드 (최근 10회)
+                    </h3>
+                    <div class="relative" style="height: 280px;">
+                        <canvas id="ciBuildTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 성공/실패 분포 도넛 차트 -->
+                <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🍩</span>
+                        성공/실패 분포
+                    </h3>
+                    <div class="relative" style="height: 280px;">
+                        <canvas id="ciSuccessDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 CI 리포트 목록 -->
+            <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg overflow-hidden">
+                <div class="p-4 border-b border-white/10 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-white dark:text-gray-100 font-semibold">최근 CI 리포트</h3>
+                    <div class="flex items-center space-x-2">
+                        <!-- 상태 필터 버튼 -->
+                        <button id="ciFilterAllBtn" class="ci-status-filter-btn bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition-colors duration-200">
+                            전체
+                        </button>
+                        <button id="ciFilterSuccessBtn" class="ci-status-filter-btn bg-white/10 text-white/80 px-3 py-1 rounded-lg text-sm transition-colors duration-200">
+                            성공
+                        </button>
+                        <button id="ciFilterFailureBtn" class="ci-status-filter-btn bg-white/10 text-white/80 px-3 py-1 rounded-lg text-sm transition-colors duration-200">
+                            실패
+                        </button>
+                    </div>
+                </div>
+
+                <div id="ciReportsList" class="max-h-80 overflow-y-auto p-4 space-y-3">
+                    <!-- CI 리포트 목록이 여기에 동적으로 추가됩니다 -->
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-2">📊</div>
+                        <div>CI 리포트 데이터를 로드하는 중...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON 보기 토글 섹션 (초기에는 숨김) -->
+            <div id="ciJsonViewSection" class="hidden mt-6">
+                <div class="bg-black/40 dark:bg-gray-900/60 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-white dark:text-gray-100 font-semibold">JSON 데이터 원본</h4>
+                        <button id="copyCIJsonBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
+                            📋 복사
+                        </button>
+                    </div>
+                    <pre id="ciJsonContent" class="bg-gray-900 text-green-400 p-4 rounded overflow-x-auto text-sm max-h-64 overflow-y-auto"></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📅 월간 운영 리포트 패널 -->
+        <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white dark:text-gray-100 flex items-center">
+                    <span class="mr-3">📅</span>
+                    월간 운영 리포트
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <button id="refreshMonthlyReportBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">🔄</span>
+                        새로고침
+                    </button>
+                    <button id="generateMonthlyReportBtn" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📊</span>
+                        리포트 생성
+                    </button>
+                    <button id="downloadMonthlyReportBtn" class="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📥</span>
+                        다운로드
+                    </button>
+                </div>
+            </div>
+
+            <!-- 월간 성과 점수 카드들 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <!-- 보안 점수 카드 -->
+                <div class="bg-gradient-to-br from-red-500/20 to-red-600/30 border border-red-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">🛡️</span>
+                        <div class="text-red-300 dark:text-red-200 text-sm font-medium">보안 점수</div>
+                    </div>
+                    <div id="monthlySecurityScore" class="text-red-100 text-3xl font-bold mb-1">0</div>
+                    <div class="text-red-200 text-xs">/40점</div>
+                </div>
+
+                <!-- 백업 점수 카드 -->
+                <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">📦</span>
+                        <div class="text-blue-300 dark:text-blue-200 text-sm font-medium">백업 점수</div>
+                    </div>
+                    <div id="monthlyBackupScore" class="text-blue-100 text-3xl font-bold mb-1">0</div>
+                    <div class="text-blue-200 text-xs">/40점</div>
+                </div>
+
+                <!-- 시스템 점수 카드 -->
+                <div class="bg-gradient-to-br from-green-500/20 to-green-600/30 border border-green-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">💾</span>
+                        <div class="text-green-300 dark:text-green-200 text-sm font-medium">시스템 점수</div>
+                    </div>
+                    <div id="monthlySystemScore" class="text-green-100 text-3xl font-bold mb-1">0</div>
+                    <div class="text-green-200 text-xs">/20점</div>
+                </div>
+
+                <!-- 총점 및 등급 카드 -->
+                <div class="bg-gradient-to-br from-yellow-500/20 to-yellow-600/30 border border-yellow-400/30 rounded-lg p-4 text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-2xl mr-2">📈</span>
+                        <div class="text-yellow-300 dark:text-yellow-200 text-sm font-medium">종합 성과</div>
+                    </div>
+                    <div id="monthlyTotalScore" class="text-yellow-100 text-3xl font-bold mb-1">0</div>
+                    <div id="monthlyPerformanceGrade" class="text-yellow-200 text-xs font-medium">등급 확인 중...</div>
+                </div>
+            </div>
+
+            <!-- 월간 성과 추이 차트 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- 성과 점수 추이 차트 -->
+                <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">📊</span>
+                        월별 성과 점수 추이 (최근 6개월)
+                    </h3>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="monthlyPerformanceTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 성과 등급 분포 차트 -->
+                <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg p-4">
+                    <h3 class="text-white dark:text-gray-100 text-lg font-semibold mb-4 flex items-center">
+                        <span class="mr-2">🏆</span>
+                        월별 성과 등급 분포
+                    </h3>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="monthlyGradeDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 월간 리포트 상세 정보 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- 보안 현황 요약 -->
+                <div class="bg-red-500/10 dark:bg-red-600/10 border border-red-400/20 rounded-lg p-4">
+                    <h4 class="text-red-300 dark:text-red-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">🛡️</span>
+                        보안 현황 (30일)
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-red-200">총 차단 IP:</span>
+                            <span id="monthlyBlockedIPs" class="text-red-100 font-medium">0회</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-red-200">고유 차단 IP:</span>
+                            <span id="monthlyUniqueIPs" class="text-red-100 font-medium">0개</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-red-200">Rate Limit 위반:</span>
+                            <span id="monthlyRateLimit" class="text-red-100 font-medium">0회</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-red-200">보안 이벤트:</span>
+                            <span id="monthlySecurityEvents" class="text-red-100 font-medium">0회</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 백업 현황 요약 -->
+                <div class="bg-blue-500/10 dark:bg-blue-600/10 border border-blue-400/20 rounded-lg p-4">
+                    <h4 class="text-blue-300 dark:text-blue-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">📦</span>
+                        백업 현황 (30일)
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-blue-200">성공한 백업:</span>
+                            <span id="monthlySuccessfulBackups" class="text-blue-100 font-medium">0회</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-200">실패한 백업:</span>
+                            <span id="monthlyFailedBackups" class="text-blue-100 font-medium">0회</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-200">성공률:</span>
+                            <span id="monthlyBackupSuccessRate" class="text-blue-100 font-medium">0%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-200">정리 작업:</span>
+                            <span id="monthlyCleanupOps" class="text-blue-100 font-medium">0회</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 시스템 리소스 요약 -->
+                <div class="bg-green-500/10 dark:bg-green-600/10 border border-green-400/20 rounded-lg p-4">
+                    <h4 class="text-green-300 dark:text-green-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">💾</span>
+                        시스템 리소스 (30일)
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-green-200">평균 디스크 사용률:</span>
+                            <span id="monthlyAvgDiskUsage" class="text-green-100 font-medium">0%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-green-200">최대 디스크 사용률:</span>
+                            <span id="monthlyMaxDiskUsage" class="text-green-100 font-medium">0%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-green-200">보안 로그 크기:</span>
+                            <span id="monthlyLogSize" class="text-green-100 font-medium">0MB</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-green-200">백업 저장소 크기:</span>
+                            <span id="monthlyBackupSize" class="text-green-100 font-medium">0GB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최신 월간 리포트 목록 및 다운로드 -->
+            <div class="bg-black/20 dark:bg-gray-900/50 rounded-lg overflow-hidden">
+                <div class="p-4 border-b border-white/10 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-white dark:text-gray-100 font-semibold">최근 월간 리포트</h3>
+                    <div class="flex items-center space-x-2">
+                        <!-- 기간 선택 드롭다운 -->
+                        <select id="monthlyReportPeriodSelect" class="bg-gray-700 text-white px-3 py-1 rounded text-sm border border-gray-600 focus:outline-none focus:border-blue-500">
+                            <option value="current">이번 달</option>
+                            <option value="last-1">지난 달</option>
+                            <option value="last-2">2개월 전</option>
+                            <option value="last-3">3개월 전</option>
+                            <option value="last-6">6개월 전</option>
+                        </select>
+                        <!-- 포맷 선택 버튼 -->
+                        <button id="downloadMarkdownBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm transition-colors duration-200">
+                            Markdown
+                        </button>
+                        <button id="downloadJsonBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm transition-colors duration-200">
+                            JSON
+                        </button>
+                    </div>
+                </div>
+
+                <div id="monthlyReportsList" class="max-h-64 overflow-y-auto p-4 space-y-3">
+                    <!-- 월간 리포트 목록이 여기에 동적으로 추가됩니다 -->
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-2">📅</div>
+                        <div>월간 리포트 데이터를 로드하는 중...</div>
+                        <div class="text-sm text-gray-500 mt-2">첫 번째 리포트 생성까지 시간이 걸릴 수 있습니다.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 월간 리포트 권장사항 -->
+            <div id="monthlyRecommendationsSection" class="mt-6 hidden">
+                <div class="bg-yellow-500/10 dark:bg-yellow-600/10 border border-yellow-400/20 rounded-lg p-4">
+                    <h4 class="text-yellow-300 dark:text-yellow-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">💡</span>
+                        월간 권장사항
+                    </h4>
+                    <div id="monthlyRecommendationsList" class="space-y-2 text-sm text-yellow-200">
+                        <!-- 권장사항이 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 다음 달 목표 -->
+            <div id="nextMonthGoalsSection" class="mt-6 hidden">
+                <div class="bg-purple-500/10 dark:bg-purple-600/10 border border-purple-400/20 rounded-lg p-4">
+                    <h4 class="text-purple-300 dark:text-purple-200 font-semibold mb-3 flex items-center">
+                        <span class="mr-2">🎯</span>
+                        다음 달 목표
+                    </h4>
+                    <div id="nextMonthGoalsList" class="space-y-2 text-sm text-purple-200">
+                        <div>• 종합 성과 점수 85점 이상 달성</div>
+                        <div>• 보안 이벤트 20% 감소</div>
+                        <div>• 백업 성공률 98% 이상 유지</div>
+                        <div>• 시스템 자동화 및 모니터링 강화</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <div class="text-center text-white/70 dark:text-gray-400 text-sm">
             © 2024 MCP-MAP Company. All rights reserved.
@@ -3765,15 +4140,479 @@
             }
         }
 
+        // =============================================
+        // 📊 CI/CD 성능 리포트 패널 JavaScript Implementation
+        // =============================================
+
+        class CIReportManager {
+            constructor() {
+                this.reports = [];
+                this.filteredReports = [];
+                this.currentFilter = 'all';
+                this.charts = {};
+                this.jsonViewVisible = false;
+                this.autoRefreshInterval = null;
+                this.currentData = null; // 현재 로드된 데이터 저장
+                this.init();
+            }
+
+            init() {
+                // DOM 요소 바인딩
+                this.bindElements();
+
+                // 이벤트 리스너 설정
+                this.setupEventListeners();
+
+                // 초기 데이터 로드
+                this.loadCIReports();
+
+                // 자동 새로고침 시작 (60초마다)
+                this.startAutoRefresh();
+
+                // 차트 초기화
+                this.initializeCharts();
+            }
+
+            bindElements() {
+                // 버튼 요소들
+                this.refreshBtn = document.getElementById('refreshCIReportsBtn');
+                this.jsonToggleBtn = document.getElementById('toggleCIJsonViewBtn');
+                this.copyJsonBtn = document.getElementById('copyCIJsonBtn');
+                this.downloadMdBtn = document.getElementById('downloadCIReportMdBtn');
+                this.downloadJsonBtn = document.getElementById('downloadCIReportJsonBtn');
+
+                // 필터 버튼들
+                this.filterAllBtn = document.getElementById('ciFilterAllBtn');
+                this.filterSuccessBtn = document.getElementById('ciFilterSuccessBtn');
+                this.filterFailureBtn = document.getElementById('ciFilterFailureBtn');
+
+                // 통계 표시 요소들
+                this.successRateEl = document.getElementById('ciSuccessRate');
+                this.failureRateEl = document.getElementById('ciFailureRate');
+                this.avgExecutionTimeEl = document.getElementById('ciAvgExecutionTime');
+                this.totalRunsEl = document.getElementById('ciTotalRuns');
+                this.lastExecutionEl = document.getElementById('ciLastExecution');
+                this.failureRateCardEl = document.getElementById('ciFailureRateCard');
+                this.failureWarningEl = document.getElementById('ciFailureWarning');
+
+                // 기타 요소들
+                this.reportsListEl = document.getElementById('ciReportsList');
+                this.jsonViewSectionEl = document.getElementById('ciJsonViewSection');
+                this.jsonContentEl = document.getElementById('ciJsonContent');
+            }
+
+            setupEventListeners() {
+                // 새로고침 버튼
+                this.refreshBtn?.addEventListener('click', () => this.loadCIReports());
+
+                // JSON 토글 버튼
+                this.jsonToggleBtn?.addEventListener('click', () => this.toggleJsonView());
+
+                // JSON 복사 버튼
+                this.copyJsonBtn?.addEventListener('click', () => this.copyJsonToClipboard());
+
+                // 필터 버튼들
+                this.filterAllBtn?.addEventListener('click', () => this.setFilter('all'));
+                this.filterSuccessBtn?.addEventListener('click', () => this.setFilter('success'));
+                this.filterFailureBtn?.addEventListener('click', () => this.setFilter('failure'));
+            }
+
+            async loadCIReports() {
+                try {
+                    // 로딩 상태 표시
+                    this.showLoadingState();
+
+                    // API에서 CI 리포트 데이터 가져오기 (모의 데이터)
+                    await this.generateMockCIReports();
+
+                    // 통계 업데이트
+                    this.updateStatistics();
+
+                    // 필터링된 리포트 목록 표시
+                    this.displayReports();
+
+                    // 차트 업데이트
+                    this.updateCharts();
+
+                    // JSON 뷰 업데이트
+                    this.updateJsonView();
+
+                    // 로딩 상태 해제
+                    this.hideLoadingState();
+
+                    addLog('📊 CI/CD 리포트 데이터가 성공적으로 로드되었습니다.', 'info');
+                } catch (error) {
+                    console.error('CI 리포트 로드 중 오류:', error);
+                    addLog(`📊 CI 리포트 로드 실패: ${error.message}`, 'error');
+                    this.hideLoadingState();
+                }
+            }
+
+            async generateMockCIReports() {
+                // 실제 환경에서는 /api/v1/ci/reports 호출
+                const mockData = [
+                    {
+                        id: `ci-${Date.now()}-1`,
+                        workflow: 'CI/CD Pipeline',
+                        status: 'success',
+                        execution_time: 480, // 초 단위
+                        test_count: 127,
+                        test_passed: 125,
+                        test_failed: 2,
+                        coverage: 85.6,
+                        timestamp: new Date(Date.now() - 3600000).toISOString(),
+                        branch: 'main',
+                        commit: 'c3f5aa7',
+                        author: 'developer@company.com'
+                    },
+                    {
+                        id: `ci-${Date.now()}-2`,
+                        workflow: 'Security Scan',
+                        status: 'failure',
+                        execution_time: 320,
+                        test_count: 45,
+                        test_passed: 40,
+                        test_failed: 5,
+                        coverage: 72.3,
+                        timestamp: new Date(Date.now() - 7200000).toISOString(),
+                        branch: 'develop',
+                        commit: '6b14912',
+                        author: 'security@company.com',
+                        error_message: 'Vulnerability detected in dependencies'
+                    },
+                    {
+                        id: `ci-${Date.now()}-3`,
+                        workflow: 'Build & Test',
+                        status: 'success',
+                        execution_time: 620,
+                        test_count: 89,
+                        test_passed: 89,
+                        test_failed: 0,
+                        coverage: 92.1,
+                        timestamp: new Date(Date.now() - 10800000).toISOString(),
+                        branch: 'main',
+                        commit: '01e2a23',
+                        author: 'build@company.com'
+                    }
+                ];
+
+                // 시뮬레이션을 위한 지연
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                this.reports = mockData;
+                this.applyCurrentFilter();
+            }
+
+            setFilter(filterType) {
+                this.currentFilter = filterType;
+
+                // 버튼 상태 업데이트
+                this.updateFilterButtons();
+
+                // 필터 적용 및 표시
+                this.applyCurrentFilter();
+                this.displayReports();
+
+                addLog(`📊 CI 리포트 필터가 '${filterType}'로 변경되었습니다.`, 'info');
+            }
+
+            updateFilterButtons() {
+                const buttons = [this.filterAllBtn, this.filterSuccessBtn, this.filterFailureBtn];
+                const filters = ['all', 'success', 'failure'];
+
+                buttons.forEach((btn, index) => {
+                    if (!btn) return;
+
+                    if (filters[index] === this.currentFilter) {
+                        btn.classList.add('bg-blue-600', 'text-white');
+                        btn.classList.remove('bg-white/10', 'text-white/80');
+                    } else {
+                        btn.classList.remove('bg-blue-600', 'text-white');
+                        btn.classList.add('bg-white/10', 'text-white/80');
+                    }
+                });
+            }
+
+            applyCurrentFilter() {
+                if (this.currentFilter === 'all') {
+                    this.filteredReports = [...this.reports];
+                } else {
+                    this.filteredReports = this.reports.filter(
+                        report => report.status === this.currentFilter
+                    );
+                }
+            }
+
+            updateStatistics() {
+                if (this.reports.length === 0) return;
+
+                // 평균 실행 시간 계산
+                const avgTime = this.reports.reduce((sum, r) => sum + r.execution_time, 0) / this.reports.length;
+                const minutes = Math.floor(avgTime / 60);
+                const seconds = Math.floor(avgTime % 60);
+
+                // 실패율 계산
+                const failedCount = this.reports.filter(r => r.status === 'failure').length;
+                const failureRate = ((failedCount / this.reports.length) * 100).toFixed(1);
+
+                // 평균 커버리지 계산
+                const avgCoverage = (this.reports.reduce((sum, r) => sum + r.coverage, 0) / this.reports.length).toFixed(1);
+
+                // 최근 실행 날짜
+                const latestReport = this.reports.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+                const lastExecution = new Date(latestReport.timestamp).toLocaleDateString('ko-KR');
+
+                // UI 업데이트
+                if (this.avgExecutionTimeEl) this.avgExecutionTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                if (this.failureRateEl) this.failureRateEl.textContent = failureRate;
+                if (this.testCoverageEl) this.testCoverageEl.textContent = avgCoverage;
+                if (this.lastExecutionEl) this.lastExecutionEl.textContent = lastExecution;
+            }
+
+            displayReports() {
+                if (!this.reportsListEl) return;
+
+                if (this.filteredReports.length === 0) {
+                    this.reportsListEl.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="text-4xl mb-2">📊</div>
+                            <div>표시할 CI 리포트가 없습니다.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const reportsHtml = this.filteredReports.map(report => {
+                    const statusIcon = report.status === 'success' ? '✅' : '❌';
+                    const statusColor = report.status === 'success' ? 'green' : 'red';
+                    const executionTime = `${Math.floor(report.execution_time / 60)}:${(report.execution_time % 60).toString().padStart(2, '0')}`;
+
+                    return `
+                        <div class="bg-white/5 dark:bg-gray-800/30 rounded-lg p-4 border border-${statusColor}-500/20">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-3 flex-1">
+                                    <div class="text-2xl">${statusIcon}</div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <h4 class="text-white dark:text-gray-100 font-semibold">${report.workflow}</h4>
+                                            <span class="text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300">${report.branch}</span>
+                                        </div>
+                                        <p class="text-white/80 dark:text-gray-300 text-sm mb-2">
+                                            실행 시간: ${executionTime} | 테스트: ${report.test_passed}/${report.test_count} | 커버리지: ${report.coverage}%
+                                        </p>
+                                        <div class="flex items-center justify-between text-xs text-white/60 dark:text-gray-400">
+                                            <span>📅 ${new Date(report.timestamp).toLocaleString('ko-KR')}</span>
+                                            <span>👤 ${report.author}</span>
+                                            <span>🔗 ${report.commit}</span>
+                                        </div>
+                                        ${report.error_message ? `<div class="mt-2 text-red-400 text-sm">❌ ${report.error_message}</div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                this.reportsListEl.innerHTML = reportsHtml;
+            }
+
+            initializeCharts() {
+                // Chart.js 초기화 (Chart.js가 로드되어 있다고 가정)
+                if (typeof Chart === 'undefined') {
+                    console.warn('Chart.js가 로드되지 않았습니다.');
+                    return;
+                }
+
+                // 실행 시간 차트
+                const executionTimeCtx = document.getElementById('ciExecutionTimeChart');
+                if (executionTimeCtx) {
+                    this.charts.executionTime = new Chart(executionTimeCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: '실행 시간 (분)',
+                                data: [],
+                                borderColor: 'rgb(59, 130, 246)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { color: 'rgba(255, 255, 255, 0.8)' }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { color: 'rgba(255, 255, 255, 0.6)' },
+                                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                                },
+                                x: {
+                                    ticks: { color: 'rgba(255, 255, 255, 0.6)' },
+                                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 실패율 차트
+                const failureRateCtx = document.getElementById('ciFailureRateChart');
+                if (failureRateCtx) {
+                    this.charts.failureRate = new Chart(failureRateCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: '실패율 (%)',
+                                data: [],
+                                backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                                borderColor: 'rgb(239, 68, 68)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { color: 'rgba(255, 255, 255, 0.8)' }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    ticks: { color: 'rgba(255, 255, 255, 0.6)' },
+                                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                                },
+                                x: {
+                                    ticks: { color: 'rgba(255, 255, 255, 0.6)' },
+                                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            updateCharts() {
+                if (!this.charts.executionTime || !this.charts.failureRate) return;
+
+                // 최근 10개 리포트 데이터로 차트 업데이트
+                const recentReports = this.reports
+                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+                    .slice(-10);
+
+                const labels = recentReports.map(r => new Date(r.timestamp).toLocaleDateString('ko-KR'));
+                const executionTimes = recentReports.map(r => (r.execution_time / 60).toFixed(1));
+
+                // 실행 시간 차트 업데이트
+                this.charts.executionTime.data.labels = labels;
+                this.charts.executionTime.data.datasets[0].data = executionTimes;
+                this.charts.executionTime.update();
+
+                // 실패율 차트 데이터 계산 (기간별)
+                const failureRates = recentReports.map(r => {
+                    return r.status === 'failure' ? 100 : 0;
+                });
+
+                this.charts.failureRate.data.labels = labels;
+                this.charts.failureRate.data.datasets[0].data = failureRates;
+                this.charts.failureRate.update();
+            }
+
+            toggleJsonView() {
+                this.jsonViewVisible = !this.jsonViewVisible;
+
+                if (this.jsonSectionEl) {
+                    if (this.jsonViewVisible) {
+                        this.jsonSectionEl.classList.remove('hidden');
+                        this.jsonToggleBtn.innerHTML = '<span class="mr-2">📄</span>JSON 숨김';
+                    } else {
+                        this.jsonSectionEl.classList.add('hidden');
+                        this.jsonToggleBtn.innerHTML = '<span class="mr-2">📄</span>JSON 보기';
+                    }
+                }
+
+                this.updateJsonView();
+            }
+
+            updateJsonView() {
+                if (this.jsonViewVisible && this.jsonContentEl) {
+                    this.jsonContentEl.textContent = JSON.stringify(this.reports, null, 2);
+                }
+            }
+
+            copyJsonToClipboard() {
+                if (this.jsonContentEl) {
+                    navigator.clipboard.writeText(this.jsonContentEl.textContent).then(() => {
+                        addLog('📋 CI 리포트 JSON 데이터가 클립보드에 복사되었습니다.', 'info');
+                    }).catch(err => {
+                        addLog('📋 클립보드 복사 실패: ' + err.message, 'error');
+                    });
+                }
+            }
+
+            showLoadingState() {
+                if (this.reportsListEl) {
+                    this.reportsListEl.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="animate-spin text-4xl mb-2">🔄</div>
+                            <div>CI 리포트 데이터를 로드하는 중...</div>
+                        </div>
+                    `;
+                }
+
+                if (this.refreshBtn) {
+                    this.refreshBtn.disabled = true;
+                    this.refreshBtn.innerHTML = '<span class="mr-2">🔄</span>로딩 중...';
+                }
+            }
+
+            hideLoadingState() {
+                if (this.refreshBtn) {
+                    this.refreshBtn.disabled = false;
+                    this.refreshBtn.innerHTML = '<span class="mr-2">🔄</span>새로고침';
+                }
+            }
+
+            startAutoRefresh() {
+                this.stopAutoRefresh(); // 기존 인터벌 정리
+                this.autoRefreshInterval = setInterval(() => {
+                    this.loadCIReports();
+                }, 60000); // 60초마다 새로고침
+            }
+
+            stopAutoRefresh() {
+                if (this.autoRefreshInterval) {
+                    clearInterval(this.autoRefreshInterval);
+                    this.autoRefreshInterval = null;
+                }
+            }
+        }
+
         // 운영 알림 매니저 전역 인스턴스 생성
         let opsNotificationManager;
+        let ciReportManager;
 
-        // DOM 로드 완료 시 운영 알림 매니저 초기화
+        // DOM 로드 완료 시 매니저들 초기화
         document.addEventListener('DOMContentLoaded', function() {
             // 운영 알림 통합 패널이 있는 경우에만 초기화
             if (document.getElementById('opsNotificationsList')) {
                 opsNotificationManager = new OpsNotificationManager();
                 addLog('🔔 운영 알림 통합 패널이 초기화되었습니다.', 'info');
+            }
+
+            // CI/CD 성능 리포트 패널이 있는 경우에만 초기화
+            if (document.getElementById('ciReportsList')) {
+                ciReportManager = new CIReportManager();
+                addLog('📊 CI/CD 성능 리포트 패널이 초기화되었습니다.', 'info');
             }
         });
     </script>

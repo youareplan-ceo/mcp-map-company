@@ -2729,6 +2729,468 @@ ls -la logs/
 
 이 월간 운영 리포트 자동화 시스템을 통해 관리자는 매월 정기적으로 시스템 운영 성과를 종합 평가하고, 데이터 기반의 중장기 운영 전략을 수립할 수 있습니다.
 
+## 📊 월간 운영 리포트 대시보드
+
+### 개요
+월간 운영 리포트 대시보드는 관리자 웹 인터페이스를 통해 월간 리포트 데이터를 시각적으로 표시하고, 실시간 성과 추이를 모니터링할 수 있는 종합적인 웹 대시보드 시스템입니다.
+
+### 주요 기능
+- **실시간 성과 점수 표시**: 보안/백업/시스템 점수와 종합 등급 실시간 업데이트
+- **Chart.js 기반 시각화**: 월별 성과 추이 및 등급 분포 차트
+- **인터랙티브 대시보드**: 다크모드 지원, 반응형 디자인
+- **리포트 다운로드 기능**: Markdown/JSON 형식으로 리포트 다운로드
+- **자동 새로고침**: 주기적 데이터 갱신 및 실시간 모니터링
+
+### 대시보드 구성 요소
+
+#### 1. 성과 점수 카드
+```html
+<!-- 보안 점수 카드 -->
+<div class="bg-gradient-to-br from-red-500/20 to-red-600/30 border border-red-400/30 rounded-lg p-4 text-center">
+    <div class="flex items-center justify-center mb-2">
+        <span class="text-2xl mr-2">🛡️</span>
+        <div class="text-red-300 text-sm font-medium">보안 점수</div>
+    </div>
+    <div id="monthlySecurityScore" class="text-red-100 text-3xl font-bold mb-1">32</div>
+    <div class="text-red-200 text-xs">/40점</div>
+</div>
+```
+
+#### 2. 성과 추이 차트
+- **월별 성과 점수 추이**: 최근 6개월간 보안/백업/시스템 점수 변화
+- **성과 등급 분포**: 우수/보통/개선 필요 등급별 분포 도넛 차트
+
+#### 3. 월간 현황 요약
+- **보안 현황**: 차단 IP, Rate Limit 위반, 보안 이벤트 통계
+- **백업 현황**: 성공률, 성공/실패 횟수, 정리 작업 현황
+- **시스템 리소스**: 디스크 사용률, 로그 크기, 백업 저장소 크기
+
+#### 4. 리포트 관리 패널
+- **기간 선택**: 이번 달, 지난 달, 2-6개월 전 선택 가능
+- **다운로드 옵션**: Markdown, JSON 형식 다운로드 버튼
+- **생성 제어**: 새 리포트 생성, 진행 상황 모니터링
+
+### API 엔드포인트
+
+#### 월간 리포트 요약
+```http
+GET /api/v1/reports/monthly/
+```
+
+**응답 예시:**
+```json
+{
+    "status": "success",
+    "reports_count": 6,
+    "latest_reports": [
+        {
+            "date": "2024-09-21",
+            "markdown_file": "/reports/monthly/monthly-report-2024-09-21.md",
+            "json_file": "/reports/monthly/monthly-report-2024-09-21.json",
+            "created_at": "2024-09-21T10:30:00",
+            "size_mb": 0.5
+        }
+    ],
+    "latest_performance": {
+        "total_score": 87,
+        "security_score": 32,
+        "backup_score": 37,
+        "system_score": 18,
+        "grade": "우수"
+    },
+    "generation_status": {
+        "is_running": false,
+        "last_run": "2024-09-21T10:30:00",
+        "last_error": null
+    }
+}
+```
+
+#### 최신 리포트 조회
+```http
+GET /api/v1/reports/monthly/latest
+```
+
+#### 성과 추이 데이터
+```http
+GET /api/v1/reports/monthly/performance-trend?months=6
+```
+
+**응답 예시:**
+```json
+{
+    "status": "success",
+    "trend_data": [
+        {
+            "period": "2024-04-21",
+            "total_score": 85,
+            "security_score": 30,
+            "backup_score": 35,
+            "system_score": 20,
+            "grade": "우수"
+        }
+    ],
+    "summary": {
+        "average_total_score": 86.5,
+        "average_security_score": 31.2,
+        "average_backup_score": 36.8,
+        "average_system_score": 18.5,
+        "grade_distribution": {
+            "우수": 4,
+            "보통": 2,
+            "개선 필요": 0
+        }
+    }
+}
+```
+
+#### 리포트 생성
+```http
+POST /api/v1/reports/monthly/generate?period=2024-09
+```
+
+#### 생성 상태 확인
+```http
+GET /api/v1/reports/monthly/status
+```
+
+#### 리포트 다운로드
+```http
+GET /api/v1/reports/monthly/download/2024-09-21?format=markdown
+GET /api/v1/reports/monthly/download/2024-09-21?format=json
+```
+
+### 대시보드 접속 방법
+
+#### 로컬 환경
+```bash
+# 서버 시작
+cd mcp-map-company
+python -m mcp.run
+
+# 브라우저에서 접속
+open http://localhost:8088/web/admin_dashboard.html
+```
+
+#### 운영 환경
+```bash
+# 관리자 대시보드 URL
+https://mcp-map-company.onrender.com/web/admin_dashboard.html
+```
+
+### JavaScript 기능
+
+#### 월간 리포트 데이터 로드
+```javascript
+// 월간 리포트 요약 데이터 로드
+async function loadMonthlyReportSummary() {
+    try {
+        const response = await fetch(`${CONFIG.BASE_URL}/api/v1/reports/monthly/`);
+        const data = await response.json();
+
+        updateMonthlyScoreCards(data.latest_performance);
+        updateMonthlyReportsList(data.latest_reports);
+        updateGenerationStatus(data.generation_status);
+
+    } catch (error) {
+        console.error('월간 리포트 데이터 로드 실패:', error);
+        showErrorMessage('월간 리포트 데이터를 불러올 수 없습니다.');
+    }
+}
+
+// 성과 점수 카드 업데이트
+function updateMonthlyScoreCards(performance) {
+    if (!performance) return;
+
+    document.getElementById('monthlySecurityScore').textContent = performance.security_score || 0;
+    document.getElementById('monthlyBackupScore').textContent = performance.backup_score || 0;
+    document.getElementById('monthlySystemScore').textContent = performance.system_score || 0;
+    document.getElementById('monthlyTotalScore').textContent = performance.total_score || 0;
+    document.getElementById('monthlyPerformanceGrade').textContent = performance.grade || '알 수 없음';
+}
+```
+
+#### 성과 추이 차트 생성
+```javascript
+// Chart.js를 사용한 성과 추이 차트
+async function initMonthlyPerformanceTrendChart() {
+    const response = await fetch(`${CONFIG.BASE_URL}/api/v1/reports/monthly/performance-trend?months=6`);
+    const data = await response.json();
+
+    const ctx = document.getElementById('monthlyPerformanceTrendChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.trend_data.map(item => item.period),
+            datasets: [
+                {
+                    label: '보안 점수',
+                    data: data.trend_data.map(item => item.security_score),
+                    borderColor: 'rgb(239, 68, 68)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    tension: 0.4
+                },
+                {
+                    label: '백업 점수',
+                    data: data.trend_data.map(item => item.backup_score),
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    tension: 0.4
+                },
+                {
+                    label: '시스템 점수',
+                    data: data.trend_data.map(item => item.system_score),
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '월별 성과 점수 추이'
+                },
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 40
+                }
+            }
+        }
+    });
+}
+```
+
+#### 리포트 생성 및 다운로드
+```javascript
+// 월간 리포트 생성
+async function generateMonthlyReport(period = null) {
+    try {
+        const generateBtn = document.getElementById('generateMonthlyReportBtn');
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<span class="mr-2">⏳</span>생성 중...';
+
+        const url = period
+            ? `${CONFIG.BASE_URL}/api/v1/reports/monthly/generate?period=${period}`
+            : `${CONFIG.BASE_URL}/api/v1/reports/monthly/generate`;
+
+        const response = await fetch(url, { method: 'POST' });
+        const result = await response.json();
+
+        if (response.ok) {
+            showSuccessMessage('월간 리포트 생성이 시작되었습니다. 완료까지 5-10분 소요됩니다.');
+            startStatusPolling();
+        } else {
+            throw new Error(result.detail || '리포트 생성 실패');
+        }
+
+    } catch (error) {
+        console.error('리포트 생성 오류:', error);
+        showErrorMessage('리포트 생성 중 오류가 발생했습니다: ' + error.message);
+    } finally {
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = '<span class="mr-2">📊</span>리포트 생성';
+    }
+}
+
+// 리포트 다운로드
+async function downloadMonthlyReport(date, format) {
+    try {
+        const response = await fetch(
+            `${CONFIG.BASE_URL}/api/v1/reports/monthly/download/${date}?format=${format}`
+        );
+
+        if (!response.ok) {
+            throw new Error('다운로드 실패');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `monthly-report-${date}.${format === 'markdown' ? 'md' : 'json'}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        showSuccessMessage(`${format} 리포트가 다운로드되었습니다.`);
+
+    } catch (error) {
+        console.error('다운로드 오류:', error);
+        showErrorMessage('리포트 다운로드 중 오류가 발생했습니다.');
+    }
+}
+```
+
+### 다크모드 지원
+
+대시보드는 완전한 다크모드를 지원하며, 사용자 설정에 따라 자동으로 테마가 전환됩니다:
+
+```css
+/* 다크모드 월간 리포트 패널 스타일 */
+.dark .monthly-report-panel {
+    background: rgba(31, 41, 55, 0.5);
+    border-color: rgba(107, 114, 128, 0.5);
+}
+
+.dark .performance-card {
+    background: rgba(75, 85, 99, 0.6);
+    border-color: rgba(107, 114, 128, 0.4);
+}
+
+.dark .chart-container {
+    background: rgba(17, 24, 39, 0.5);
+}
+```
+
+### 반응형 디자인
+
+대시보드는 모든 화면 크기에서 최적화된 경험을 제공합니다:
+
+- **데스크톱**: 4열 그리드 레이아웃으로 모든 정보 표시
+- **태블릿**: 2열 그리드로 축소, 차트 크기 자동 조정
+- **모바일**: 1열 레이아웃, 터치 친화적 인터페이스
+
+### 실시간 업데이트
+
+```javascript
+// 자동 새로고침 설정 (10초마다)
+setInterval(async () => {
+    if (autoRefreshEnabled) {
+        await loadMonthlyReportSummary();
+        await updatePerformanceTrend();
+    }
+}, 10000);
+```
+
+### 오류 처리 및 사용자 피드백
+
+```javascript
+// 사용자 친화적 오류 메시지
+function showErrorMessage(message) {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <span class="mr-2">❌</span>
+            <span>${message}</span>
+        </div>
+    `;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+// 성공 메시지
+function showSuccessMessage(message) {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <span class="mr-2">✅</span>
+            <span>${message}</span>
+        </div>
+    `;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+```
+
+### 권한 및 보안
+
+대시보드 접근은 다음과 같이 제어됩니다:
+
+1. **IP 화이트리스트**: 허용된 IP에서만 접근 가능
+2. **Rate Limiting**: API 호출 빈도 제한
+3. **HTTPS 강제**: 운영 환경에서 암호화된 연결만 허용
+4. **CSP 헤더**: XSS 공격 방지를 위한 콘텐츠 보안 정책
+
+### CI/CD 파이프라인 연동
+
+```yaml
+# .github/workflows/monthly-report-dashboard.yml
+name: Monthly Report Dashboard CI/CD
+
+on:
+  push:
+    paths:
+      - 'web/admin_dashboard.html'
+      - 'mcp/monthly_report_api.py'
+      - 'tests/test_monthly_report_api.py'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest fastapi[all] httpx
+
+      - name: Run API tests
+        run: |
+          pytest tests/test_monthly_report_api.py -v
+
+      - name: Test dashboard accessibility
+        run: |
+          python -m mcp.run &
+          sleep 5
+          curl -f http://localhost:8088/web/admin_dashboard.html
+```
+
+### 성능 최적화
+
+1. **지연 로딩**: 차트는 탭 활성화 시에만 생성
+2. **캐싱**: API 응답 5분간 브라우저 캐시
+3. **압축**: Gzip 압축으로 전송 크기 최소화
+4. **CDN**: 정적 자원은 CDN을 통해 제공
+
+### 모니터링 및 로깅
+
+```javascript
+// 대시보드 사용 통계 수집
+function trackDashboardUsage(action, details = {}) {
+    fetch(`${CONFIG.BASE_URL}/api/v1/analytics/dashboard`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action,
+            timestamp: new Date().toISOString(),
+            user_agent: navigator.userAgent,
+            ...details
+        })
+    }).catch(console.error);
+}
+
+// 사용 예시
+trackDashboardUsage('monthly_report_viewed');
+trackDashboardUsage('report_downloaded', { format: 'markdown', date: '2024-09-21' });
+```
+
+이 월간 운영 리포트 대시보드를 통해 관리자는 직관적인 웹 인터페이스에서 실시간으로 시스템 성과를 모니터링하고, 필요한 리포트를 즉시 다운로드할 수 있습니다.
+
 ## 🔔 운영 알림 통합 시스템
 
 ### 개요
