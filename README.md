@@ -1510,6 +1510,356 @@ await send_ci_cleanup_report(
 
 이 CI 클린업 자동화 시스템을 통해 CI/CD 파이프라인 실행 후 생성되는 아티팩트와 로그 파일을 효율적으로 관리하여 시스템 성능과 저장 공간을 최적화할 수 있습니다.
 
+## 📡 CI/CD 모니터링 자동화
+
+### 📋 ci_monitor.sh 스크립트 개요
+CI/CD 모니터링 자동화 스크립트는 GitHub Actions의 실행 상태를 실시간으로 확인하고, 빌드 실패 시 자동으로 알림을 전송하여 신속한 대응이 가능하도록 지원합니다.
+
+### 🎯 주요 기능
+
+#### 1. 📊 GitHub Actions 실시간 모니터링
+- **워크플로우 상태 확인**: 최근 10개 워크플로우 실행 상태 (성공/실패/진행중)
+- **GitHub CLI 활용**: `gh api` 명령어로 실시간 데이터 수집
+- **상태별 분류**: 성공률 계산 및 실패 패턴 분석
+- **브랜치별 통계**: 특정 브랜치의 실패 빈도 추적
+
+#### 2. 🚨 자동 실패 감지 및 알림
+- **실패 로그 기록**: `logs/ci_failures.log`에 자동 기록
+- **알림 시스템 연동**: notifier.py를 통한 Slack/Discord/Email 알림
+- **한국어 메시지**: 이모지와 함께 직관적인 한국어 알림
+- **심각도 분류**: 실패 수에 따른 Critical/Error/Warning 레벨 구분
+
+#### 3. 🔄 실시간 모니터링 모드
+- **Watch 모드**: `--watch` 옵션으로 30초 간격 실시간 모니터링
+- **커스텀 간격**: `--interval` 옵션으로 모니터링 간격 조정
+- **모니터링 수량**: `--count` 옵션으로 확인할 워크플로우 수 설정
+
+#### 4. 📊 다양한 출력 형식
+- **텍스트 모드**: 사람이 읽기 쉬운 상세 출력
+- **JSON 모드**: 자동화 파이프라인 연동용 구조화된 데이터
+- **상세 모드**: `--verbose` 옵션으로 모든 과정 실시간 표시
+
+### 🛠️ 사용법
+
+#### 전제조건
+```bash
+# GitHub CLI 설치 및 인증
+brew install gh                    # macOS
+sudo apt install gh               # Ubuntu
+gh auth login                     # GitHub 인증
+```
+
+#### 기본 실행
+```bash
+# CI 상태 확인 (기본 10개 워크플로우)
+./scripts/ci_monitor.sh
+
+# 상세 출력과 함께 실행
+./scripts/ci_monitor.sh --verbose
+```
+
+#### JSON 출력 (자동화 연동)
+```bash
+# JSON 형식으로 결과 출력
+./scripts/ci_monitor.sh --json
+
+# 특정 수량의 워크플로우 JSON 출력
+./scripts/ci_monitor.sh --json --count 20
+```
+
+#### 실시간 모니터링
+```bash
+# 실시간 모니터링 (30초 간격)
+./scripts/ci_monitor.sh --watch
+
+# 커스텀 간격으로 모니터링 (60초)
+./scripts/ci_monitor.sh --watch --interval 60
+
+# 상세 정보와 함께 실시간 모니터링
+./scripts/ci_monitor.sh --watch --verbose --interval 45
+```
+
+#### 옵션 조합
+```bash
+# 20개 워크플로우를 2분 간격으로 실시간 모니터링
+./scripts/ci_monitor.sh --watch --count 20 --interval 120 --verbose
+
+# JSON 출력과 함께 특정 수량 모니터링
+./scripts/ci_monitor.sh --json --count 15 --verbose
+```
+
+### 📊 실행 예시 및 예상 출력
+
+#### 일반 실행 예시
+```bash
+$ ./scripts/ci_monitor.sh --verbose
+
+📡 MCP-MAP CI/CD 모니터링 시작
+⏰ 실행 시간: 2024-09-21 14:30:25
+
+ℹ️  전제조건 확인 중...
+ℹ️  전제조건 확인 완료
+ℹ️  최근 10개 워크플로우 실행 목록 가져오는 중...
+ℹ️  워크플로우 상태 분석 완료
+ℹ️  총 실행: 10, 성공: 8, 실패: 2, 진행중: 0
+
+📡 CI/CD 모니터링 요약
+====================
+
+⏰ 검사 시간: 2024-09-21 14:30:25
+📊 워크플로우 통계:
+  📋 총 실행: 10개
+  ✅ 성공: 8개
+  ❌ 실패: 2개
+  🔄 진행중: 0개
+  📈 성공률: 80%
+
+🚨 실패한 워크플로우 (2개):
+  • CI Build and Test (#156) - main 브랜치
+    실행 시간: 2024-09-21T14:30:25Z
+    링크: https://github.com/owner/repo/actions/runs/12345
+
+  • Deploy to Staging (#89) - develop 브랜치
+    실행 시간: 2024-09-21T14:25:15Z
+    링크: https://github.com/owner/repo/actions/runs/12346
+
+📁 로그 파일: logs/ci_failures.log
+🔗 GitHub Actions: https://github.com/owner/repo/actions
+
+🎉 CI/CD 모니터링 완료!
+```
+
+#### JSON 출력 예시
+```json
+{
+  "timestamp": "2024-09-21 14:30:25",
+  "summary": {
+    "total_runs": 10,
+    "success_count": 8,
+    "failure_count": 2,
+    "in_progress_count": 0,
+    "success_rate": 80
+  },
+  "failed_workflows": [
+    {
+      "id": 12345,
+      "name": "CI Build and Test",
+      "status": "completed",
+      "conclusion": "failure",
+      "branch": "main",
+      "created_at": "2024-09-21T14:30:25Z",
+      "html_url": "https://github.com/owner/repo/actions/runs/12345",
+      "run_number": 156
+    }
+  ],
+  "recent_runs": [
+    {
+      "id": 12345,
+      "name": "CI Build and Test",
+      "status": "completed",
+      "conclusion": "failure",
+      "branch": "main",
+      "created_at": "2024-09-21T14:30:25Z",
+      "html_url": "https://github.com/owner/repo/actions/runs/12345",
+      "run_number": 156
+    }
+  ]
+}
+```
+
+#### 실시간 모니터링 출력 예시
+```bash
+$ ./scripts/ci_monitor.sh --watch --interval 60
+
+📡 CI/CD 실시간 모니터링 시작 (60초 간격)
+종료하려면 Ctrl+C를 누르세요
+
+=== 모니터링 #1 - 14:30:25 ===
+📊 워크플로우 통계: 총 10개 | 성공 8개 | 실패 2개 | 성공률 80%
+🚨 새로운 실패 감지: CI Build and Test (#156)
+
+다음 검사까지 60초 대기 중...
+
+=== 모니터링 #2 - 14:31:25 ===
+📊 워크플로우 통계: 총 10개 | 성공 9개 | 실패 1개 | 성공률 90%
+✅ 상황 개선: 일부 워크플로우 복구됨
+
+다음 검사까지 60초 대기 중...
+```
+
+### 🔔 알림 시스템 통합
+
+#### 지원 알림 채널
+- **Slack**: 웹훅을 통한 실시간 알림
+- **Discord**: 임베드 메시지로 상세 정보 제공
+- **Email**: HTML/텍스트 형식의 상세 보고서
+
+#### 알림 레벨 분류
+- **🚨 Critical**: 5개 이상 워크플로우 실패 시
+- **❌ Error**: 3-4개 워크플로우 실패 시
+- **⚠️ Warning**: 1-2개 워크플로우 실패 시
+- **ℹ️ Info**: 복구 완료 및 정상 상태
+
+#### 알림 내용
+- 실패한 워크플로우 목록 (최대 5개 표시)
+- 브랜치별 실패 패턴 분석
+- 권장 조치사항 자동 생성
+- GitHub Actions 로그 링크 포함
+- 최근 실패 로그 20줄 첨부 (Critical/Error 시)
+
+### 🧪 테스트 실행
+
+#### ci_monitor.sh 테스트
+```bash
+# CI 모니터링 스크립트 테스트
+python -m pytest tests/test_ci_monitor.py -v
+
+# 특정 테스트 클래스만 실행
+python -m pytest tests/test_ci_monitor.py::TestCIMonitor -v
+
+# 통합 테스트 실행
+python -m pytest tests/test_ci_monitor.py::TestCIMonitorIntegration -v
+
+# 성능 테스트 포함
+python -m pytest tests/test_ci_monitor.py::TestCIMonitorPerformance -v
+```
+
+#### 테스트 시나리오
+1. **스크립트 기본 검증**
+   - 파일 존재 및 실행 권한 확인
+   - 도움말 옵션 정상 동작 검증
+   - 잘못된 옵션 에러 처리 확인
+
+2. **기능별 테스트**
+   - GitHub CLI 전제조건 확인
+   - JSON 출력 형식 스키마 검증
+   - 옵션 조합 및 파싱 테스트
+
+3. **통합 테스트**
+   - notifier.py 연동 확인
+   - 알림 함수 시그니처 검증
+   - 모킹된 데이터로 알림 테스트
+
+4. **성능 테스트**
+   - 30초 이내 실행 완료 검증
+   - 옵션 파싱 1초 이내 완료 확인
+
+### 🔧 환경변수 설정
+
+#### GitHub Actions 알림
+```bash
+# Slack 알림
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/..."
+
+# Discord 알림
+export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
+
+# 이메일 알림
+export SMTP_SERVER="smtp.gmail.com"
+export SMTP_PORT="587"
+export NOTIFY_EMAIL="ci@company.com"
+export NOTIFY_PASSWORD="app_password"
+export NOTIFY_RECIPIENTS="admin1@company.com,admin2@company.com"
+```
+
+### ⏰ 정기 실행 설정 (cron)
+
+#### 매일 아침 8시 자동 체크
+```bash
+# 매일 오전 8시에 CI 상태 체크 및 알림
+0 8 * * * cd /path/to/mcp-map-company && ./scripts/ci_monitor.sh --json >> /var/log/ci_monitor.log 2>&1
+
+# 업무시간 중 30분 간격 모니터링 (오전 9시-오후 6시)
+*/30 9-18 * * 1-5 cd /path/to/mcp-map-company && ./scripts/ci_monitor.sh --count 5 >> /var/log/ci_monitor_frequent.log 2>&1
+
+# 주말 2시간 간격 모니터링
+0 */2 * * 0,6 cd /path/to/mcp-map-company && ./scripts/ci_monitor.sh --json >> /var/log/ci_monitor_weekend.log 2>&1
+```
+
+#### 실시간 모니터링 서비스 (systemd)
+```bash
+# CI 모니터링 서비스 생성
+sudo tee /etc/systemd/system/ci-monitor.service << EOF
+[Unit]
+Description=MCP-MAP CI/CD Monitoring Service
+After=network.target
+
+[Service]
+Type=simple
+User=deployer
+WorkingDirectory=/path/to/mcp-map-company
+ExecStart=/path/to/mcp-map-company/scripts/ci_monitor.sh --watch --interval 300
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 서비스 활성화 및 시작
+sudo systemctl enable ci-monitor
+sudo systemctl start ci-monitor
+
+# 서비스 상태 확인
+sudo systemctl status ci-monitor
+```
+
+### 📊 모니터링 및 분석
+
+#### 로그 분석
+```bash
+# CI 실패 로그 분석
+grep "워크플로우:" logs/ci_failures.log | tail -10
+
+# 브랜치별 실패 통계
+grep "브랜치:" logs/ci_failures.log | sort | uniq -c
+
+# 시간대별 실패 패턴 분석
+awk '/실행 시간:/ {print $4}' logs/ci_failures.log | cut -d'T' -f2 | cut -d':' -f1 | sort | uniq -c
+```
+
+#### 성공률 추적
+```bash
+# JSON 출력으로 성공률 히스토리 수집
+./scripts/ci_monitor.sh --json | jq '.summary.success_rate' >> logs/success_rate_history.txt
+
+# 성공률 트렌드 분석
+awk '{sum+=$1; count++} END {print "평균 성공률:", sum/count "%"}' logs/success_rate_history.txt
+```
+
+#### 대시보드 연동
+```bash
+# Grafana 연동용 메트릭 수집
+./scripts/ci_monitor.sh --json | jq '.summary' > /var/lib/grafana/ci_metrics.json
+
+# Prometheus 메트릭 형식으로 출력
+echo "ci_success_rate $(./scripts/ci_monitor.sh --json | jq '.summary.success_rate')" > /var/lib/prometheus/ci_metrics.prom
+```
+
+### 💡 모범 사례
+
+#### 1. 모니터링 주기 최적화
+- **개발 시간**: 30분 간격으로 빈번한 체크
+- **야간/주말**: 2-4시간 간격으로 최소 모니터링
+- **긴급 상황**: 5분 간격으로 집중 모니터링
+
+#### 2. 알림 피로도 방지
+- 연속된 실패는 첫 번째만 Critical로 알림
+- 복구 시에는 Info 레벨로 복구 알림 전송
+- 성공률 기반 요약 알림으로 전체 상황 파악
+
+#### 3. 로그 관리
+- CI 실패 로그는 최대 90일 보관
+- 성공률 히스토리는 1년간 보관하여 트렌드 분석
+- 중요한 실패 사례는 별도 문서화
+
+#### 4. 팀 워크플로우 통합
+- PR 생성 시 자동 CI 모니터링 활성화
+- 릴리즈 전 CI 상태 필수 체크
+- 실패 시 담당자 자동 할당 시스템 연동
+
+이 CI/CD 모니터링 자동화 시스템을 통해 GitHub Actions의 상태를 실시간으로 추적하고, 빌드 실패 시 신속한 대응이 가능하여 개발 팀의 생산성을 크게 향상시킬 수 있습니다.
+
 ## 📊 주간 운영 리포트 자동화
 
 ### 📋 weekly_ops_report.sh 스크립트 개요

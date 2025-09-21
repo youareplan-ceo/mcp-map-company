@@ -2032,6 +2032,743 @@ async def test_weekly_report_notification():
     print(f"✅ 주간 리포트 알림 테스트 완료: {result}")
     return result
 
+# ================================================
+# 월간 운영 리포트 알림 시스템 (Monthly Operations Report)
+# ================================================
+
+async def send_monthly_ops_report(
+    report_data: Dict[str, Any],
+    report_file_path: Optional[str] = None,
+    level: NotificationLevel = NotificationLevel.INFO
+) -> Dict[str, bool]:
+    """
+    월간 운영 리포트 결과 알림 전송 (한국어 메시지 지원)
+
+    Args:
+        report_data: monthly_ops_report.sh 실행 결과 데이터
+        report_file_path: 생성된 Markdown 리포트 파일 경로
+        level: 알림 심각도
+
+    Returns:
+        채널별 전송 결과
+    """
+    # 리포트 기간 정보
+    period_start = report_data.get('report_metadata', {}).get('period_start', 'Unknown')
+    period_end = report_data.get('report_metadata', {}).get('period_end', 'Unknown')
+
+    # 주요 통계 추출
+    security_events = report_data.get('security_events', {})
+    backup_ops = report_data.get('backup_operations', {})
+    system_resources = report_data.get('system_resources', {})
+    performance_score = report_data.get('performance_score', {})
+
+    # 월간 통계 요약
+    blocked_ips = security_events.get('blocked_ips', 0)
+    unique_blocked_ips = security_events.get('unique_blocked_ips', 0)
+    backup_success_rate = backup_ops.get('success_rate_percent', 0)
+    total_score = performance_score.get('total_score', 0)
+    grade = performance_score.get('grade', 'unknown')
+
+    # 성능 등급에 따른 레벨 조정
+    if grade == '개선 필요':
+        level = NotificationLevel.ERROR
+    elif grade == '보통':
+        level = NotificationLevel.WARNING
+    elif total_score < 70:
+        level = NotificationLevel.WARNING
+
+    # 메시지 생성
+    message = f"📊 월간 운영 리포트가 생성되었습니다.\n"
+    message += f"📅 기간: {period_start} ~ {period_end}\n"
+    message += f"📈 종합 성과: {total_score}/100점 ({grade})\n\n"
+
+    # 성능 등급별 상태 메시지
+    if grade == '우수':
+        message += "🏆 축하합니다! 월간 운영 성과가 우수합니다.\n"
+    elif grade == '보통':
+        message += "⚠️ 월간 운영 성과가 평균 수준입니다. 개선 방안을 검토해주세요.\n"
+    elif grade == '개선 필요':
+        message += "🚨 월간 운영 성과가 기준 이하입니다. 즉시 개선 조치가 필요합니다.\n"
+
+    # 보안 상태 요약
+    if unique_blocked_ips > 100:
+        message += "🚨 보안: 월간 차단 IP가 100개를 초과했습니다. 보안 정책 강화가 필요합니다.\n"
+    elif unique_blocked_ips > 50:
+        message += "⚠️ 보안: 월간 차단 IP가 평소보다 많습니다. 보안 모니터링을 강화해주세요.\n"
+    else:
+        message += "✅ 보안: 월간 보안 상태가 안정적입니다.\n"
+
+    # 백업 상태 요약
+    if backup_success_rate < 85:
+        message += "🚨 백업: 월간 백업 성공률이 85% 미만입니다. 백업 시스템 점검이 필요합니다.\n"
+    elif backup_success_rate < 95:
+        message += "⚠️ 백업: 월간 백업 성공률이 95% 미만입니다. 백업 안정성 개선이 필요합니다.\n"
+    else:
+        message += "✅ 백업: 월간 백업이 안정적으로 수행되고 있습니다.\n"
+
+    # 알림 제목 생성
+    title = f"📊 월간 운영 리포트 - {grade} ({total_score}점)"
+
+    # 세부 정보 필드 준비
+    report_fields = {
+        "📅 리포트 기간": f"{period_start} ~ {period_end}",
+        "📊 생성 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "📈 종합 성과": f"{total_score}/100점 ({grade})",
+        "🛡️ 월간 보안 현황": f"차단 IP {blocked_ips}회 (고유 {unique_blocked_ips}개)",
+        "📦 월간 백업 현황": f"성공률 {backup_success_rate}%",
+    }
+
+    # 성능 점수 세부 분석
+    if performance_score:
+        security_score = performance_score.get('security_score', 0)
+        backup_score = performance_score.get('backup_score', 0)
+        system_score = performance_score.get('system_score', 0)
+
+        report_fields["📊 성능 점수 분석"] = (
+            f"보안: {security_score}/40점\n"
+            f"백업: {backup_score}/40점\n"
+            f"시스템: {system_score}/20점"
+        )
+
+    # 보안 세부 통계
+    if security_events:
+        report_fields["🔒 보안 세부사항"] = (
+            f"Rate Limit 위반: {security_events.get('rate_limit_violations', 0)}회\n"
+            f"화이트리스트 추가: {security_events.get('whitelist_additions', 0)}회\n"
+            f"모니터링 이벤트: {security_events.get('monitoring_events', 0)}회\n"
+            f"보안 이벤트 총계: {security_events.get('total_security_events', 0)}회"
+        )
+
+    # 백업 세부 통계
+    if backup_ops:
+        report_fields["📦 백업 세부사항"] = (
+            f"성공한 백업: {backup_ops.get('successful_backups', 0)}회\n"
+            f"실패한 백업: {backup_ops.get('failed_backups', 0)}회\n"
+            f"정리 작업: {backup_ops.get('cleanup_operations', 0)}회\n"
+            f"백업 작업 총계: {backup_ops.get('total_backup_operations', 0)}회"
+        )
+
+    # 시스템 리소스 정보
+    if system_resources:
+        avg_disk_usage = system_resources.get('average_disk_usage_percent', 0)
+        max_disk_usage = system_resources.get('max_disk_usage_percent', 0)
+        log_size_mb = system_resources.get('security_log_size_bytes', 0) / (1024 * 1024)
+
+        report_fields["💾 시스템 리소스"] = (
+            f"평균 디스크 사용률: {avg_disk_usage}%\n"
+            f"최대 디스크 사용률: {max_disk_usage}%\n"
+            f"보안 로그 크기: {log_size_mb:.1f}MB"
+        )
+
+    # 리포트 파일 링크 추가
+    if report_file_path:
+        # 상대 경로를 웹 URL로 변환
+        report_url = report_file_path.replace('reports/', '/reports/')
+        report_fields["📄 상세 리포트"] = f"[Markdown 리포트 보기]({report_url})"
+
+    # 권장 사항 추가
+    recommendations = []
+    if total_score < 70:
+        recommendations.append("📈 월간 운영 성과 개선 계획 수립 및 실행")
+    if unique_blocked_ips > 50:
+        recommendations.append("🔍 보안 정책 재검토 및 화이트리스트 최적화")
+    if backup_success_rate < 95:
+        recommendations.append("📦 백업 시스템 안정성 강화 및 모니터링 개선")
+    if system_resources.get('max_disk_usage_percent', 0) > 90:
+        recommendations.append("💾 스토리지 용량 확장 및 데이터 정리")
+
+    if recommendations:
+        report_fields["💡 월간 권장 사항"] = "\n".join(recommendations)
+
+    # 다음 달 목표 추가
+    next_month_goals = [
+        "🎯 종합 성과 점수 85점 이상 달성",
+        "🛡️ 보안 이벤트 20% 감소",
+        "📦 백업 성공률 98% 이상 유지",
+        "🔄 시스템 자동화 및 모니터링 강화"
+    ]
+    report_fields["🎯 다음 달 목표"] = "\n".join(next_month_goals)
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=level,
+        title=title,
+        fields=report_fields,
+        attach_logs=level in [NotificationLevel.ERROR, NotificationLevel.CRITICAL]
+    )
+
+async def execute_and_notify_monthly_report(
+    script_path: str = "scripts/monthly_ops_report.sh",
+    script_args: List[str] = None,
+    auto_notify: bool = True
+) -> Dict[str, Any]:
+    """
+    월간 운영 리포트 스크립트 실행 후 결과 알림 전송
+
+    Args:
+        script_path: monthly_ops_report.sh 스크립트 경로
+        script_args: 스크립트 실행 인수
+        auto_notify: 자동 알림 전송 여부
+
+    Returns:
+        실행 결과와 알림 전송 결과
+    """
+    script_args = script_args or ["--json"]
+
+    try:
+        # 스크립트 실행
+        result = subprocess.run(
+            [script_path] + script_args,
+            capture_output=True,
+            text=True,
+            timeout=600,  # 10분 타임아웃 (월간 리포트는 더 많은 시간 필요)
+            cwd=Path(script_path).parent.parent  # 프로젝트 루트에서 실행
+        )
+
+        execution_result = {
+            'script': 'monthly_ops_report.sh',
+            'returncode': result.returncode,
+            'stdout': result.stdout,
+            'stderr': result.stderr,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # JSON 출력 파싱
+        report_data = {}
+        report_file_path = None
+
+        if result.returncode == 0 and result.stdout.strip():
+            try:
+                # JSON 출력 파싱
+                json_output = json.loads(result.stdout.strip())
+                report_data = json_output
+
+                # 리포트 파일 경로 추정
+                period_end = report_data.get('report_metadata', {}).get('period_end', datetime.now().strftime('%Y-%m-%d'))
+                report_file_path = f"reports/monthly/monthly-report-{period_end}.md"
+
+            except json.JSONDecodeError:
+                # JSON 파싱 실패 시 기본 데이터 사용
+                report_data = {
+                    'report_metadata': {
+                        'period_start': (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d'),
+                        'period_end': datetime.now().strftime('%Y-%m-%d'),
+                        'generated_at': datetime.now().isoformat()
+                    },
+                    'execution_output': result.stdout.strip()
+                }
+
+        # 알림 전송
+        notification_result = {}
+        if auto_notify and result.returncode == 0:
+            notification_result = await send_monthly_ops_report(
+                report_data=report_data,
+                report_file_path=report_file_path,
+                level=NotificationLevel.INFO
+            )
+        elif auto_notify and result.returncode != 0:
+            # 실행 실패 시 에러 알림
+            error_data = {
+                'report_metadata': {
+                    'period_start': 'Unknown',
+                    'period_end': 'Unknown',
+                    'generated_at': datetime.now().isoformat()
+                },
+                'error': result.stderr or "월간 리포트 스크립트 실행 실패",
+                'returncode': result.returncode
+            }
+            notification_result = await send_monthly_ops_report(
+                report_data=error_data,
+                level=NotificationLevel.ERROR
+            )
+
+        return {
+            'execution': execution_result,
+            'report_data': report_data,
+            'report_file': report_file_path,
+            'notification': notification_result,
+            'success': result.returncode == 0
+        }
+
+    except subprocess.TimeoutExpired:
+        error_result = {
+            'script': 'monthly_ops_report.sh',
+            'returncode': -1,
+            'error': 'Monthly report generation timeout (10 minutes)',
+            'timestamp': datetime.now().isoformat()
+        }
+
+        if auto_notify:
+            notification_result = await send_monthly_ops_report(
+                report_data={
+                    'error': 'Script timeout',
+                    'report_metadata': {'generated_at': datetime.now().isoformat()}
+                },
+                level=NotificationLevel.ERROR
+            )
+        else:
+            notification_result = {}
+
+        return {
+            'execution': error_result,
+            'report_data': {},
+            'report_file': None,
+            'notification': notification_result,
+            'success': False
+        }
+
+    except Exception as e:
+        error_result = {
+            'script': 'monthly_ops_report.sh',
+            'returncode': -2,
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }
+
+        if auto_notify:
+            notification_result = await send_monthly_ops_report(
+                report_data={
+                    'error': str(e),
+                    'report_metadata': {'generated_at': datetime.now().isoformat()}
+                },
+                level=NotificationLevel.ERROR
+            )
+        else:
+            notification_result = {}
+
+        return {
+            'execution': error_result,
+            'report_data': {},
+            'report_file': None,
+            'notification': notification_result,
+            'success': False
+        }
+
+# 편의 함수
+async def send_monthly_report_notification(report_period: str = None):
+    """
+    월간 리포트 생성 및 알림 전송 편의 함수
+
+    Args:
+        report_period: 리포트 기간 (None일 경우 최근 30일)
+    """
+    script_args = ["--json"]
+    if report_period:
+        script_args.extend(["--period", report_period])
+
+    return await execute_and_notify_monthly_report(
+        script_args=script_args,
+        auto_notify=True
+    )
+
+async def test_monthly_report_notification():
+    """월간 리포트 알림 시스템 테스트"""
+    print("📊 월간 리포트 알림 시스템 테스트 시작...")
+
+    # 테스트용 리포트 데이터
+    test_report_data = {
+        'report_metadata': {
+            'period_start': '2024-08-22',
+            'period_end': '2024-09-21',
+            'generated_at': datetime.now().isoformat(),
+            'report_type': 'monthly_operations'
+        },
+        'security_events': {
+            'blocked_ips': 245,
+            'unique_blocked_ips': 68,
+            'rate_limit_violations': 180,
+            'whitelist_additions': 12,
+            'monitoring_events': 520,
+            'total_security_events': 957
+        },
+        'backup_operations': {
+            'successful_backups': 28,
+            'failed_backups': 2,
+            'cleanup_operations': 8,
+            'success_rate_percent': 93,
+            'total_backup_operations': 30
+        },
+        'system_resources': {
+            'average_disk_usage_percent': 72,
+            'max_disk_usage_percent': 89,
+            'security_log_size_bytes': 15728640,  # 15MB
+            'backup_directory_size_kb': 5242880   # 5GB
+        },
+        'performance_score': {
+            'security_score': 32,
+            'backup_score': 37,
+            'system_score': 18,
+            'total_score': 87,
+            'grade': '우수'
+        }
+    }
+
+    # 테스트 알림 전송
+    result = await send_monthly_ops_report(
+        report_data=test_report_data,
+        report_file_path="reports/monthly/monthly-report-2024-09-21.md",
+        level=NotificationLevel.INFO
+    )
+
+    print(f"✅ 월간 리포트 알림 테스트 완료: {result}")
+    return result
+
+# ================================================
+# CI/CD 모니터링 알림 시스템 (CI Monitoring Alerts)
+# ================================================
+
+async def send_ci_alerts(
+    failed_workflows: List[Dict[str, Any]],
+    level: NotificationLevel = NotificationLevel.ERROR
+) -> Dict[str, bool]:
+    """
+    CI/CD 빌드 실패 알림 전송 (한국어 메시지 및 이모지 레벨 구분)
+
+    Args:
+        failed_workflows: 실패한 워크플로우 목록
+        level: 알림 심각도
+
+    Returns:
+        채널별 전송 결과
+    """
+    if not failed_workflows:
+        logger.info("실패한 워크플로우가 없어 CI 알림을 전송하지 않습니다")
+        return {}
+
+    failure_count = len(failed_workflows)
+
+    # 실패 수에 따른 심각도 조정
+    if failure_count >= 5:
+        level = NotificationLevel.CRITICAL
+        emoji = "🚨"
+        status_text = "심각한 상황"
+    elif failure_count >= 3:
+        level = NotificationLevel.ERROR
+        emoji = "❌"
+        status_text = "주의 필요"
+    elif failure_count >= 1:
+        level = NotificationLevel.WARNING
+        emoji = "⚠️"
+        status_text = "경고"
+    else:
+        level = NotificationLevel.INFO
+        emoji = "ℹ️"
+        status_text = "정보"
+
+    # 메시지 생성
+    message = f"{emoji} CI/CD 파이프라인에서 {failure_count}개의 워크플로우가 실패했습니다.\n"
+    message += f"📊 상태: {status_text}\n\n"
+
+    # 실패한 워크플로우 세부 정보 추가 (최대 5개)
+    displayed_failures = failed_workflows[:5]
+    for i, workflow in enumerate(displayed_failures, 1):
+        workflow_name = workflow.get('name', 'Unknown')
+        run_number = workflow.get('run_number', 'N/A')
+        branch = workflow.get('branch', 'Unknown')
+        created_at = workflow.get('created_at', 'Unknown')
+
+        # 시간 포맷팅 (ISO 시간을 한국어 형식으로)
+        try:
+            if created_at != 'Unknown':
+                dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                created_at = dt.strftime('%m월 %d일 %H:%M')
+        except:
+            pass
+
+        message += f"{i}. **{workflow_name}** (#{run_number})\n"
+        message += f"   브랜치: `{branch}` | 실행 시간: {created_at}\n"
+
+    if len(failed_workflows) > 5:
+        message += f"\n... 외 {len(failed_workflows) - 5}개 더"
+
+    # 알림 제목 생성
+    title = f"🚨 CI/CD 빌드 실패 알림 ({failure_count}건)"
+
+    # 세부 정보 필드 준비
+    ci_fields = {
+        "📊 실패 워크플로우": f"{failure_count}개",
+        "📅 확인 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "🔗 GitHub Actions": "https://github.com/actions",
+        "⚡ 상태": status_text
+    }
+
+    # 최근 실패 패턴 분석
+    branch_failures = {}
+    workflow_failures = {}
+
+    for workflow in failed_workflows:
+        branch = workflow.get('branch', 'Unknown')
+        name = workflow.get('name', 'Unknown')
+
+        branch_failures[branch] = branch_failures.get(branch, 0) + 1
+        workflow_failures[name] = workflow_failures.get(name, 0) + 1
+
+    # 가장 많이 실패한 브랜치/워크플로우 정보
+    if branch_failures:
+        most_failed_branch = max(branch_failures.items(), key=lambda x: x[1])
+        ci_fields["🌿 주요 실패 브랜치"] = f"{most_failed_branch[0]} ({most_failed_branch[1]}회)"
+
+    if workflow_failures:
+        most_failed_workflow = max(workflow_failures.items(), key=lambda x: x[1])
+        ci_fields["⚙️ 주요 실패 워크플로우"] = f"{most_failed_workflow[0]} ({most_failed_workflow[1]}회)"
+
+    # GitHub Actions 링크 추가 (최근 실패한 워크플로우)
+    recent_failure = failed_workflows[0] if failed_workflows else {}
+    if recent_failure.get('html_url'):
+        ci_fields["🔗 최근 실패 로그"] = f"[로그 확인]({recent_failure['html_url']})"
+
+    # 권장 조치사항 추가
+    recommendations = []
+    if failure_count >= 3:
+        recommendations.append("🔍 공통 실패 원인 분석 필요")
+    if len(set(workflow.get('branch') for workflow in failed_workflows)) == 1:
+        recommendations.append("🌿 특정 브랜치 이슈 확인 필요")
+    if any("test" in workflow.get('name', '').lower() for workflow in failed_workflows):
+        recommendations.append("🧪 테스트 환경 점검 필요")
+
+    recommendations.append("🛠️ CI/CD 파이프라인 상태 확인")
+    recommendations.append("📋 빌드 로그 상세 검토")
+
+    ci_fields["💡 권장 조치"] = "\n".join(recommendations)
+
+    # CI 로그 첨부 (20줄)
+    ci_logs = get_recent_logs("logs/ci_failures.log", lines=20)
+    attach_logs = level in [NotificationLevel.ERROR, NotificationLevel.CRITICAL] and ci_logs
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=level,
+        title=title,
+        fields=ci_fields,
+        attach_logs=attach_logs
+    )
+
+async def send_ci_success_alert(
+    successful_workflows: List[Dict[str, Any]],
+    recovery_info: Dict[str, Any] = None
+) -> Dict[str, bool]:
+    """
+    CI/CD 빌드 성공/복구 알림 전송
+
+    Args:
+        successful_workflows: 성공한 워크플로우 목록
+        recovery_info: 복구 관련 정보 (이전 실패에서 복구된 경우)
+
+    Returns:
+        채널별 전송 결과
+    """
+    success_count = len(successful_workflows)
+
+    if recovery_info:
+        # 복구 알림
+        message = f"✅ CI/CD 파이프라인이 복구되었습니다!\n"
+        message += f"🔧 {success_count}개의 워크플로우가 성공적으로 실행되었습니다.\n"
+        if recovery_info.get('previous_failures'):
+            message += f"📈 이전 실패: {recovery_info['previous_failures']}건에서 복구됨"
+        title = "✅ CI/CD 파이프라인 복구 완료"
+        level = NotificationLevel.INFO
+    else:
+        # 일반 성공 알림 (대량 성공 시에만)
+        if success_count < 5:
+            return {}  # 적은 수의 성공은 알림하지 않음
+
+        message = f"🎉 CI/CD 파이프라인이 안정적으로 실행되고 있습니다.\n"
+        message += f"✅ 최근 {success_count}개의 워크플로우가 모두 성공했습니다."
+        title = "🎉 CI/CD 파이프라인 안정 운영"
+        level = NotificationLevel.INFO
+
+    # 세부 정보 필드
+    ci_fields = {
+        "✅ 성공 워크플로우": f"{success_count}개",
+        "📅 확인 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "📊 상태": "안정"
+    }
+
+    if recovery_info:
+        ci_fields["🔧 복구 정보"] = f"이전 실패 {recovery_info.get('previous_failures', 0)}건에서 복구"
+        ci_fields["⏱️ 복구 소요시간"] = recovery_info.get('recovery_duration', 'Unknown')
+
+    # 최근 성공한 워크플로우 정보 (최대 3개)
+    recent_successes = successful_workflows[:3]
+    success_info = []
+    for workflow in recent_successes:
+        name = workflow.get('name', 'Unknown')
+        branch = workflow.get('branch', 'Unknown')
+        success_info.append(f"• {name} ({branch})")
+
+    if success_info:
+        ci_fields["🎯 최근 성공 워크플로우"] = "\n".join(success_info)
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=level,
+        title=title,
+        fields=ci_fields,
+        attach_logs=False
+    )
+
+async def send_ci_summary_alert(
+    total_runs: int,
+    success_count: int,
+    failure_count: int,
+    in_progress_count: int,
+    period: str = "최근"
+) -> Dict[str, bool]:
+    """
+    CI/CD 실행 요약 알림 전송
+
+    Args:
+        total_runs: 총 실행 수
+        success_count: 성공 수
+        failure_count: 실패 수
+        in_progress_count: 진행 중 수
+        period: 집계 기간
+
+    Returns:
+        채널별 전송 결과
+    """
+    if total_runs == 0:
+        return {}
+
+    success_rate = (success_count * 100) // total_runs if total_runs > 0 else 0
+
+    # 성공률에 따른 상태 결정
+    if success_rate >= 95:
+        status = "우수"
+        emoji = "🎉"
+        level = NotificationLevel.INFO
+    elif success_rate >= 85:
+        status = "양호"
+        emoji = "✅"
+        level = NotificationLevel.INFO
+    elif success_rate >= 70:
+        status = "주의"
+        emoji = "⚠️"
+        level = NotificationLevel.WARNING
+    else:
+        status = "위험"
+        emoji = "🚨"
+        level = NotificationLevel.ERROR
+
+    message = f"{emoji} {period} CI/CD 파이프라인 실행 요약입니다.\n"
+    message += f"📊 전체 성공률: {success_rate}% ({status})\n\n"
+    message += f"✅ 성공: {success_count}건\n"
+    message += f"❌ 실패: {failure_count}건\n"
+    message += f"🔄 진행중: {in_progress_count}건\n"
+    message += f"📋 총 실행: {total_runs}건"
+
+    title = f"📊 CI/CD 실행 요약 ({period})"
+
+    # 세부 정보 필드
+    summary_fields = {
+        "📊 성공률": f"{success_rate}%",
+        "📈 상태": status,
+        "✅ 성공": f"{success_count}건",
+        "❌ 실패": f"{failure_count}건",
+        "🔄 진행중": f"{in_progress_count}건",
+        "📋 총 실행": f"{total_runs}건",
+        "📅 집계 시간": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+
+    # 권장사항 추가
+    recommendations = []
+    if success_rate < 70:
+        recommendations.append("🔍 실패 원인 긴급 분석 필요")
+        recommendations.append("🛠️ CI/CD 파이프라인 점검 필요")
+    elif success_rate < 85:
+        recommendations.append("📈 성공률 개선 방안 검토")
+    else:
+        recommendations.append("🎯 현재 성능 유지 관리")
+
+    if recommendations:
+        summary_fields["💡 권장사항"] = "\n".join(recommendations)
+
+    return await notification_manager.send_notification(
+        message=message,
+        level=level,
+        title=title,
+        fields=summary_fields,
+        attach_logs=level in [NotificationLevel.ERROR, NotificationLevel.WARNING]
+    )
+
+async def test_ci_notifications():
+    """CI/CD 알림 시스템 테스트"""
+    print("🚀 CI/CD 알림 시스템 테스트 시작...")
+
+    # 테스트용 실패한 워크플로우 데이터
+    test_failed_workflows = [
+        {
+            'id': 12345,
+            'name': 'CI Build and Test',
+            'run_number': 156,
+            'branch': 'main',
+            'created_at': '2024-09-21T14:30:25Z',
+            'html_url': 'https://github.com/owner/repo/actions/runs/12345'
+        },
+        {
+            'id': 12346,
+            'name': 'Deploy to Staging',
+            'run_number': 89,
+            'branch': 'develop',
+            'created_at': '2024-09-21T14:25:15Z',
+            'html_url': 'https://github.com/owner/repo/actions/runs/12346'
+        }
+    ]
+
+    # 실패 알림 테스트
+    print("1. CI 실패 알림 테스트...")
+    failure_result = await send_ci_alerts(test_failed_workflows)
+    print(f"   실패 알림 결과: {failure_result}")
+
+    # 성공/복구 알림 테스트
+    print("2. CI 복구 알림 테스트...")
+    test_successful_workflows = [
+        {
+            'id': 12347,
+            'name': 'CI Build and Test',
+            'run_number': 157,
+            'branch': 'main',
+            'created_at': '2024-09-21T15:30:25Z'
+        }
+    ]
+    recovery_info = {
+        'previous_failures': 2,
+        'recovery_duration': '1시간 30분'
+    }
+    recovery_result = await send_ci_success_alert(test_successful_workflows, recovery_info)
+    print(f"   복구 알림 결과: {recovery_result}")
+
+    # 요약 알림 테스트
+    print("3. CI 요약 알림 테스트...")
+    summary_result = await send_ci_summary_alert(
+        total_runs=10,
+        success_count=7,
+        failure_count=2,
+        in_progress_count=1,
+        period="최근 24시간"
+    )
+    print(f"   요약 알림 결과: {summary_result}")
+
+    print("✅ CI/CD 알림 시스템 테스트 완료")
+    return {
+        'failure_alerts': failure_result,
+        'recovery_alerts': recovery_result,
+        'summary_alerts': summary_result
+    }
+
+# 편의 함수들
+async def notify_ci_failure(failed_workflows: List[Dict[str, Any]]):
+    """CI 실패 알림 편의 함수"""
+    return await send_ci_alerts(failed_workflows)
+
+async def notify_ci_recovery(successful_workflows: List[Dict[str, Any]], recovery_info: Dict[str, Any] = None):
+    """CI 복구 알림 편의 함수"""
+    return await send_ci_success_alert(successful_workflows, recovery_info)
+
+async def notify_ci_summary(total_runs: int, success_count: int, failure_count: int, in_progress_count: int):
+    """CI 요약 알림 편의 함수"""
+    return await send_ci_summary_alert(total_runs, success_count, failure_count, in_progress_count)
+
 if __name__ == "__main__":
     # 테스트 실행
     import sys
@@ -2040,6 +2777,8 @@ if __name__ == "__main__":
             asyncio.run(test_ops_integration())
         elif sys.argv[1] == "weekly":
             asyncio.run(test_weekly_report_notification())
+        elif sys.argv[1] == "ci":
+            asyncio.run(test_ci_notifications())
         else:
             asyncio.run(test_notifications())
     else:
