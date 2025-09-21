@@ -4295,6 +4295,349 @@ brew install chromedriver
 ./scripts/dashboard_smoke_test.sh --host http://localhost:8088 --verbose
 ```
 
+### CI/CD 자동 완화 및 플래키 테스트 격리 시스템
+
+#### 개요
+CI/CD 파이프라인에서 발생하는 빌드 실패, 테스트 타임아웃, 의존성 설치 오류 등을 자동으로 감지하고 완화하는 시스템입니다. 플래키 테스트를 격리하여 안정적인 CI/CD 환경을 유지합니다.
+
+#### 🛠️ 핵심 구성 요소
+
+**1. 자동 완화 스크립트 (`scripts/ci_autoremediate.sh`)**
+- 에러 유형별 자동 감지 및 완화 액션 실행
+- 안전한 드라이런 모드 기본 제공
+- 훅 기반 아키텍처로 확장 가능
+
+```bash
+# 드라이런 모드로 의존성 설치 실패 완화
+./scripts/ci_autoremediate.sh --dry-run --error-type dependency_install_failed
+
+# 실제 완화 액션 실행 (권한 필요)
+./scripts/ci_autoremediate.sh --error-type test_timeout --max-actions 5
+```
+
+**2. 완화 훅 시스템 (`scripts/hooks/`)**
+- `clear_ci_cache.sh`: CI 캐시 정리 및 재빌드
+- `retry_failed_tests.sh`: 실패한 테스트 재시도 및 플래그 최적화
+- `restart_worker.sh`: CI 워커 재시작 및 리소스 해제
+
+```bash
+# 개별 훅 테스트 실행
+./scripts/hooks/clear_ci_cache.sh --dry-run
+./scripts/hooks/retry_failed_tests.sh --test-framework pytest
+./scripts/hooks/restart_worker.sh --platform github-actions
+```
+
+**3. 런북 시스템 (`mcp/utils/runbook.py`)**
+- 에러 유형별 한국어 트러블슈팅 가이드
+- 자동 생성되는 HTML 런북 문서
+- 카테고리별 검색 및 필터링 지원
+
+```python
+from mcp.utils.runbook import RunbookManager, generate_runbook_html
+
+# 의존성 설치 실패 런북 생성
+html_guide = generate_runbook_html("dependency_install_failed")
+
+# 카테고리별 런북 조회
+build_runbooks = get_runbook_by_category("BUILD")
+test_runbooks = get_runbook_by_category("TEST")
+```
+
+**4. 플래키 테스트 격리 API (`mcp/flaky_tests_api.py`)**
+- 테스트 결과 추적 및 실패율 분석
+- 자동 격리 및 해제 기능
+- 통계 및 리포팅 API
+
+```python
+# FastAPI 엔드포인트 사용 예시
+POST /api/v1/flaky-tests/record     # 테스트 결과 기록
+GET  /api/v1/flaky-tests/stats      # 플래키 테스트 통계
+POST /api/v1/flaky-tests/{id}/quarantine  # 격리 설정
+```
+
+**5. 웹 대시보드 통합 (`web/admin_dashboard.html`)**
+- 🛠️ 자동 완화 & 런북 패널
+- 실시간 완화 상태 모니터링
+- 런북 뷰어 및 빠른 액세스
+- 플래키 테스트 격리 관리
+
+#### 🚀 GitHub Actions 통합
+
+**자동 완화 워크플로 설정**
+
+```yaml
+# .github/workflows/ci-autoremediation.yml
+name: 🛠️ CI 자동 완화 시스템
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  auto-remediation:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: 🔧 자동 완화 스크립트 권한 설정
+      run: chmod +x scripts/ci_autoremediate.sh scripts/hooks/*.sh
+
+    - name: 🛠️ CI 오류 감지 및 완화
+      run: |
+        echo "🛠️ CI 자동 완화 시스템 실행..."
+
+        # GitHub Actions 로그에서 에러 타입 감지
+        ERROR_TYPE="unknown"
+        if [[ "${{ github.event.workflow_run.conclusion }}" == "failure" ]]; then
+          # 에러 로그 분석 (실제 구현에서는 더 정교한 분석 필요)
+          if grep -q "dependency.*failed\|npm.*install.*failed" <<< "$GITHUB_EVENT_PAYLOAD"; then
+            ERROR_TYPE="dependency_install_failed"
+          elif grep -q "test.*timeout\|jest.*timeout" <<< "$GITHUB_EVENT_PAYLOAD"; then
+            ERROR_TYPE="test_timeout"
+          elif grep -q "build.*timeout\|webpack.*timeout" <<< "$GITHUB_EVENT_PAYLOAD"; then
+            ERROR_TYPE="build_timeout"
+          fi
+        fi
+
+        # 자동 완화 실행 (드라이런 모드)
+        ./scripts/ci_autoremediate.sh --dry-run --error-type "$ERROR_TYPE" --verbose
+      continue-on-error: true
+
+    - name: 📊 완화 결과 업로드
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: auto-remediation-logs
+        path: |
+          logs/autoremediate_*.log
+          logs/hook_execution_*.log
+
+  flaky-test-isolation:
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - name: 📥 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: 🐍 Python 설정
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: 📦 종속성 설치
+      run: |
+        pip install fastapi uvicorn pytest pytest-json-report
+        pip install -r requirements.txt
+
+    - name: 🔍 플래키 테스트 감지 및 격리
+      run: |
+        echo "🔍 플래키 테스트 분석 시작..."
+
+        # 테스트 결과 JSON 파싱 (pytest-json-report 사용)
+        if [ -f "test-results.json" ]; then
+          python -c "
+          import json
+          import requests
+          import os
+
+          # 테스트 결과 로드
+          with open('test-results.json', 'r') as f:
+              results = json.load(f)
+
+          # API 서버 시작 (백그라운드)
+          os.system('uvicorn mcp.run:app --host 0.0.0.0 --port 8088 &')
+
+          # 각 테스트 결과를 플래키 테스트 API에 기록
+          for test in results.get('tests', []):
+              test_data = {
+                  'test_name': test['nodeid'],
+                  'file_path': test.get('file', 'unknown'),
+                  'status': 'PASSED' if test['outcome'] == 'passed' else 'FAILED',
+                  'execution_time': test.get('duration', 0),
+                  'error_message': test.get('longrepr', ''),
+                  'runner': 'pytest',
+                  'branch': os.environ.get('GITHUB_REF_NAME', 'main'),
+                  'commit_hash': os.environ.get('GITHUB_SHA', 'unknown'),
+                  'metadata': {
+                      'ci_job_id': os.environ.get('GITHUB_RUN_ID'),
+                      'os': 'ubuntu-latest',
+                      'python_version': '3.11'
+                  }
+              }
+
+              try:
+                  response = requests.post(
+                      'http://localhost:8088/api/v1/flaky-tests/record',
+                      json=test_data,
+                      timeout=5
+                  )
+                  print(f'테스트 결과 기록: {test[\"nodeid\"]} -> {response.status_code}')
+              except Exception as e:
+                  print(f'테스트 결과 기록 실패: {e}')
+          "
+        fi
+      continue-on-error: true
+
+    - name: 📈 플래키 테스트 통계 조회
+      run: |
+        echo "📈 플래키 테스트 통계 조회..."
+        curl -s http://localhost:8088/api/v1/flaky-tests/stats | jq . || echo "통계 조회 실패"
+```
+
+#### 🔧 Makefile 통합
+
+```makefile
+# CI 자동 완화 관련 명령어
+.PHONY: ci-autofix ci-test-remediation ci-clear-cache ci-retry-tests
+
+# CI 자동 완화 실행 (드라이런)
+ci-autofix-dry:
+	@echo "🛠️ CI 자동 완화 시스템 (드라이런 모드)"
+	@chmod +x scripts/ci_autoremediate.sh scripts/hooks/*.sh
+	@./scripts/ci_autoremediate.sh --dry-run --error-type dependency_install_failed
+	@./scripts/ci_autoremediate.sh --dry-run --error-type test_timeout
+	@./scripts/ci_autoremediate.sh --dry-run --error-type build_timeout
+
+# CI 자동 완화 실행 (실제 액션)
+ci-autofix:
+	@echo "🛠️ CI 자동 완화 시스템 (실제 실행)"
+	@chmod +x scripts/ci_autoremediate.sh scripts/hooks/*.sh
+	@./scripts/ci_autoremediate.sh --error-type dependency_install_failed --max-actions 3
+	@./scripts/ci_autoremediate.sh --error-type test_timeout --max-actions 5
+
+# 개별 완화 액션 테스트
+ci-test-hooks:
+	@echo "🔧 완화 훅 테스트 실행"
+	@chmod +x scripts/hooks/*.sh
+	@./scripts/hooks/clear_ci_cache.sh --dry-run
+	@./scripts/hooks/retry_failed_tests.sh --dry-run --test-framework pytest
+	@./scripts/hooks/restart_worker.sh --dry-run --platform github-actions
+
+# CI 캐시 정리
+ci-clear-cache:
+	@echo "🧹 CI 캐시 정리"
+	@./scripts/hooks/clear_ci_cache.sh
+
+# 실패한 테스트 재시도
+ci-retry-tests:
+	@echo "🔄 실패한 테스트 재시도"
+	@./scripts/hooks/retry_failed_tests.sh --test-framework pytest
+
+# 플래키 테스트 격리 시스템 테스트
+test-flaky-isolation:
+	@echo "🔍 플래키 테스트 격리 시스템 테스트"
+	@python -m pytest tests/test_autoremediate_and_flaky.py::TestFlakyTestsAPI -v
+
+# 자동 완화 시스템 전체 테스트
+test-autoremediation:
+	@echo "🛠️ 자동 완화 시스템 전체 테스트"
+	@python -m pytest tests/test_autoremediate_and_flaky.py -v --tb=short
+
+# 런북 시스템 테스트
+test-runbooks:
+	@echo "📚 런북 시스템 테스트"
+	@python -m pytest tests/test_autoremediate_and_flaky.py::TestRunbookSystem -v
+
+# 웹 대시보드 자동 완화 패널 테스트
+test-dashboard-remediation:
+	@echo "🖥️ 대시보드 자동 완화 패널 테스트"
+	@python -m pytest tests/test_autoremediate_and_flaky.py::TestAdminDashboardIntegration -v
+```
+
+#### 📊 모니터링 및 알림
+
+**자동 완화 상태 모니터링**
+
+```bash
+# scripts/monitor_autoremediation.sh
+#!/bin/bash
+
+LOG_FILE="logs/autoremediate_monitor.log"
+STATS_FILE="logs/remediation_stats.json"
+
+# 최근 24시간 완화 액션 통계
+echo "📊 자동 완화 시스템 통계 (최근 24시간)" | tee -a "$LOG_FILE"
+
+# 성공률 계산
+SUCCESS_COUNT=$(grep -c "REMEDIATION_SUCCESS" logs/autoremediate_*.log || echo "0")
+TOTAL_COUNT=$(grep -c "REMEDIATION_ATTEMPT" logs/autoremediate_*.log || echo "1")
+SUCCESS_RATE=$(( SUCCESS_COUNT * 100 / TOTAL_COUNT ))
+
+# 통계 JSON 생성
+cat > "$STATS_FILE" << EOF
+{
+  "timestamp": "$(date -Iseconds)",
+  "success_count": $SUCCESS_COUNT,
+  "total_attempts": $TOTAL_COUNT,
+  "success_rate": $SUCCESS_RATE,
+  "most_common_errors": [
+    $(grep -o "ERROR_TYPE=[a-z_]*" logs/autoremediate_*.log | sort | uniq -c | sort -nr | head -3 | while read count error; do
+      echo "\"$error\""
+    done | paste -sd ',' -)
+  ]
+}
+EOF
+
+# 성공률이 낮을 때 알림
+if [ $SUCCESS_RATE -lt 70 ]; then
+  python -c "
+  import asyncio
+  from mcp.utils.notifier import send_ops_integration_alert, NotificationLevel
+
+  asyncio.run(send_ops_integration_alert(
+      event_type='auto_remediation_low_success',
+      security_events=[],
+      backup_results=[{'success_rate': $SUCCESS_RATE, 'total_attempts': $TOTAL_COUNT}],
+      level=NotificationLevel.WARNING
+  ))
+  "
+fi
+```
+
+#### 💡 사용 시나리오
+
+**시나리오 1: 의존성 설치 실패 자동 완화**
+```bash
+# CI에서 npm install 실패 시
+ERROR: npm ERR! network timeout
+
+# 자동 완화 시스템 작동
+./scripts/ci_autoremediate.sh --error-type dependency_install_failed
+# 1. 캐시 정리 (clear_ci_cache.sh)
+# 2. 재시도 with --force-reinstall
+# 3. 알림 발송 및 런북 제공
+```
+
+**시나리오 2: 플래키 테스트 자동 격리**
+```bash
+# test_network_connection이 간헐적으로 실패
+# API를 통해 자동 감지 및 격리
+curl -X POST http://localhost:8088/api/v1/flaky-tests/{test_id}/quarantine
+
+# 격리된 테스트는 CI에서 제외되어 안정성 향상
+```
+
+**시나리오 3: 빌드 타임아웃 완화**
+```bash
+# CI 빌드가 타임아웃으로 실패
+ERROR: Build timed out after 30 minutes
+
+# 자동 완화 액션
+./scripts/ci_autoremediate.sh --error-type build_timeout
+# 1. 워커 리소스 확인 및 재시작
+# 2. 빌드 캐시 최적화
+# 3. 병렬 빌드 설정 조정
+```
+
 ### CI/CD 통합
 
 #### GitHub Actions 워크플로 통합
@@ -5293,3 +5636,588 @@ def test_dashboard_visual_regression(self, browser_setup, dashboard_url):
 ```
 
 이 대시보드 테스트 자동화 시스템을 통해 관리자는 대시보드의 모든 기능이 정상적으로 작동하는지 지속적으로 모니터링하고, 문제 발생 시 즉시 감지할 수 있습니다.
+
+## 🔎 이상탐지 고도화: 원인분석·계절성·정책·백테스트
+
+### 📊 개요
+고도화된 이상탐지 시스템은 기존 단순 임계값 기반 탐지를 넘어서 **다변량 상관분석**, **계절성 분해**, **정책 기반 억제**, **파라미터 백테스트** 등을 제공하는 통합 분석 플랫폼입니다.
+
+#### 🎯 핵심 기능
+- **🔍 원인분석(RCA)**: 다변량 상관관계 분석으로 이상 원인 추적
+- **📈 계절성 분해**: FFT 기반 시계열 분해 및 트렌드 예측
+- **⚙️ 정책 관리**: YAML 기반 알림 정책 및 억제 규칙
+- **🧪 백테스트**: 그리드 서치를 통한 최적 파라미터 튜닝
+- **📊 대시보드**: 실시간 RCA 드릴다운 및 시각화
+
+### 🏗️ 아키텍처
+
+#### 1. 원인분석 엔진 (`mcp/anomaly_rca.py`)
+다변량 이상탐지와 근본원인 분석을 위한 핵심 분석 엔진입니다.
+
+**주요 클래스: `AnomalyRCAAnalyzer`**
+```python
+from mcp.anomaly_rca import AnomalyRCAAnalyzer
+
+analyzer = AnomalyRCAAnalyzer()
+
+# 다변량 상관분석을 통한 원인분석
+rca_result = analyzer.analyze_root_causes(
+    target_metric="cpu_usage",
+    time_series_data=data,
+    correlation_threshold=0.7
+)
+
+# 계절성 분해 및 트렌드 예측
+decompose_result = analyzer.decompose_seasonality(
+    metric_name="memory_usage",
+    values=memory_data,
+    timestamps=time_stamps
+)
+```
+
+**핵심 분석 기법:**
+- **EWMA 스무딩**: 지수가중이동평균으로 노이즈 제거
+- **Z-Score 이상탐지**: 롤링 윈도우 기반 표준화 점수 계산
+- **상관관계 매트릭스**: 피어슨 상관계수로 메트릭 간 관계 분석
+- **FFT 기반 주기성 탐지**: 푸리에 변환으로 계절성 패턴 추출
+
+#### 2. 정책 관리 API (`mcp/anomaly_policy_api.py`)
+YAML 기반 알림 정책 설정과 억제 규칙을 관리하는 RESTful API입니다.
+
+**FastAPI 엔드포인트:**
+```python
+# 정책 목록 조회
+GET /api/v1/anomaly/policies
+
+# 새 정책 생성
+POST /api/v1/anomaly/policies
+{
+    "name": "고성능서버알림정책",
+    "description": "중요 서버 대상 엄격한 알림 정책",
+    "detection_config": {
+        "z_score_threshold": 2.5,
+        "correlation_threshold": 0.8
+    }
+}
+
+# 정책 시뮬레이션
+POST /api/v1/anomaly/policies/{policy_id}/simulate
+```
+
+**정책 구조 (`data/anomaly_policy.yaml`):**
+```yaml
+# 기본 탐지 설정
+detection:
+  z_score_threshold: 3.0
+  correlation_threshold: 0.7
+  smoothing_alpha: 0.3
+
+# 메트릭별 세부 임계값
+metric_specific:
+  cpu_usage:
+    warning_threshold: 70.0
+    critical_threshold: 90.0
+  memory_usage:
+    warning_threshold: 80.0
+    critical_threshold: 95.0
+
+# 알림 레벨 및 억제 규칙
+alert_levels:
+  critical:
+    cooldown_minutes: 5
+    max_alerts_per_hour: 6
+  warning:
+    cooldown_minutes: 15
+    max_alerts_per_hour: 4
+
+# 시간대별 억제 설정
+suppression_rules:
+  maintenance_windows:
+    - start_time: "02:00"
+      end_time: "04:00"
+      days: ["Sunday"]
+      suppress_levels: ["warning"]
+```
+
+#### 3. 통합 이상탐지 API (`mcp/anomaly_api.py`)
+기존 이상탐지 API에 RCA 및 계절성 분해 기능을 확장한 통합 엔드포인트입니다.
+
+**신규 엔드포인트:**
+```python
+# RCA 원인분석 실행
+POST /api/v1/anomaly/rca
+{
+    "target_metric": "cpu_usage",
+    "time_range": "1h",
+    "correlation_threshold": 0.7
+}
+
+# 계절성 분해 분석
+GET /api/v1/anomaly/decompose?metric=memory_usage&period=7d
+```
+
+**응답 스키마:**
+```json
+{
+    "success": true,
+    "analysis": {
+        "target_metric": "cpu_usage",
+        "anomaly_score": 8.5,
+        "correlation_analysis": {
+            "highly_correlated": [
+                {"metric": "network_io", "correlation": 0.89},
+                {"metric": "disk_io", "correlation": 0.76}
+            ]
+        },
+        "trend_forecast": {
+            "next_hour_prediction": 78.2,
+            "confidence_interval": [72.1, 84.3]
+        }
+    }
+}
+```
+
+#### 4. 관리자 대시보드 RCA 패널 (`web/admin_dashboard.html`)
+실시간 원인분석 결과를 시각화하는 대화형 웹 대시보드 패널입니다.
+
+**대시보드 구성요소:**
+
+**📊 요약 카드 (4개)**
+- **이상탐지 스코어**: 현재 시스템 전체 이상 점수
+- **상관관계 개수**: 강한 상관관계를 보이는 메트릭 수
+- **예측 정확도**: 시계열 예측 모델의 정확도
+- **활성 억제 규칙**: 현재 적용 중인 알림 억제 규칙 수
+
+**📈 시각화 차트 (4개)**
+- **상관관계 히트맵**: 메트릭 간 상관계수 매트릭스
+- **계절성 분해 차트**: 트렌드, 계절성, 잔차 성분 분리
+- **이상탐지 타임라인**: 시간대별 이상 스코어 추이
+- **예측 vs 실측 비교**: 예측값과 실제값 비교 차트
+
+**🎛️ 제어 패널**
+```javascript
+class AnomalyRCAManager {
+    constructor() {
+        this.charts = {};
+        this.currentTab = 'summary';
+        this.refreshInterval = null;
+    }
+
+    // RCA 분석 실행
+    async runRCAAnalysis() {
+        const targetMetric = document.getElementById('rcaTargetMetric').value;
+        const response = await fetch('/api/v1/anomaly/rca', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                target_metric: targetMetric,
+                time_range: '1h',
+                correlation_threshold: 0.7
+            })
+        });
+
+        const result = await response.json();
+        this.updateRCAResults(result);
+    }
+
+    // 계절성 분해 실행
+    async runSeasonalityAnalysis() {
+        const metric = document.getElementById('seasonalityMetric').value;
+        const response = await fetch(`/api/v1/anomaly/decompose?metric=${metric}&period=7d`);
+        const result = await response.json();
+        this.updateSeasonalityChart(result);
+    }
+}
+```
+
+#### 5. 백테스트 및 파라미터 튜닝 (`scripts/anomaly_backtest.py`)
+그리드 서치를 통해 최적의 이상탐지 파라미터를 찾는 자동화 도구입니다.
+
+**실행 방법:**
+```bash
+# 기본 백테스트 실행
+python3 scripts/anomaly_backtest.py --config configs/backtest_config.yaml
+
+# 특정 메트릭 대상 백테스트
+python3 scripts/anomaly_backtest.py --metric cpu_usage --period 30d
+
+# 그리드 서치 파라미터 튜닝
+python3 scripts/anomaly_backtest.py --tune --output results/tuning_results.json
+```
+
+**백테스트 설정:**
+```yaml
+# configs/backtest_config.yaml
+backtest:
+  metrics: ["cpu_usage", "memory_usage", "network_io"]
+  time_period: "30d"
+  test_split: 0.3
+
+parameter_grid:
+  z_score_threshold: [2.0, 2.5, 3.0, 3.5]
+  correlation_threshold: [0.6, 0.7, 0.8]
+  smoothing_alpha: [0.1, 0.3, 0.5]
+
+evaluation:
+  metrics: ["precision", "recall", "f1_score"]
+  cross_validation_folds: 5
+```
+
+**백테스트 결과:**
+```json
+{
+    "best_parameters": {
+        "z_score_threshold": 2.5,
+        "correlation_threshold": 0.7,
+        "smoothing_alpha": 0.3
+    },
+    "performance_metrics": {
+        "precision": 0.89,
+        "recall": 0.82,
+        "f1_score": 0.85
+    },
+    "parameter_sensitivity": {
+        "z_score_threshold": {
+            "impact_score": 0.73,
+            "optimal_range": [2.0, 3.0]
+        }
+    }
+}
+```
+
+### 🧪 테스트 및 검증
+
+#### 종합 테스트 스위트 (`tests/test_anomaly_rca_and_policy.py`)
+RCA 엔진, 정책 API, 대시보드 통합 등 전체 시스템을 검증하는 pytest 기반 테스트입니다.
+
+**테스트 실행:**
+```bash
+# 전체 이상탐지 시스템 테스트
+python3 -m pytest tests/test_anomaly_rca_and_policy.py -v
+
+# 성능 테스트 (10K+ 데이터포인트)
+python3 -m pytest tests/test_anomaly_rca_and_policy.py::TestAnomalyRCAPerformance -v
+
+# RCA 엔진 단위 테스트
+python3 -m pytest tests/test_anomaly_rca_and_policy.py::TestAnomalyRCACore -v
+```
+
+**테스트 커버리지:**
+- **TestAnomalyRCACore**: RCA 분석 엔진 핵심 로직 검증
+- **TestAnomalyPolicyAPI**: 정책 관리 API 엔드포인트 테스트
+- **TestSeasonalityDecomposition**: 계절성 분해 알고리즘 정확성 검증
+- **TestAnomalyRCAPerformance**: 대용량 데이터 성능 벤치마크
+- **TestAdminDashboardIntegration**: 웹 대시보드 API 연동 테스트
+
+### ⚙️ 운영 가이드
+
+#### 1. 시스템 초기 설정
+```bash
+# 이상탐지 모듈 의존성 설치
+pip3 install numpy pandas scipy scikit-learn pyyaml
+
+# 정책 설정 파일 초기화
+cp data/anomaly_policy.yaml.template data/anomaly_policy.yaml
+
+# 백테스트 설정 초기화
+mkdir -p configs results
+cp configs/backtest_config.yaml.template configs/backtest_config.yaml
+```
+
+#### 2. 일상적인 운영 작업
+```bash
+# 현재 이상탐지 상태 점검
+curl http://localhost:8088/api/v1/anomaly/status
+
+# RCA 분석 실행 (CPU 사용률 기준)
+curl -X POST http://localhost:8088/api/v1/anomaly/rca \
+  -H "Content-Type: application/json" \
+  -d '{"target_metric": "cpu_usage", "time_range": "1h"}'
+
+# 계절성 분해 분석
+curl "http://localhost:8088/api/v1/anomaly/decompose?metric=memory_usage&period=7d"
+
+# 주간 백테스트 실행
+python3 scripts/anomaly_backtest.py --config configs/weekly_backtest.yaml
+```
+
+#### 3. 알림 정책 관리
+```bash
+# 정책 목록 조회
+curl http://localhost:8088/api/v1/anomaly/policies
+
+# 새 정책 생성
+curl -X POST http://localhost:8088/api/v1/anomaly/policies \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "야간모니터링정책",
+    "detection_config": {
+      "z_score_threshold": 2.0,
+      "correlation_threshold": 0.8
+    },
+    "suppression_rules": {
+      "time_windows": [{"start": "22:00", "end": "06:00"}]
+    }
+  }'
+
+# 정책 시뮬레이션 실행
+curl -X POST http://localhost:8088/api/v1/anomaly/policies/policy_123/simulate
+```
+
+### 📈 성능 최적화 팁
+
+#### 1. 메모리 사용량 최적화
+- **스트리밍 처리**: 대용량 시계열 데이터는 청크 단위로 분할 처리
+- **캐싱 전략**: 상관계수 매트릭스 등 계산 집약적 결과를 Redis에 캐싱
+- **배치 처리**: RCA 분석을 비동기 배치 작업으로 처리
+
+#### 2. 계산 성능 향상
+- **NumPy 벡터화**: 반복문 대신 벡터화된 연산 사용
+- **병렬 처리**: 멀티코어 활용을 위한 joblib 병렬화
+- **알고리즘 최적화**: FFT 대신 웨이블릿 변환 고려
+
+#### 3. API 응답 속도 개선
+```python
+# 비동기 RCA 분석
+@router.post("/rca/async")
+async def analyze_rca_async(request: RCARequest):
+    task_id = generate_task_id()
+
+    # 백그라운드 작업으로 RCA 실행
+    background_tasks.add_task(
+        run_rca_analysis,
+        task_id,
+        request.target_metric,
+        request.time_range
+    )
+
+    return {"task_id": task_id, "status": "processing"}
+
+# 결과 조회
+@router.get("/rca/result/{task_id}")
+async def get_rca_result(task_id: str):
+    result = await get_analysis_result(task_id)
+    return result
+```
+
+### 🔧 트러블슈팅
+
+#### 1. 일반적인 문제 해결
+**문제**: RCA 분석이 너무 오래 걸림
+**해결책**:
+- 시간 범위를 단축 (1h → 30m)
+- 상관계수 임계값을 높임 (0.7 → 0.8)
+- 메트릭 수를 제한 (전체 → 핵심 10개)
+
+**문제**: 잘못된 이상탐지 (false positive) 과다
+**해결책**:
+- Z-score 임계값을 높임 (2.5 → 3.0)
+- EWMA 스무딩 알파값을 낮춤 (0.3 → 0.1)
+- 억제 규칙을 추가하여 알림 빈도 조절
+
+#### 2. 로그 분석
+```bash
+# RCA 분석 로그 확인
+tail -f logs/anomaly_rca.log | grep "correlation_analysis"
+
+# 정책 적용 로그 확인
+tail -f logs/anomaly_policy.log | grep "policy_applied"
+
+# 백테스트 진행 상황 모니터링
+tail -f logs/backtest.log | grep "parameter_evaluation"
+```
+
+### 🚀 확장 계획
+
+#### 1. 머신러닝 모델 통합
+- **AutoML**: 자동 특성 선택 및 모델 최적화
+- **딥러닝**: LSTM/GRU 기반 시계열 예측
+- **앙상블**: 여러 알고리즘 조합으로 정확도 향상
+
+#### 2. 실시간 스트리밍 처리
+- **Apache Kafka**: 실시간 메트릭 수집
+- **Apache Storm**: 스트리밍 이상탐지 처리
+- **InfluxDB**: 고성능 시계열 데이터베이스
+
+#### 3. 클라우드 네이티브 배포
+```yaml
+# k8s/anomaly-detector.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anomaly-detector
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: anomaly-detector
+  template:
+    spec:
+      containers:
+      - name: rca-engine
+        image: mcp/anomaly-rca:latest
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+```
+
+이 고도화된 이상탐지 시스템을 통해 단순한 임계값 모니터링을 넘어 근본원인 분석, 예측적 탐지, 정책 기반 관리까지 가능한 종합적인 모니터링 플랫폼을 구축할 수 있습니다.
+
+## 🤖 CI/CD 자동 완화 시스템
+
+### 개요
+CI/CD 파이프라인에서 발생하는 에러를 자동으로 감지하고 완화 작업을 수행하는 지능형 시스템입니다. 안전성을 최우선으로 하여 드라이런 모드가 기본값으로 설정되어 있습니다.
+
+### 🎯 주요 기능
+
+#### 1. 🔧 자동 완화 스크립트 (scripts/ci_autoremediate.sh)
+```bash
+# 기본 사용법 (드라이런 모드)
+./scripts/ci_autoremediate.sh
+
+# 특정 에러 타입 완화
+./scripts/ci_autoremediate.sh --error-type dependency_install_failed
+
+# 실제 실행 모드 (위험!)
+./scripts/ci_autoremediate.sh --execute
+```
+
+**주요 특징:**
+- 🛡️ **안전 우선**: 기본적으로 드라이런 모드로 실행
+- ⏰ **중복 방지**: 15분 내 동일 에러 처리 방지
+- 🔒 **보호된 워크플로우**: main, production 브랜치 자동 보호
+- 📝 **상세 로깅**: 모든 작업 내역을 로그로 기록
+- 🇰🇷 **한국어 지원**: 완전한 한국어 로그 및 메시지
+
+#### 2. 🎣 훅 시스템 (scripts/hooks/)
+
+**clear_ci_cache.sh** - CI 캐시 정리
+```bash
+# 플랫폼별 캐시 정리 시뮬레이션
+./scripts/hooks/clear_ci_cache.sh --platform docker --simulate
+```
+
+**retry_failed_tests.sh** - 실패한 테스트 재시도
+```bash
+# 테스트 프레임워크 자동 감지 및 재시도
+./scripts/hooks/retry_failed_tests.sh --framework pytest --simulate
+```
+
+**restart_worker.sh** - 워커 재시작
+```bash
+# 플랫폼별 워커 재시작 시뮬레이션
+./scripts/hooks/restart_worker.sh --platform kubernetes --simulate
+```
+
+#### 3. 📚 런북 시스템 (mcp/utils/runbook.py)
+
+10가지 이상의 일반적인 CI 에러에 대한 종합적인 해결 가이드를 제공합니다.
+
+```python
+from mcp.utils.runbook import get_runbook, search_runbooks
+
+# 특정 에러에 대한 런북 조회
+runbook = get_runbook("dependency_install_failed")
+
+# 키워드로 런북 검색
+results = search_runbooks("timeout")
+```
+
+**지원 에러 타입:**
+- `dependency_install_failed` - 의존성 설치 실패
+- `test_timeout` - 테스트 타임아웃
+- `build_timeout` - 빌드 타임아웃
+- `network_error` - 네트워크 연결 오류
+- `cache_corruption` - 캐시 손상
+- `worker_failure` - 워커 실패
+- `permission_denied` - 권한 거부
+- `disk_space_full` - 디스크 공간 부족
+- `memory_exhausted` - 메모리 부족
+- `flaky_test` - 불안정한 테스트
+
+#### 4. 🎛️ 웹 관리 패널 (web/admin_dashboard.html)
+
+관리자 대시보드에 **🛠️ 자동 완화 & 런북** 패널이 추가되었습니다.
+
+### 🛠️ 사용법
+
+#### 기본 자동 완화 실행
+```bash
+# 1. 에러 로그 파일 준비
+echo "[ERROR] dependency_install_failed: npm install timeout" > ci_errors.log
+
+# 2. 자동 완화 실행 (드라이런)
+./scripts/ci_autoremediate.sh --error-file ci_errors.log
+
+# 3. 결과 확인
+cat logs/autoremediation_$(date +%Y%m%d).log
+```
+
+### 🧪 테스트
+
+```bash
+# 자동 완화 시스템 전체 테스트
+python -m pytest tests/test_autoremediate_and_flaky.py::TestCIAutoRemediate -v
+python -m pytest tests/test_autoremediate_and_flaky.py::TestRunbookSystem -v
+```
+
+## 🧪 플래키 테스트 격리 시스템
+
+### 개요
+불안정한(플래키) 테스트를 자동으로 감지하고 격리하여 CI/CD 파이프라인의 안정성을 향상시키는 시스템입니다.
+
+### 🎯 주요 기능
+
+#### 1. 🔍 플래키 테스트 자동 감지
+- **실패율 기반 감지**: 설정 가능한 임계값으로 불안정한 테스트 식별
+- **최소 실행 횟수**: 통계적 유의성을 위한 최소 실행 횟수 확인
+- **시간 기반 분석**: 설정된 기간 내 테스트 결과만 분석
+
+#### 2. 📊 REST API (mcp/flaky_tests_api.py)
+
+**엔드포인트 목록:**
+```
+GET    /api/v1/flaky-tests/           # 플래키 테스트 목록 조회
+GET    /api/v1/flaky-tests/stats      # 통계 정보 조회
+POST   /api/v1/flaky-tests/record     # 테스트 결과 기록
+POST   /api/v1/flaky-tests/quarantine # 테스트 격리
+DELETE /api/v1/flaky-tests/quarantine # 격리 해제
+GET    /api/v1/flaky-tests/config     # 설정 조회
+PUT    /api/v1/flaky-tests/config     # 설정 업데이트
+```
+
+### 🛠️ 사용법
+
+#### API를 통한 테스트 결과 기록
+```python
+import requests
+
+test_result = {
+    "test_name": "test_user_authentication", 
+    "file_path": "tests/test_auth.py",
+    "status": "FAILED",
+    "execution_time": 1.23,
+    "error_message": "AssertionError: Login failed",
+    "runner": "pytest"
+}
+
+response = requests.post(
+    "http://localhost:8088/api/v1/flaky-tests/record",
+    json=test_result
+)
+```
+
+### 🧪 테스트
+
+```bash
+# 플래키 테스트 시스템 전체 테스트
+python -m pytest tests/test_autoremediate_and_flaky.py::TestFlakyTestsAPI -v
+
+# 전체 자동 완화 및 플래키 테스트 시스템 테스트
+python -m pytest tests/test_autoremediate_and_flaky.py -v
+```
+

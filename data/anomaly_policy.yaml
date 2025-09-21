@@ -1,0 +1,157 @@
+# 기본 이상탐지 정책 설정 (한국어 주석)
+# 생성일: 2024-09-21
+# 설명: 이상탐지 알림 임계값, 윈도우 크기, 민감도, 서프레션 룰 설정
+
+# 기본 탐지 설정
+detection:
+  # 기본 윈도우 크기 (일 단위)
+  default_window_size: 7
+
+  # 기본 Z-score 임계값
+  default_threshold: 3.0
+
+  # 기본 예측 일수
+  default_forecast_days: 7
+
+  # EWMA 알파값 (0.0-1.0, 높을수록 최근 데이터에 민감)
+  ewma_alpha: 0.3
+
+# 지표별 맞춤 설정
+metrics:
+  cpu_usage:
+    threshold: 2.5      # CPU는 더 민감하게 탐지
+    window_size: 5
+    enabled: true
+
+  memory_usage:
+    threshold: 3.0
+    window_size: 7
+    enabled: true
+
+  disk_usage:
+    threshold: 3.5      # 디스크는 덜 민감하게
+    window_size: 14
+    enabled: true
+
+  network_latency:
+    threshold: 2.8
+    window_size: 6
+    enabled: true
+
+# 알림 레벨 설정
+alert_levels:
+  critical:
+    threshold: 5.0      # Z-score 5.0 이상
+    color: "#dc3545"    # 빨간색
+    description: "즉시 대응 필요"
+
+  high:
+    threshold: 4.0      # Z-score 4.0-5.0
+    color: "#fd7e14"    # 주황색
+    description: "신속 확인 요망"
+
+  medium:
+    threshold: 3.0      # Z-score 3.0-4.0
+    color: "#ffc107"    # 노란색
+    description: "모니터링 강화"
+
+  low:
+    threshold: 2.0      # Z-score 2.0-3.0
+    color: "#17a2b8"    # 파란색
+    description: "참고용 알림"
+
+# 서프레션 룰 (알림 억제 규칙)
+suppression:
+  # 전역 서프레션 설정
+  global:
+    enabled: true
+    # 동일 지표 연속 알림 억제 시간 (분)
+    consecutive_alert_cooldown: 30
+    # 하루 최대 알림 수
+    max_alerts_per_day: 100
+
+  # 시간대별 서프레션
+  time_based:
+    # 야간 시간 (22:00-06:00) 서프레션
+    nighttime:
+      enabled: true
+      start_hour: 22
+      end_hour: 6
+      suppressed_levels: ["low", "medium"]  # 낮은/중간 알림만 억제
+
+    # 주말 서프레션
+    weekend:
+      enabled: false
+      suppressed_levels: ["low"]
+
+  # 지표별 서프레션
+  metric_based:
+    cpu_usage:
+      # CPU 스파이크는 5분간 억제
+      cooldown_minutes: 5
+      max_hourly_alerts: 6
+
+    memory_usage:
+      # 메모리는 15분간 억제 (천천히 변화)
+      cooldown_minutes: 15
+      max_hourly_alerts: 4
+
+    disk_usage:
+      # 디스크는 1시간 억제 (매우 천천히 변화)
+      cooldown_minutes: 60
+      max_hourly_alerts: 2
+
+# 알림 채널 설정
+notification:
+  channels:
+    slack:
+      enabled: true
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      levels: ["critical", "high", "medium"]
+
+    discord:
+      enabled: false
+      webhook_url: "${DISCORD_WEBHOOK_URL}"
+      levels: ["critical", "high"]
+
+    email:
+      enabled: false
+      smtp_server: "${SMTP_SERVER}"
+      recipients: ["${ALERT_EMAIL}"]
+      levels: ["critical"]
+
+  # 알림 메시지 템플릿 (한국어)
+  templates:
+    critical: "🚨 [긴급] {metric} 이상탐지: {value} (임계값: {threshold})"
+    high: "⚠️ [높음] {metric} 이상탐지: {value} (임계값: {threshold})"
+    medium: "⚡ [보통] {metric} 이상탐지: {value} (임계값: {threshold})"
+    low: "ℹ️ [낮음] {metric} 이상탐지: {value} (임계값: {threshold})"
+
+# 백테스트 및 튜닝 설정
+tuning:
+  # 자동 임계값 조정 활성화
+  auto_threshold_adjustment:
+    enabled: false
+    # 조정 주기 (일)
+    adjustment_period_days: 30
+    # 목표 일일 알림 수
+    target_daily_alerts: 10
+
+  # 백테스트 기본 설정
+  backtest:
+    # 학습 기간 (일)
+    training_period_days: 90
+    # 테스트 기간 (일)
+    test_period_days: 30
+    # 목표 재현율 (0.0-1.0)
+    target_recall: 0.85
+    # 목표 정밀도 (0.0-1.0)
+    target_precision: 0.75
+
+# 메타데이터
+metadata:
+  version: "1.0.0"
+  created_by: "Claude Code Assistant"
+  created_at: "2024-09-21"
+  description: "이상탐지 및 알림 정책 기본 설정"
+  tags: ["anomaly", "detection", "alerting", "korean"]

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StockPilot · 포트폴리오 손익/추천</title>
+  <link rel="stylesheet" href="assets/portfolio.css" />
+  <script src="assets/config.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>📊 포트폴리오 손익/추천</h1>
+    <div class="actions">
+      <button onclick="const u=prompt('API 베이스 URL 입력 (예: https://your-api.onrender.com)'); if(u) setApiBase(u)">API 연결</button>
+      <button onclick="loadData()">새로고침</button>
+    </div>
+  </header>
+
+  <section id="summary" class="summary">로딩 중…</section>
+  <section id="cards"></section>
+
+  <footer class="footnote">
+    <small>API: <code id="apiBase"></code> · 30초마다 자동 갱신</small>
+  </footer>
+
+  <script src="assets/portfolio.js"></script>
+</body>
+</html>
