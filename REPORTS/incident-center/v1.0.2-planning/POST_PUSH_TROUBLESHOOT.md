@@ -52,3 +52,12 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgGWLKztR8aoxjk7eg0VQvEBggudI9Uu3GiJcIPi09H
    - known_hosts 등록 완료 상태
    - 필요 시 GitHub에 SSH 공개키 등록 후 재시도
 2) 또는 gh auth login(브라우저 로그인) 후 HTTPS로 재시도
+
+## Push Result
+- 시각: 2025-09-22 16:29:33 KST (Asia/Seoul)
+- 방법: HTTPS
+- 결과: ❌ 실패
+- 조치:
+  1) GitHub → Settings → SSH and GPG keys → 위 공개키 수동 등록
+  2) 'git remote -v' 확인 후 재시도: git push origin main
+  3) 또는 'gh auth login' 재실행

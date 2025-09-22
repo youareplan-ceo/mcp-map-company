@@ -66,3 +66,5 @@
 > 🔒 갱신: 2025-09-22 16:09:32 KST (Asia/Seoul) (main)
 
 - 프로젝트 보드: [PROJECTS.md](PROJECTS.md)
+
+- Sprint-1: [DAY-1 Kickoff](v1.0.2-planning/SPRINT1_DAY1_KICKOFF.md)
