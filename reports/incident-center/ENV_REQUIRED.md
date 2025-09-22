@@ -1,9 +1,9 @@
 # Incident Center 환경 변수 요구사항 (통합)
 
 ## 실행 정보
-- **실행 커밋**: 2b761c0 (hotfix/incident-center-v1.0.1-pre)
-- **최종 업데이트**: 2025-09-22 13:20 (Asia/Seoul)
-- **복원 상태**: 스크립트 및 Makefile 타깃 복원 완료, 문서 표준화 완료
+- **실행 커밋**: 97b2ba6 (hotfix/incident-center-v1.0.1-pre)
+- **최종 업데이트**: 2025-09-22 13:25 (Asia/Seoul)
+- **복원 상태**: 스크립트 및 Makefile 타깃 복원 완료, CI 워크플로 통합, 문서 표준화 완료
 - **경로**: /Users/youareplan/Desktop/mcp-map-company
 
 ## API 스모크 테스트 필수 변수

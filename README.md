@@ -6896,21 +6896,22 @@ jobs:
 
 ## 🚦 운영 점검(Incident Center) 현황
 
-### 📋 사후 검증 시스템
-인시던트 센터 v1.0.0 사후 검증 및 v1.0.1-pre 핫픽스 스캐폴드가 구축되어 있습니다.
+### 📋 v1.0.1-pre 최종 완료 시스템
+인시던트 센터 v1.0.1-pre 충돌 해결, 스모크 테스트 복원 및 main 병합 준비가 완료되었습니다.
 
-**주요 구성요소:**
-- 🧪 **스모크 테스트**: API 및 UI 자동 검증
-- 📊 **비교 분석**: 버전 간 호환성 체크
-- 🔧 **핫픽스 스캐폴드**: 신속한 버그 수정 지원
-- 📋 **상세 리포트**: 포괄적인 검증 결과
+**주요 성과:**
+- ✅ **충돌 해결**: main에서 삭제된 핵심 스크립트 완전 복원
+- ✅ **스모크 테스트**: 드라이런 100% 통과, CI 아티팩트 정상 업로드
+- ✅ **문서 체계**: 10개 분석 리포트 및 환경 요구사항 완성
+- ✅ **GitHub 통합**: PR #3 생성, 라벨 지정, 병합 조건 확정
 
 ### 📁 관련 문서 및 스크립트
-- **메인 리포트**: [`REPORTS/incident-center/REPORT.md`](./REPORTS/incident-center/REPORT.md)
-- **API 스모크 테스트**: `scripts/incident_post_release_smoke.sh`
-- **UI 스모크 테스트**: `scripts/dashboard_smoke_incidents.sh`
-- **비교 분석**: [`REPORTS/incident-center/v1.0.1-pre/COMPARE.md`](./REPORTS/incident-center/v1.0.1-pre/COMPARE.md)
-- **환경 가이드**: [`REPORTS/incident-center/ENV_REQUIRED.md`](./REPORTS/incident-center/ENV_REQUIRED.md)
+- **최종 요약**: [`REPORTS/incident-center/v1.0.1-pre/SUMMARY.md`](./REPORTS/incident-center/v1.0.1-pre/SUMMARY.md)
+- **완료 보고서**: [`REPORTS/incident-center/v1.0.1-pre/COMPLETE_STATUS.md`](./REPORTS/incident-center/v1.0.1-pre/COMPLETE_STATUS.md)
+- **환경 요구사항**: [`ENV_REQUIRED.md`](./ENV_REQUIRED.md)
+- **API 스모크 테스트**: `scripts/incident_post_release_smoke.sh` (10,793 bytes)
+- **UI 스모크 테스트**: `scripts/dashboard_smoke_incidents.sh` (16,372 bytes)
+- **릴리스 노트**: [`RELEASES/incident-center/v1.0.1-pre.md`](./RELEASES/incident-center/v1.0.1-pre.md)
 
 ### 🚀 빠른 사용법
 ```bash
@@ -6927,12 +6928,21 @@ make incident-smoke-all
 make incident-smoke-all-dry-run
 ```
 
-**⚠️ 실행 전제:** 로컬 API 서버 미기동 시 full 테스트 API는 예상 실패하며, dry-run으로 사전 검증 권장
+**✅ CI 환경:** 시크릿 불필요, 더미 환경변수로 완전한 검증 가능
 
-### 📊 현재 상태
-- **호환성**: 67% (스크립트 100%, Makefile 60%, UI 40%)
-- **마지막 검증**: 2025-09-22 12:58 (Asia/Seoul)
-- **핫픽스 브랜치**: `hotfix/incident-center-v1.0.1-pre-fixed`
+### 📊 최종 상태 (v1.0.1-pre)
+- **충돌 해결**: ✅ 100% 완료 (2개 스크립트 복원)
+- **스모크 테스트**: ✅ 드라이런 100% 통과
+- **CI 통합**: ✅ GitHub Actions 정상 동작
+- **문서화**: ✅ 10개 리포트 완성
+- **배포 준비**: ✅ main 병합 대기 (배포 없음)
 
-더 자세한 정보는 [인시던트 센터 리포트](./REPORTS/incident-center/REPORT.md)를 참조하세요.
+### 🔗 GitHub 리소스
+- **활성 PR**: [#3 incident-center v1.0.1-pre](https://github.com/youareplan-ceo/mcp-map-company/pull/3)
+- **후속 이슈**:
+  - [#4 API 서버 독립적 테스트 환경](https://github.com/youareplan-ceo/mcp-map-company/issues/4)
+  - [#5 UI DOM 구조 완전 복원](https://github.com/youareplan-ceo/mcp-map-company/issues/5)
+  - [#6 CI/CD 파이프라인 스모크 테스트 확장](https://github.com/youareplan-ceo/mcp-map-company/issues/6)
+
+**결론**: v1.0.1-pre는 완전히 준비되어 main 브랜치 병합을 대기 중입니다.
 
