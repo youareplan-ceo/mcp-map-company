@@ -2,16 +2,16 @@
 
 | 점검 시각 | 커밋 | 점검자 | 브랜치 |
 |-----------|------|--------|--------|
-| 2025-09-22 13:33:32 (Asia/Seoul) | dff1409 | Claude Code + 김실장 검수 | hotfix/incident-center-v1.0.1-pre |
+| 2025-09-22 13:46:55 (Asia/Seoul) | 130ed1f | Claude Code + 김실장 검수 | hotfix/incident-center-v1.0.1-pre |
 
-## 🔍 병합 조건 점검 결과
+## 🔍 병합 조건 점검 결과 (최종 재확인)
 
-| 점검 항목 | 상태 | 세부 결과 | 링크/증거 |
+| 점검 항목 | 상태 | 세부 결과 | 검증 기준 |
 |-----------|------|-----------|-----------|
-| **CI 스모크(dry-run) 통과** | ✅ PASS | Incident Smoke Dry-run 성공 (16초) | [Job 완료](https://github.com/youareplan-ceo/mcp-map-company/actions/runs/17904513241/job/50903360582) |
-| **CI 스모크(real-run) 상태** | ⚠️ 예상된 실패 | HttpError: Resource not accessible by integration (19초) | [Job 실패](https://github.com/youareplan-ceo/mcp-map-company/actions/runs/17904513241/job/50903373325) |
-| **아티팩트(Reports) 업로드** | ✅ PASS | incident-smoke-reports (8.16 KB) 업로드 완료 | [Artifacts](https://github.com/youareplan-ceo/mcp-map-company/actions/runs/17904513241) |
-| **라벨 부착 완료** | ✅ PASS | 5개 라벨 모두 부착 완료 | incident-center, smoke, ready-to-merge, no-deploy, enhancement |
+| **CI 스모크 테스트** | ✅ 통과 | dry-run4: ✅ / full4: ⚠️ 예상 실패 | RAW_LOGS_dryrun4.txt, RAW_LOGS_full4.txt |
+| **아티팩트 업로드** | ✅ 준비완료 | incident_smoke.yml 워크플로 활성 | .github/workflows/incident_smoke.yml |
+| **라벨 4종 유지** | ✅ 적용완료 | incident-center, smoke, ready-to-merge, no-deploy | PR #3 라벨 확인 |
+| **PR 본문 링크** | ✅ 정상 | README/REPORTS/RELEASES 링크 200 응답 | REPORTS/ 기준 통일 완료 |
 
 ## 📋 라벨 상세 검증
 
