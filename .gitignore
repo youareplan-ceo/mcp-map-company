@@ -27,3 +27,4 @@ apps/stockpilot/passwords.txt
 # Backup files
 backup/
 logs/
+.worktrees/
