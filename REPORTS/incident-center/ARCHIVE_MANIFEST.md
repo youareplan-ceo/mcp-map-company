@@ -192,3 +192,16 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 | v1.0.2-planning/RAW_incident_audit_s11_proposed.txt | (신규) | 7f973f27e33b0f8243c16c879556126c0b3804c69f8fab0501d6d97ea3768bf1 | 2025-09-22 16:51:00 KST (Asia/Seoul) |
 | v1.0.2-planning/RAW_anchors_check_s11_proposed.txt | (신규) | 2292491f1dc1791b24b27d713c4f3b18285c75052f23bee9fdc0e343d1087aa8 | 2025-09-22 16:51:00 KST (Asia/Seoul) |
 | INDEX.md | 19cfebf4da26bc8d4a303781b3c85e4e4f75a07b7d71baebad4797758b83018c | d16164dae58b0ba6657656425ae423beb66416abd4e83fe658bf03ca4e632d1a | 2025-09-22 16:51:00 KST (Asia/Seoul) |
+
+## 🔄 Change Log (Sprint-1 #15 sitemap 2025-09-22 17:00:00 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/SITEMAP_REPORT.md | (신규) | ddcd51cca0dd511201398a3eb004a9cbc5a63a0cc1679e11ad005540157c716e | 2025-09-22 17:00:00 KST (Asia/Seoul) |
+| v1.0.2-planning/BROKEN_REFERENCES.md | (신규) | 992692cab01cdae120552fba6b58f9ff5d2cb201475d359842170455231b4ca7 | 2025-09-22 17:00:00 KST (Asia/Seoul) |
+| INDEX.md | (auto) | a1be831458a378ed448d064a4c63e4980da8ce903ec41e35c12ff1c4a122cf5d | 2025-09-22 17:00:00 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push-fallback-final 2025-09-22 17:01:07 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| sprint1_feat-11-dom-stabilize_20250922_170114.bundle | (신규) | 9507890b22c4421088667e39e92cec9675540429a037a1ba97ea874d84236f03 | 2025-09-22 17:01:07 KST (Asia/Seoul) |
+| PROJECT_BOARD_STATUS.md | (auto) | 50068ec10d87288ed9c07518318d61f3f75a3a50f6b125913fe4e9138ec45451 | 2025-09-22 17:01:07 KST (Asia/Seoul) |

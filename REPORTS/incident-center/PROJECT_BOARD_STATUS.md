@@ -21,3 +21,10 @@ To request it, run: gh auth refresh -s read:project
 
 - 필요 스코프: `project`, `read:project`, `repo`
 - 현재 상태: 스코프 제한으로 자동화 불가
+
+## Push 실패 최종 기록
+- 시각: 2025-09-22 17:01:07 KST (Asia/Seoul)
+- 브랜치: sprint1/feat-11-dom-stabilize
+- 방법: HTTPS → HTTPS 대체 포함
+- 조치: 번들 백업 생성 → REPORTS/incident-center/v1.0.2-planning/sprint1_feat-11-dom-stabilize_20250922_170114.bundle (SHA256: 9507890b22c4421088667e39e92cec9675540429a037a1ba97ea874d84236f03)
+- 다음: SSH 공개키 등록 또는 gh auth login 후 재푸시

@@ -73,3 +73,7 @@
 - Sprint-1: [DECISIONS](v1.0.2-planning/DECISIONS.md)
 
 - Sprint-1: [LINK_AUDIT 정책(엄격)](v1.0.2-planning/LINK_AUDIT_POLICY.md)
+
+- Sprint-1: [SITEMAP_REPORT](v1.0.2-planning/SITEMAP_REPORT.md)
+
+- Sprint-1: [BROKEN_REFERENCES](v1.0.2-planning/BROKEN_REFERENCES.md)
