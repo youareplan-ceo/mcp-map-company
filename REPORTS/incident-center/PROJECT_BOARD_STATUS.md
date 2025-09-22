@@ -70,3 +70,9 @@ To request it, run: gh auth refresh -s read:project
 - GitHub 이슈 생성: 0개
 - 산출: ISSUE_MAP.{md,json} / B2_BUCKET_01.md 링크 보강
 - 정책: NO-DEPLOY (문서 전용)
+
+## #14 Batch-2 준비(code2)
+- 시각: 2025-09-22 18:39:31 KST (Asia/Seoul)
+- 브랜치: sprint1/feat-14-batch2-prep (base: sprint1/fix-broken-links-from-15)
+- 산출: BATCH2 buckets/drafts/meta/map + 계획서
+- 정책: NO-DEPLOY (문서 전용)

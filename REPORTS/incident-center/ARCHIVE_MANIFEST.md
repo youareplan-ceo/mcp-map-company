@@ -256,3 +256,12 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 | v1.0.2-planning/BATCH2/ISSUE_MAP.json | (auto) | 51334a5b39c27cc6c1932459b9e6a131a7dfa9b485fd48aaaef98371982d3124 | 2025-09-22 18:24:49 KST (Asia/Seoul) |
 | v1.0.2-planning/BATCH2/B2_BUCKET_01.md | (auto) | ba995d54bb1dc7d80543c4fb2d96ea1467e9faa0944117f9003099815a048c1e | 2025-09-22 18:24:49 KST (Asia/Seoul) |
 | INDEX.md | (auto) | e608397c2bca5cee488d9320d71895d176cd324097731b48a25454725befb69a | 2025-09-22 18:24:49 KST (Asia/Seoul) |
+
+## 🔄 Change Log (#14 batch-2 prep 2025-09-22 18:39:31 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/LINK_AUDIT_BATCH2_PLAN.md | (auto) | 983dadbc80ffa9f98c867bdaee534f33274afa7acad8312c31cc30ad638be1d3 | 2025-09-22 18:39:31 KST (Asia/Seoul) |
+| v1.0.2-planning/BATCH2/BATCH2_META.md | (auto) | 3e8c854372cf55d812d6a7ff1d1b4c580436f762776fa63088bc2735f89abbf2 | 2025-09-22 18:39:31 KST (Asia/Seoul) |
+| v1.0.2-planning/BATCH2/B2_BUCKET_01.md | (auto) | 9c4adc1117dfca910be29ec0fa78504e364ceee6a0fb17b4ff3a742afcdf0a48 | 2025-09-22 18:39:31 KST (Asia/Seoul) |
+| v1.0.2-planning/BATCH2/ISSUE_DRAFT_B2_01.md | (auto) | f5c597e72200dc1d30f220f1298a6f6d50354b8036e92a2d68b0a0b078590d07 | 2025-09-22 18:39:31 KST (Asia/Seoul) |
+| INDEX.md | (auto) | 32eeed1395107e71f1a6e25b4b41250b5d902dc8cf2d8a0fd8c4c7bf7c60c9db | 2025-09-22 18:39:31 KST (Asia/Seoul) |

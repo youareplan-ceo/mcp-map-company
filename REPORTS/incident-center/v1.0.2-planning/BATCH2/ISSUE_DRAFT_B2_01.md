@@ -1,9 +1,6 @@
 # [Draft] Sprint-1 #14 — Batch-2 Bucket 01
-문서 외 경로/복잡 참조 수동 교정 작업 묶음.
-
-## 범위
 - 항목: 2개
-- 버킷 파일: B2_BUCKET_01.md
+- 버킷: B2_BUCKET_01.md
 
 ## 체크리스트
 - [ ] (1) **missing-anchor** — `REPORTS/incident-center/INDEX.md` → `../../README.md#빠른-사용법` (path/up-level)
