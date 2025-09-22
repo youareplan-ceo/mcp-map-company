@@ -100,3 +100,8 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 | 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
 |------|-------------|------------|-----------|
 | v1.0.2-planning/mcp-map-company_main_20250922_161533.bundle | (신규) | 6a0ffefd850071ad8bcfa38d106ef2f6806cd17aee3d40138a898e1fde9f5ba3 | 2025-09-22 16:15:33 KST |
+
+## 🔄 Change Log (push-fallback 2025-09-22 16:18:10 KST)
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/main_backup_20250922_161810.bundle | (신규) | 9b6930a6267e10d405bd945a841fb83e0b0c190b7b0f7b0f61b8552ded4b5513 | 2025-09-22 16:18:10 KST |
