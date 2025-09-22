@@ -8,3 +8,7 @@
 - `make db-init`
 - `make db-ingest`
 - `make db-health`
+
+## 아티팩트/요약
+- 워크플로 실행 후 **Artifacts → `etl-summary`**에서 `last_run.json` 다운로드 가능
+- 로컬 원샷 실행: `make etl-all` (init→ingest→health→summary)

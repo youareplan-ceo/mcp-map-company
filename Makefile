@@ -40,3 +40,13 @@ db-ingest:
 
 db-health:
 \tpython -c "import duckdb; con=duckdb.connect('data/mcp.duckdb'); print('Holdings rows:', con.execute('SELECT COUNT(*) FROM holdings').fetchone()[0]); con.close(); print('✅ DB health OK')"
+
+.PHONY: etl-summary etl-all
+etl-summary:
+\tpython db/scripts/etl_summary.py
+
+etl-all:
+\tmake db-init
+\tmake db-ingest
+\tmake db-health
+\tmake etl-summary
