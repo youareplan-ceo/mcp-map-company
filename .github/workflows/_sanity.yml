@@ -1,0 +1,9 @@
+name: _sanity
+on: workflow_dispatch
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "runner ok :: $(uname -a)"
+      - uses: actions/checkout@v4
+      - run: echo "checkout ok :: $(git rev-parse --short HEAD)"
