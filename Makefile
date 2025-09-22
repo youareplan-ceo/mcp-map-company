@@ -669,8 +669,32 @@ incident-rollback-dry: ## 인시던트 센터 v1.0.0 롤백 시뮬레이션 (실
 	@echo "   2. 롤백: git checkout incident-center-v1.0.0"
 	@echo "   3. 검증: make incident-smoke-all"
 
+# 🔍 로컬 점검 타깃 (운영 고도화 - REPORTS 기준 경로)
 
+incident-audit: ## 인시던트 센터 로컬 점검 (파일 무결성, 권한, 크기 - REPORTS 기준 경로)
+	@echo "🔍 인시던트 센터 로컬 점검 시작..."
+	@echo "📋 스크립트 파일 점검:"
+	@ls -la scripts/incident_* scripts/dashboard_smoke_incidents.sh 2>/dev/null || echo "❌ 스크립트 파일 누락"
+	@echo "📋 Makefile 타깃 점검:"
+	@grep -c "incident-" Makefile || echo "❌ Makefile 타깃 문제"
+	@echo "📋 리포트 파일 점검:"
+	@find REPORTS/incident-center -name "*.md" | wc -l | awk '{print "✅ 리포트 파일: " $$1 "개"}'
+	@echo "📋 CI 워크플로 점검:"
+	@ls -la .github/workflows/incident_smoke.yml .github/workflows/weekly_monitor.yml 2>/dev/null || echo "❌ CI 워크플로 누락"
+	@echo "✅ 로컬 점검 완료"
+
+incident-links: ## 인시던트 센터 링크 상태 점검 (로컬 파일 기반 - REPORTS 기준 경로)
+	@echo "🔗 인시던트 센터 링크 상태 점검..."
+	@echo "📋 핵심 문서 존재 확인:"
+	@ls -1 REPORTS/incident-center/INDEX.md REPORTS/incident-center/ENV_REQUIRED.md 2>/dev/null | wc -l | awk '{print "✅ 핵심 문서: " $$1 "/2개"}'
+	@echo "📋 v1.0.1-pre 리포트 확인:"
+	@ls -1 REPORTS/incident-center/v1.0.1-pre/COMPLETE_STATUS.md REPORTS/incident-center/v1.0.1-pre/SUMMARY.md 2>/dev/null | wc -l | awk '{print "✅ v1.0.1-pre 리포트: " $$1 "/2개"}'
+	@echo "📋 GitHub Actions 배지 (로컬 확인):"
+	@grep -c "badge.svg" README.md 2>/dev/null | awk '{print "✅ 배지 링크: " $$1 "개"}'
+	@echo "📋 상대 경로 링크 (REPORTS 내부):"
+	@find REPORTS -name "*.md" -exec grep -l "\]\(\./\|\.\./" {} \; 2>/dev/null | wc -l | awk '{print "✅ 상대 경로 문서: " $$1 "개"}'
+	@echo "✅ 링크 점검 완료"
 
 # .PHONY 선언 (인시던트 센터 관련)
-.PHONY: incident-smoke-api incident-smoke-ui incident-smoke-all incident-smoke-all-dry-run incident-rollback-dry
+.PHONY: incident-smoke-api incident-smoke-ui incident-smoke-all incident-smoke-all-dry-run incident-rollback-dry incident-audit incident-links
 
