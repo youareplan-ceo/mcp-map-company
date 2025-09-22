@@ -12,4 +12,5 @@ mcp/
 scripts/
 
 # 오직 web 폴더만 배포
-!web/
+!web/apps/stockpilot/
+apps/

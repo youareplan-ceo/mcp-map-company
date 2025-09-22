@@ -83,15 +83,3 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 - 릴리스 자산 교체
 
 **결론**: ✅ Incident Center post-merge 체크섬 확정 완료
-## 🔄 Change Log (postqa 2025-09-22 16:09:17 KST)
-| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
-|------|-------------|------------|-----------|
-| INDEX.md | (auto) | 6c97693768dff4098741be1db47fa9e9da9e3e7fe51ad1260a0b256463a8f536 | 2025-09-22 16:09:17 KST |
-| v1.0.2-planning/RAW_anchors_check.txt | (신규) | 8fd3508c5c9e20ded6aac88c12f6ba6c1302eaf8e3b643ecfcb1daac82a88ae5 | 2025-09-22 16:09:17 KST |
-
-## 🔄 Change Log (weekly_monitor 2025-09-22 16:09:32 KST (Asia/Seoul))
-| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
-|------|-------------|------------|-----------|
-| WEEKLY/LINKS_STATUS_2025-09-22.md | (auto) | 15e6088d13800c0fb79ef08d5e32b53e3c0660d26a5b9347a01c39d323e3b06d | 2025-09-22 16:09:32 KST (Asia/Seoul) |
-| WEEKLY/BADGES_STATUS_2025-09-22.md | (auto) | 3aefe7878b6e5c98824fce37547f9676173458cbdf5fd57fcca55533d35548ee | 2025-09-22 16:09:32 KST (Asia/Seoul) |
-| WEEKLY/INTEGRITY_2025-09-22.md | (auto) | 49182b05ffd583fbe904281c11c28346822ab03e2d21ece235d7c61f9c6d3478 | 2025-09-22 16:09:32 KST (Asia/Seoul) |

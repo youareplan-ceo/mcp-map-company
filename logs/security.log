@@ -1,0 +1,6 @@
+2025-09-22 12:58:55 - INFO - [DASHBOARD_SMOKE_TEST] 대시보드 스모크 테스트 시작 (호스트: http://localhost:8088, 타임아웃: 10초)
+2025-09-22 12:58:55 - INFO - [DASHBOARD_SMOKE_TEST] 테스트 시작: 관리자 대시보드 (http://localhost:8088/admin_dashboard.html)
+2025-09-22 12:58:55 - ERROR - [DASHBOARD_SMOKE_TEST] 관리자 대시보드 테스트 실패: curl 오류 (exit code: 7)
+2025-09-22 13:00:01 - INFO - [DASHBOARD_SMOKE_TEST] 대시보드 스모크 테스트 시작 (호스트: http://localhost:8088, 타임아웃: 10초)
+2025-09-22 13:00:01 - INFO - [DASHBOARD_SMOKE_TEST] 테스트 시작: 관리자 대시보드 (http://localhost:8088/admin_dashboard.html)
+2025-09-22 13:00:01 - ERROR - [DASHBOARD_SMOKE_TEST] 관리자 대시보드 테스트 실패: curl 오류 (exit code: 7)

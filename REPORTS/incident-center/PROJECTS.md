@@ -6,15 +6,21 @@
 **URL**: https://github.com/youareplan-ceo/mcp-map-company/projects/1
 **설명**: v1.0.2 릴리스 전체 개발 진행 상황 추적
 
-### 보드 컬럼 구성
+### 보드 컬럼 구성 (v1.0.2 Sprint-1 적용)
 | 컬럼 | 설명 | 이동 조건 |
 |------|------|-----------|
 | **📋 Backlog** | 계획된 작업 목록 | 이슈 생성 시 자동 배치 |
-| **🎯 Sprint Ready** | 스프린트 착수 준비 완료 | 요구사항 정의 완료 |
-| **🚀 In Progress** | 현재 진행 중인 작업 | 개발자 할당 및 작업 시작 |
-| **👀 In Review** | 코드 리뷰 진행 중 | PR 생성 및 리뷰 요청 |
-| **🧪 Testing** | 테스트 진행 중 | 코드 리뷰 승인 후 |
-| **✅ Done** | 완료된 작업 | 테스트 통과 및 병합 완료 |
+| **🎯 Ready** | 작업 준비 완료 | assignee 할당 + ready 라벨 |
+| **🚀 In Progress** | 현재 진행 중인 작업 | in-progress 라벨 추가 |
+| **👀 In Review** | 코드 리뷰 진행 중 | PR 생성 + ready-to-merge 라벨 |
+| **✅ Done** | 완료된 작업 | PR 병합 완료 |
+
+### 자동화 규칙 (문서화)
+| 규칙 | 트리거 | 액션 | 조건 |
+|------|--------|------|------|
+| **Rule 1** | assignee 할당 + "ready" 라벨 | Backlog → Ready | 이슈 상태 "open" |
+| **Rule 2** | "ready-to-merge" 라벨 추가 | In Progress → In Review | PR이 draft 아님 |
+| **Rule 3** | PR 병합 완료 | In Review → Done | PR 상태 "merged" |
 
 ## 🏷️ Kanban 규칙 및 워크플로
 
