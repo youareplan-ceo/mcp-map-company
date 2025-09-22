@@ -1,0 +1,22 @@
+name: DB/ETL — Nightly & Manual
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 15 * * *"   # 00:30 KST
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - name: Install deps
+        run: pip install duckdb pandas
+      - name: Run ETL
+        run: make etl-all
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: etl-logs
+          path: data/etl/
