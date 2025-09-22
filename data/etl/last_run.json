@@ -1,10 +1,9 @@
 {
-  "generated_at": "2025-09-22 20:49:08 KST",
+  "generated_at": "2025-09-22 20:59:18 KST",
   "tables": [
     "holdings",
     "portfolios",
-    "signals",
     "users"
   ],
-  "holdings_rows": 7
+  "holdings_rows": 4
 }

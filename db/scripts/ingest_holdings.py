@@ -54,7 +54,7 @@ con.execute(f"INSERT INTO {tmp} SELECT portfolio_id, symbol, qty, avg_price, as_
 con.execute("""
 INSERT INTO holdings (holding_id, portfolio_id, symbol, qty, avg_price, as_of)
 SELECT
-  'H' || (row_number() OVER () + COALESCE((SELECT COUNT(*) FROM holdings), 0)),
+  row_number() OVER () + COALESCE((SELECT MAX(holding_id) FROM holdings), 0),
   portfolio_id, symbol, qty, avg_price, CAST(as_of AS DATE)
 FROM holdings_tmp;
 """)
