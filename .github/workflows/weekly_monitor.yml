@@ -33,13 +33,13 @@ jobs:
       - name: Check REPORTS directory links
         run: |
           echo "=== REPORTS 디렉토리 링크 검사 ===" >> links_report.txt
-          find reports -name "*.md" -exec markdown-link-check {} \; >> links_report.txt 2>&1 || echo "REPORTS 링크 검사 완료 (오류 포함)" >> links_report.txt
+          find REPORTS -name "*.md" -exec markdown-link-check {} \; >> links_report.txt 2>&1 || echo "REPORTS 링크 검사 완료 (오류 포함)" >> links_report.txt
 
       - name: Generate links status report
         run: |
-          mkdir -p reports/incident-center/WEEKLY
+          mkdir -p REPORTS/incident-center/WEEKLY
           DATE=$(date +%Y-%m-%d)
-          cat > "reports/incident-center/WEEKLY/LINKS_STATUS_${DATE}.md" << EOF
+          cat > "REPORTS/incident-center/WEEKLY/LINKS_STATUS_${DATE}.md" << EOF
           # 링크 상태 주간 보고서
 
           **검사 일시**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
@@ -55,7 +55,7 @@ jobs:
           ## 📊 요약
 
           - **README.md**: $(grep -c "✓" links_report.txt || echo "0")개 링크 정상
-          - **REPORTS**: $(find reports -name "*.md" | wc -l)개 파일 검사 완료
+          - **REPORTS**: $(find REPORTS -name "*.md" | wc -l)개 파일 검사 완료
           - **검사 시각**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
 
           ---
@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: links-status-report
-          path: reports/incident-center/WEEKLY/LINKS_STATUS_*.md
+          path: REPORTS/incident-center/WEEKLY/LINKS_STATUS_*.md
 
   badges-check:
     runs-on: ubuntu-latest
@@ -89,9 +89,9 @@ jobs:
 
       - name: Generate badges status report
         run: |
-          mkdir -p reports/incident-center/WEEKLY
+          mkdir -p REPORTS/incident-center/WEEKLY
           DATE=$(date +%Y-%m-%d)
-          cat > "reports/incident-center/WEEKLY/BADGES_STATUS_${DATE}.md" << EOF
+          cat > "REPORTS/incident-center/WEEKLY/BADGES_STATUS_${DATE}.md" << EOF
           # 배지 상태 주간 보고서
 
           **검사 일시**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
@@ -125,7 +125,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: badges-status-report
-          path: reports/incident-center/WEEKLY/BADGES_STATUS_*.md
+          path: REPORTS/incident-center/WEEKLY/BADGES_STATUS_*.md
 
   integrity-check:
     runs-on: ubuntu-latest
@@ -139,11 +139,11 @@ jobs:
         run: |
           echo "=== ARCHIVE_MANIFEST.md 무결성 검사 ===" > integrity_report.txt
 
-          if [ -f "reports/incident-center/v1.0.1-pre/ARCHIVE_MANIFEST.md" ]; then
+          if [ -f "REPORTS/incident-center/v1.0.1-pre/ARCHIVE_MANIFEST.md" ]; then
             echo "✅ ARCHIVE_MANIFEST.md 파일 존재" >> integrity_report.txt
 
             # SHA256 체크섬 재계산 (예시)
-            cd reports/incident-center/v1.0.1-pre
+            cd REPORTS/incident-center/v1.0.1-pre
             for file in *.md *.txt; do
               if [ -f "$file" ]; then
                 echo "$(sha256sum "$file")" >> ../../../integrity_report.txt
@@ -155,9 +155,9 @@ jobs:
 
       - name: Generate integrity status report
         run: |
-          mkdir -p reports/incident-center/WEEKLY
+          mkdir -p REPORTS/incident-center/WEEKLY
           DATE=$(date +%Y-%m-%d)
-          cat > "reports/incident-center/WEEKLY/INTEGRITY_${DATE}.md" << EOF
+          cat > "REPORTS/incident-center/WEEKLY/INTEGRITY_${DATE}.md" << EOF
           # 리포트 무결성 주간 보고서
 
           **검사 일시**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
@@ -172,8 +172,8 @@ jobs:
 
           ## 📊 요약
 
-          - **ARCHIVE_MANIFEST**: $([ -f "reports/incident-center/v1.0.1-pre/ARCHIVE_MANIFEST.md" ] && echo "✅ 존재" || echo "❌ 없음")
-          - **파일 개수**: $(find reports/incident-center/v1.0.1-pre -name "*.md" -o -name "*.txt" | wc -l)개
+          - **ARCHIVE_MANIFEST**: $([ -f "REPORTS/incident-center/v1.0.1-pre/ARCHIVE_MANIFEST.md" ] && echo "✅ 존재" || echo "❌ 없음")
+          - **파일 개수**: $(find REPORTS/incident-center/v1.0.1-pre -name "*.md" -o -name "*.txt" | wc -l)개
           - **검사 시각**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
 
           ## ⚠️ 주의사항
@@ -190,7 +190,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: integrity-check-report
-          path: reports/incident-center/WEEKLY/INTEGRITY_*.md
+          path: REPORTS/incident-center/WEEKLY/INTEGRITY_*.md
 
   summary:
     runs-on: ubuntu-latest
@@ -208,9 +208,9 @@ jobs:
 
       - name: Generate weekly summary
         run: |
-          mkdir -p reports/incident-center/WEEKLY
+          mkdir -p REPORTS/incident-center/WEEKLY
           DATE=$(date +%Y-%m-%d)
-          cat > "reports/incident-center/WEEKLY/SUMMARY_${DATE}.md" << EOF
+          cat > "REPORTS/incident-center/WEEKLY/SUMMARY_${DATE}.md" << EOF
           # 주간 모니터링 요약 보고서
 
           **생성 일시**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
@@ -253,6 +253,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add reports/incident-center/WEEKLY/ || true
+          git add REPORTS/incident-center/WEEKLY/ || true
           git diff --staged --quiet || git commit -m "chore: add weekly monitoring reports $(date +%Y-%m-%d) [automated]"
         continue-on-error: true

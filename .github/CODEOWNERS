@@ -1,0 +1,38 @@
+# MCP Map Company - Code Ownership & Review Policies
+
+# Default owners for everything in the repo
+* @youareplan-ceo
+
+# Incident Center specific files
+/reports/incident-center/ @youareplan-ceo
+/scripts/incident_* @youareplan-ceo
+/scripts/dashboard_smoke_incidents.sh @youareplan-ceo
+/.github/workflows/incident_smoke.yml @youareplan-ceo
+/.github/workflows/weekly_monitor.yml @youareplan-ceo
+
+# Core API and web files
+/mcp/ @youareplan-ceo
+/web/ @youareplan-ceo
+/api/ @youareplan-ceo
+
+# Infrastructure and CI/CD
+/.github/ @youareplan-ceo
+/Makefile @youareplan-ceo
+/requirements*.txt @youareplan-ceo
+/render.yaml @youareplan-ceo
+/vercel.json @youareplan-ceo
+
+# Documentation requiring review
+/GOVERNANCE.md @youareplan-ceo
+/ROLLBACK.md @youareplan-ceo
+/README.md @youareplan-ceo
+/RUNBOOK.md @youareplan-ceo
+
+# Database and sensitive configurations
+/duckdb/ @youareplan-ceo
+/config/ @youareplan-ceo
+/.env* @youareplan-ceo
+
+# High-risk areas requiring mandatory review
+/scripts/cleanup_* @youareplan-ceo
+/scripts/db_* @youareplan-ceo

@@ -1,9 +1,10 @@
 # mcp-map-company
 
-[![PR Status](https://img.shields.io/github/pulls/youareplan-ceo/mcp-map-company/hotfix%2Fincident-center-v1.0.1-pre)](https://github.com/youareplan-ceo/mcp-map-company/pull/3)
-[![Actions Status](https://github.com/youareplan-ceo/mcp-map-company/workflows/incident_smoke/badge.svg)](https://github.com/youareplan-ceo/mcp-map-company/actions/workflows/incident_smoke.yml)
+[![Incident Smoke Tests](https://github.com/youareplan-ceo/mcp-map-company/actions/workflows/incident_smoke.yml/badge.svg)](https://github.com/youareplan-ceo/mcp-map-company/actions/workflows/incident_smoke.yml)
+[![Weekly Monitor](https://github.com/youareplan-ceo/mcp-map-company/actions/workflows/weekly_monitor.yml/badge.svg)](https://github.com/youareplan-ceo/mcp-map-company/actions/workflows/weekly_monitor.yml)
+[![Latest Release](https://img.shields.io/github/v/release/youareplan-ceo/mcp-map-company?include_prereleases)](https://github.com/youareplan-ceo/mcp-map-company/releases/latest)
 
-📋 **[Incident Center 리포트 인덱스](./REPORTS/incident-center/INDEX.md)**
+📋 **[Incident Center 리포트 인덱스](./REPORTS/incident-center/INDEX.md)** | 🔗 **[v1.0.1-pre 릴리스](https://github.com/youareplan-ceo/mcp-map-company/releases/tag/incident-center-v1.0.1-pre-merged)**
 
 유아플랜 MCP(멀티-앱 컨트롤 플레인) 회사용 리포지토리.
 프론트(`web/`), API(`mcp/run.py` FastAPI), 배포(Render), 협업(GitHub) 흐름을 표준화.
