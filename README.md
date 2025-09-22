@@ -14,6 +14,9 @@
 - `mcp/run.py` : FastAPI 서버(CORS 패치 포함)
 - `scripts/` : 운영 스크립트(백업/헬스체크 등)
 
+## 개발 규칙
+- **경로 규칙**: 리포트는 `REPORTS/` (대문자)만 사용 - `scripts/check_reports_casing.sh`로 검증
+
 ## 로컬 실행
 uvicorn mcp.run:app --reload --port 8088
 
