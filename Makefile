@@ -13,3 +13,7 @@ deploy:
 \t# Example:
 \t#   curl -X POST $RENDER_DEPLOY_HOOK
 \t#   npx vercel --prod --token=$VERCEL_TOKEN
+
+.PHONY: dash-run
+dash-run:
+\tstreamlit run dashboard/app.py --server.port 8098
