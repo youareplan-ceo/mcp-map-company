@@ -21,3 +21,10 @@ jobs:
         run: make db-ingest
       - name: DB Health
         run: make db-health
+      - name: Generate ETL summary
+        run: make etl-summary
+      - name: Upload ETL summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: etl-summary
+          path: data/etl/last_run.json
