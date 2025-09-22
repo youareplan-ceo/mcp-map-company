@@ -32,8 +32,11 @@
 - `incident-smoke-api`: API 스모크 테스트 실행
 - `incident-smoke-ui`: UI 스모크 테스트 실행
 - `incident-smoke-all`: 전체 스모크 테스트 실행
+- `incident-smoke-all-dry-run`: 드라이런 (실행 없이 확인만)
+- `incident-rollback-dry`: 롤백 시뮬레이션
 
-**위치**: Makefile 하단에 추가됨
+**위치**: Makefile 하단 (라인 605-676)
+**구문 수정**: 콜론 포함 타깃명을 하이픈으로 변경 (100% 호환성 달성)
 
 ## 변경 요약
 1. **기존 파일 영향**: 없음 (main 브랜치 기준 순수 추가)

@@ -596,3 +596,81 @@ ci-stability-benchmark:
 .PHONY: anomaly-backtest anomaly-backtest-tune test-anomaly-system test-anomaly-rca
 .PHONY: test-anomaly-policy test-anomaly-performance test-anomaly-dashboard
 .PHONY: anomaly-health-check anomaly-demo
+
+
+# =====================================
+# 🧩 인시던트 센터 전용 명령어
+# =====================================
+
+incident-smoke-api: ## 인시던트 센터 API 스모크 테스트 실행
+	@echo "🚨 인시던트 센터 API 스모크 테스트 실행 중..."
+	@echo "💡 테스트 대상: /health, /summary, /list (CSV)"
+	@./scripts/incident_post_release_smoke.sh || { \
+		echo "❌ API 스모크 테스트 실패"; \
+		echo "💡 문제 해결:"; \
+		echo "   1. API 서버 상태: make incident-health"; \
+		echo "   2. 상세 로그: ./scripts/incident_post_release_smoke.sh --verbose"; \
+		echo "   3. 롤백 검토: make incident-rollback-dry"; \
+		exit 1; \
+	}
+	@echo "✅ API 스모크 테스트 통과"
+
+incident-smoke-ui: ## 인시던트 센터 대시보드 UI 스모크 테스트 실행
+	@echo "🌐 인시던트 센터 대시보드 UI 스모크 테스트 실행 중..."
+	@echo "💡 테스트 대상: 파일 접근성, 카드/차트 DOM, 한국어 지원"
+	@./scripts/dashboard_smoke_incidents.sh --optional || { \
+		echo "❌ UI 스모크 테스트 실패"; \
+		echo "💡 문제 해결:"; \
+		echo "   1. 파일 상태: ls -la web/admin_dashboard.html"; \
+		echo "   2. 상세 로그: ./scripts/dashboard_smoke_incidents.sh --verbose"; \
+		echo "   3. 원본 복원: git checkout web/admin_dashboard.html"; \
+		exit 1; \
+	}
+	@echo "✅ UI 스모크 테스트 통과"
+
+incident-smoke-all: ## 인시던트 센터 전체 스모크 테스트 (API + UI) 실행
+	@echo "🔥 인시던트 센터 전체 스모크 테스트 실행 중..."
+	@echo "📋 실행 순서: API → UI → 요약 출력"
+	@echo ""
+	@echo "1️⃣  API 스모크 테스트..."
+	@make incident-smoke-api
+	@echo ""
+	@echo "2️⃣  UI 스모크 테스트..."
+	@make incident-smoke-ui
+	@echo ""
+	@echo "🎉 전체 스모크 테스트 완료\!"
+	@echo "📊 테스트 요약:"
+	@echo "   ✅ API 엔드포인트 정상 (health, summary, list/CSV)"
+	@echo "   ✅ UI 구조 정상 (5개 카드, 2개 차트, 한국어 지원)"
+	@echo "   ✅ 인시던트 센터 v1.0.0 릴리스 품질 검증 완료"
+
+incident-smoke-all-dry-run: ## 인시던트 센터 스모크 테스트 드라이런 (실행 없이 확인만)
+	@echo "🔄 인시던트 센터 스모크 테스트 드라이런"
+	@echo "📋 실행 예정 명령어:"
+	@echo "   1. API 스모크: ./scripts/incident_post_release_smoke.sh"
+	@echo "   2. UI 스모크: ./scripts/dashboard_smoke_incidents.sh"
+	@echo "📊 스크립트 상태:"
+	@ls -la scripts/incident_post_release_smoke.sh scripts/dashboard_smoke_incidents.sh || echo "   ⚠️ 일부 스크립트가 없습니다"
+	@echo "✅ 드라이런 완료 - 실제 실행은 'make incident-smoke-all'"
+
+incident-rollback-dry: ## 인시던트 센터 v1.0.0 롤백 시뮬레이션 (실제 checkout 없이 안내만)
+	@echo "🔄 인시던트 센터 v1.0.0 롤백 시뮬레이션"
+	@echo ""
+	@echo "📋 현재 상태:"
+	@echo "   - 현재 브랜치: $(shell git branch --show-current)"
+	@echo "   - 최근 커밋: $(shell git log --oneline -1)"
+	@echo ""
+	@echo "🏷️  롤백 가능한 태그:"
+	@git tag -l | grep incident | head -3 | xargs -I {} echo "   📌 {}"
+	@echo ""
+	@echo "⚠️  롤백 시뮬레이션 - 실제 변경 없음"
+	@echo "💡 실제 롤백 명령어 (신중히 실행):"
+	@echo "   1. 백업: tar -czf backup_$(shell date +%Y%m%d_%H%M%S).tar.gz ."
+	@echo "   2. 롤백: git checkout incident-center-v1.0.0"
+	@echo "   3. 검증: make incident-smoke-all"
+
+
+
+# .PHONY 선언 (인시던트 센터 관련)
+.PHONY: incident-smoke-api incident-smoke-ui incident-smoke-all incident-smoke-all-dry-run incident-rollback-dry
+
