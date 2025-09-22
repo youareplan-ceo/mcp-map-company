@@ -135,3 +135,10 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 | v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | 6767ac9d85ba1bade993fbb20ab24d1c5070e8b1abdb78f7228b56ec006b8b56 | 2025-09-22 16:29:33 KST (Asia/Seoul) |
 | v1.0.2-planning/SPRINT1_DAY1_KICKOFF.md | (신규) | b6549fb61f34013619f0cbfa49db4fcf66a6ca879ebb159a4a22e398f82bc2ca | 2025-09-22 16:29:33 KST (Asia/Seoul) |
 | INDEX.md | (auto) | c2f5b67d9af9c3c199b97a01790cce1fc5bc84a04219ca939596f797bd0d16a3 | 2025-09-22 16:29:33 KST (Asia/Seoul) |
+
+## 🔄 Change Log (project-board-docs 2025-09-22 16:31:00 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| PROJECTS.md | d928b1378e5e67116386368c2d518ba7a87fe3e674c663b6bc157428c127c752 | a635e598a28d114902bce7a337bec1eada57fc1578f2e32248802cc7ee66bf9d | 2025-09-22 16:31:00 KST (Asia/Seoul) |
+| PROJECT_BOARD_STATUS.md | 3944182368fa5f39e8348106d8df73c04298aa5b1f51e97144be8270226c4cf6 | 3968dbb30044bea3fbf7e3402db0989218094daf5de59cb4c09ef32efa86c27f | 2025-09-22 16:31:00 KST (Asia/Seoul) |
+| INDEX.md | c2f5b67d9af9c3c199b97a01790cce1fc5bc84a04219ca939596f797bd0d16a3 | c2f5b67d9af9c3c199b97a01790cce1fc5bc84a04219ca939596f797bd0d16a3 | 2025-09-22 16:31:00 KST (Asia/Seoul) |
