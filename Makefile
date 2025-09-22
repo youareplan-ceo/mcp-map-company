@@ -18,13 +18,33 @@ deploy:
 dash-run:
 \tstreamlit run dashboard/app.py --server.port 8098
 
-.PHONY: api-run api-test api-docker
-api-run:
-	uvicorn api.main:app --reload --port 8099
+.PHONY: db-init db-ingest db-health
+db-init:
+\tpython - <<'PY'
+import duckdb, pathlib
+root = pathlib.Path('.').resolve()
+db = root / 'data' / 'mcp.duckdb'
+db.parent.mkdir(parents=True, exist_ok=True)
+con = duckdb.connect(str(db))
+con.close()
+print(f"✅ Created {db}")
+PY
 
-api-test:
-	pytest -q
+db-ingest:
+\tpython db/scripts/ingest_holdings.py
 
-api-docker:
-	docker build -t mcp-api:local .
-	docker run --rm -p 8099:8099 mcp-api:local
+db-health:
+\tpython db/scripts/db_health.py
+
+.PHONY: ghcr-login api-tag api-release
+ghcr-login:
+	@echo "Logging in to GHCR..."
+	echo $GHCR_TOKEN | docker login ghcr.io -u youareplan-ceo --password-stdin
+
+api-tag:
+	@if [ -z "$V" ]; then echo "Usage: make api-tag V=v0.1.0"; exit 1; fi
+	git tag $V
+	git push origin $V
+
+api-release:
+	@echo "Trigger workflow_dispatch (UI에서 실행 권장)"
