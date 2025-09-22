@@ -1,0 +1,70 @@
+site_name: MCP Map Company
+site_description: "YouArePlan MCP — Documentation Portal"
+site_url: https://youareplan-ceo.github.io/mcp-map-company/
+
+repo_name: youareplan-ceo/mcp-map-company
+repo_url: https://github.com/youareplan-ceo/mcp-map-company
+edit_uri: edit/main/docs_site/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Components: architecture/components.md
+  - API Reference:
+    - Endpoints: api/endpoints.md
+    - Models: api/models.md
+  - Development:
+    - Setup: development/setup.md
+    - Testing: development/testing.md
+    - Contributing: development/contributing.md
+  - Deployment:
+    - CI/CD: deployment/cicd.md
+    - Production: deployment/production.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+
+plugins:
+  - search
+  - mkdocstrings
+
+extra:
+  version:
+    provider: mike

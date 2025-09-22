@@ -50,3 +50,13 @@ etl-all:
 \tmake db-ingest
 \tmake db-health
 \tmake etl-summary
+
+.PHONY: docs-serve docs-build docs-deploy
+docs-serve:
+	cd docs_site && mkdocs serve -a 0.0.0.0:8097
+
+docs-build:
+	cd docs_site && mkdocs build
+
+docs-deploy:
+	cd docs_site && mkdocs gh-deploy
