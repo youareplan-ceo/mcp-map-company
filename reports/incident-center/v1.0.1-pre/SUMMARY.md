@@ -6,9 +6,10 @@
 |------|---|
 | **선택 전략** | 옵션 A - 현재 버전 유지 (main에서 삭제된 파일 복원) |
 | **전략 결정 시각** | 2025-09-22 12:57:30 |
-| **최종 업데이트** | 2025-09-22 13:13:00 |
+| **최종 업데이트** | 2025-09-22 13:19:00 (Asia/Seoul) |
 | **브랜치** | hotfix/incident-center-v1.0.1-pre |
-| **커밋** | 50c1b4c deploy: disable pip hash check on Render build |
+| **커밋** | ae038f7 feat: 인시던트 센터 v1.0.1-pre 스모크 스크립트 및 Makefile 타깃 복원 |
+| **경로 정리 완료** | ✅ REPORTS/ 경로 통일 (reports/ → REPORTS/) |
 | **스모크 100% 달성** | ✅ UI 테스트 강화 및 Makefile 타깃 100% 동작 |
 
 ## 테스트 결과 비교

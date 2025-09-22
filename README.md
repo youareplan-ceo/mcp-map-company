@@ -1,6 +1,11 @@
 # mcp-map-company
 
-유아플랜 MCP(멀티-앱 컨트롤 플레인) 회사용 리포지토리.  
+[![PR Status](https://img.shields.io/github/pulls/youareplan-ceo/mcp-map-company/hotfix%2Fincident-center-v1.0.1-pre)](https://github.com/youareplan-ceo/mcp-map-company/pull/3)
+[![Actions Status](https://github.com/youareplan-ceo/mcp-map-company/workflows/incident_smoke/badge.svg)](https://github.com/youareplan-ceo/mcp-map-company/actions/workflows/incident_smoke.yml)
+
+📋 **[Incident Center 리포트 인덱스](./REPORTS/incident-center/INDEX.md)**
+
+유아플랜 MCP(멀티-앱 컨트롤 플레인) 회사용 리포지토리.
 프론트(`web/`), API(`mcp/run.py` FastAPI), 배포(Render), 협업(GitHub) 흐름을 표준화.
 
 ## 구조
@@ -6909,16 +6914,20 @@ jobs:
 
 ### 🚀 빠른 사용법
 ```bash
-# UI 스모크 테스트 (서버 불필요)
-./scripts/dashboard_smoke_incidents.sh
+# 인시던트 센터 API 스모크 테스트 실행
+make incident-smoke-api
 
-# API 스모크 테스트 (서버 필요)
-./scripts/incident_post_release_smoke.sh --json
+# 인시던트 센터 대시보드 UI 스모크 테스트 실행
+make incident-smoke-ui
 
-# Makefile 타깃 사용
-make incident-smoke-api  # API 테스트
-make incident-smoke-ui   # UI 테스트
+# 인시던트 센터 전체 스모크 테스트 (API + UI) 실행
+make incident-smoke-all
+
+# 인시던트 센터 스모크 테스트 드라이런 (실행 없이 확인만)
+make incident-smoke-all-dry-run
 ```
+
+**⚠️ 실행 전제:** 로컬 API 서버 미기동 시 full 테스트 API는 예상 실패하며, dry-run으로 사전 검증 권장
 
 ### 📊 현재 상태
 - **호환성**: 67% (스크립트 100%, Makefile 60%, UI 40%)
