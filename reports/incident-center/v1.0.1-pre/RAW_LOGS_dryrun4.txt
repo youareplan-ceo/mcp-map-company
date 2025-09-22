@@ -3,6 +3,6 @@
    1. API 스모크: ./scripts/incident_post_release_smoke.sh
    2. UI 스모크: ./scripts/dashboard_smoke_incidents.sh
 📊 스크립트 상태:
--rwxr-xr-x  1 youareplan  staff  16668  9 22 13:12 scripts/dashboard_smoke_incidents.sh
+-rwxr-xr-x  1 youareplan  staff  16668  9 22 13:39 scripts/dashboard_smoke_incidents.sh
 -rwxr-xr-x  1 youareplan  staff  10793  9 22 13:02 scripts/incident_post_release_smoke.sh
 ✅ 드라이런 완료 - 실제 실행은 'make incident-smoke-all'

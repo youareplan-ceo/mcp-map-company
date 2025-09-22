@@ -4,9 +4,11 @@
 
 | 항목 | 값 |
 |------|---|
-| **잠금 시각** | 2025-09-22 13:31:05 KST (Asia/Seoul) |
-| **브랜치** | hotfix/incident-center-v1.0.1-pre |
-| **커밋** | dff1409 chore(incident-center): unify REPORTS path; add CI smoke workflow; update PR/ENV docs (no deploy) |
+| **잠금 시각** | 2025-09-22 13:40:12 KST (Asia/Seoul) |
+| **브랜치** | main (병합 완료) |
+| **커밋** | 73dae93d933b1fbff2173998357971c949f4bf5d |
+| **태그** | incident-center-v1.0.1-pre-merged |
+| **릴리스** | https://github.com/youareplan-ceo/mcp-map-company/releases/tag/incident-center-v1.0.1-pre-merged |
 | **경로** | /Users/youareplan/Desktop/mcp-map-company/REPORTS/incident-center/ |
 | **작성자** | Claude Code + 김실장 검수 |
 
