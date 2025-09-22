@@ -51,3 +51,9 @@ To request it, run: gh auth refresh -s read:project
 - 마지막 시도: HTTPS(with gh token)
 - 번들 백업: sprint1_feat-11-dom-stabilize_20250922_173413.bundle (SHA256: 7f67391b15b667eee8c62d11f83dfa9cf875e78d0ed43e725c10185fda84cf0f)
 - 가이드: SSH키 등록 또는 gh auth login -w -s "repo,read:org,project" 후 재시도
+
+## #14 Batch-1 Finalization (code2)
+- 시각: 2025-09-22 18:12:20 KST (Asia/Seoul)
+- 브랜치: sprint1/fix-broken-links-from-15
+- KPI: 404=0, 미존재=153, 앵커누락=24, 합계=177
+- 조치: Manifest/Index 갱신 및 Batch-2 계획서 생성
