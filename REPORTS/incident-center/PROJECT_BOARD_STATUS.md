@@ -28,3 +28,9 @@ To request it, run: gh auth refresh -s read:project
 - 방법: HTTPS → HTTPS 대체 포함
 - 조치: 번들 백업 생성 → REPORTS/incident-center/v1.0.2-planning/sprint1_feat-11-dom-stabilize_20250922_170114.bundle (SHA256: 9507890b22c4421088667e39e92cec9675540429a037a1ba97ea874d84236f03)
 - 다음: SSH 공개키 등록 또는 gh auth login 후 재푸시
+
+## Push 실패 기록
+- 시각: 2025-09-22 17:07:54 KST (Asia/Seoul)
+- 브랜치: sprint1/feat-11-dom-stabilize
+- 방법: HTTPS → HTTPS 대체 포함
+- 조치: GitHub에 SSH 공개키 등록 또는 'gh auth login' 후 재푸시 필요
