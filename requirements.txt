@@ -6,3 +6,6 @@ pandas
 numpy
 duckdb
 pytest
+mkdocs
+mkdocs-material
+pyyaml
