@@ -14,3 +14,17 @@
 ## 오프라인 백업
 - 번들: REPORTS/incident-center/v1.0.2-planning/main_backup_20250922_161810.bundle
 - SHA256: 9b6930a6267e10d405bd945a841fb83e0b0c190b7b0f7b0f61b8552ded4b5513
+# Post-Push Manual SSH Key Guide
+- 시각: 2025-09-22 16:22:20 KST (Asia/Seoul)
+- 공개키(복사하여 GitHub → Settings → SSH and GPG keys → New SSH key):
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgGWLKztR8aoxjk7eg0VQvEBggudI9Uu3GiJcIPi09H youareplan-ceo@mcp-map-company
+```
+
+## Push Result
+- 시각: 2025-09-22 16:22:20 KST (Asia/Seoul)
+- 결과: ❌ 실패
+- 조치 가이드:
+  1) GitHub 웹에서 SSH 공개키 수동 등록(Settings → SSH and GPG keys)
+  2) 'git remote -v' 확인 후 재시도: git push origin main
+  3) 또는 'gh auth login' 다시 수행 후 재시도
