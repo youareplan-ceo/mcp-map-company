@@ -1,7 +1,15 @@
-# 임시 파일 정리 계획서
+# Incident Center v1.0.1-pre 정리 계획서
 
-**생성 시각**: 2025-09-22 13:52:00 (Asia/Seoul)
-**상태**: 🔒 LOCKED - 병합/태그/릴리스 드래프트 완료
+## 🔒 문서 잠금 (최종 고정)
+
+| 항목 | 값 |
+|------|---|
+| **갱신 시각** | 2025-09-22 14:50:00 KST (Asia/Seoul) |
+| **브랜치** | main (병합 완료) |
+| **최신 커밋** | d4a8a36 docs(incident-center): finalize post-merge archive |
+| **태그** | incident-center-v1.0.1-pre-merged |
+| **작성자** | Claude Code + 김실장 검수 |
+| **상태** | 🔒 LOCKED - 병합/태그/릴리스 완료 |
 
 ## 📋 정리 대상
 
@@ -25,11 +33,16 @@
 
 ## 🗑️ 정리 권장사항
 
-### 즉시 정리 가능
+### 즉시 정리 가능 (계획서만 - 실행 금지)
 ```bash
-# 임시 로그 파일들 (RAW_LOGS_*1-4.txt 제외하고 최신 v5만 보관)
-rm -f reports/incident-center/v1.0.1-pre/RAW_LOGS_dryrun[1-4].txt
-rm -f reports/incident-center/v1.0.1-pre/RAW_LOGS_full[1-4].txt
+# ⚠️ 계획서만 - 실제 삭제 금지
+# 임시 로그 파일들 (RAW_LOGS_*1-4.txt 제거하고 최신 v5만 보관)
+# rm -f reports/incident-center/v1.0.1-pre/RAW_LOGS_dryrun[1-4].txt
+# rm -f reports/incident-center/v1.0.1-pre/RAW_LOGS_full[1-4].txt
+
+# /tmp 임시 파일들 정리 (계획만)
+# rm -f /tmp/pr_body_*.md
+# rm -f /tmp/release_body.md
 ```
 
 ### 조건부 정리 (1주 후)

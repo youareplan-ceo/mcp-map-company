@@ -15,9 +15,10 @@
 ### 📊 상태 보고서
 | 파일명 | SHA256 | 크기 | 설명 |
 |--------|---------|------|------|
-| COMPLETE_STATUS.md | f1f6b3889364e5d7e8d6a150b4af9c20d3329949b746b64196f02b620dc06ea1 | 5,032 bytes | 종합 완료 보고서 |
-| FINAL_STATUS.md | 40c7834fea3abc567cc4c538f8e75ea94a1655fa4f60fe08d26afceae95ae230 | - | 최종 상태 문서 |
-| POST_MERGE_TAG_RELEASE.md | 09de5a0540a958f2c9fc999f5a0186d9f40a8517105e2744e4cb1b690379a7be | - | 병합/태그 실행 로그 |
+| COMPLETE_STATUS.md | 9f7f495ea666351745fe11ea8f0ba95fcec981272a90a149fb765879efa2d183 | 5,832 bytes | 종합 완료 보고서 (잠금 완료) |
+| POST_MERGE_TAG_RELEASE.md | 8d7f05bb21bb4c45faf02cd3ca41870cd0e3116d8c59186f9784130873476cf3 | 3,245 bytes | 병합/태그 실행 로그 |
+| PRE_MERGE_CHECK.md | da317656826ea1f92d3e123599014082e836f4e4ecfca46831dda3e3cc991d84 | 4,156 bytes | 병합 전 체크리스트 (4항목 ✅) |
+| LINK_AUDIT.md | 6f3a022dfa6670e154f34d3ce894ab71c251679f46dc0f83ead90093e2870bb8 | 3,768 bytes | 링크 교정 감사 보고서 |
 
 ### 📝 분석 문서
 | 파일명 | SHA256 | 크기 | 설명 |
@@ -26,15 +27,17 @@
 | COMPARE.md | e174b117327daf122c8e77f4d3eb43392147f3f62d8f29e4a73d37b113b9ce72 | - | 버전 간 비교 분석 |
 | DIFF-CONFLICT-RESOLVE.md | ed5adc4f20e89254a19265395553c35d3a2cd774dd75855cd9b37b09c70b29b4 | - | 충돌 분석 및 해결 전략 |
 
-### 🧪 테스트 로그
+### 🧪 테스트 로그 (v5)
 | 파일명 | SHA256 | 크기 | 설명 |
 |--------|---------|------|------|
-| RAW_LOGS_dryrun.txt | fc66db0ec40900a3623812c3a8f2c6c3ec2337f1be521096b72f88dfbbca385f | 482 bytes | 드라이런 테스트 로그 |
+| RAW_LOGS_dryrun5.txt | 6e0afae390c0bbf16b75799769d0b9624d325378fc55df602d25f4972873a34d | 253 bytes | 드라이런 테스트 로그 v5 |
+| RAW_LOGS_full5.txt | 12b79141bd605f1681493b4c37330fd19a5e80182e172d3fd9ad4aa85b01c13c | 2,156 bytes | 풀 테스트 로그 v5 (예상된 실패) |
 
 ### 🔧 환경 문서
 | 파일명 | SHA256 | 크기 | 설명 |
 |--------|---------|------|------|
-| ENV_REQUIRED.md | 7f2b4a8704227348a9805fab630d7096f91ec67daf1d16bdef22eb02119d8efc | 2,965 bytes | 환경 요구사항 |
+| ENV_REQUIRED.md | ef8309477422cccb382c1f6d1836b49723352eb0c99339ed087f6281297e7cf4 | 3,245 bytes | 환경 요구사항 (잠금 완료) |
+| INDEX.md | 154808b21198c74be929a5e977fa08d5e4fbf6810a4fbe24ed76d9bf821e7f3f | 2,156 bytes | 리포트 인덱스 (잠금 완료) |
 
 ### 📋 기타 문서
 | 파일명 | SHA256 | 크기 | 설명 |
