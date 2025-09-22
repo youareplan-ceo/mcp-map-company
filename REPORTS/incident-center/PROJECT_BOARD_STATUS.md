@@ -44,3 +44,10 @@ To request it, run: gh auth refresh -s read:project
   2) 또는 gh auth login -w -s "repo,read:org,project" 재실행
   3) 또는 GITHUB_TOKEN 내리고 재실행
 - 번들 백업: sprint1_feat-11-dom-stabilize_20250922_172604.bundle (SHA256: f8fc96e1835e051ccac3a63f3d6b4e21203c15b26bb080451f755b0970263d68)
+
+## Push 실패 기록(code3)
+- 시각: 2025-09-22 17:34:05 KST (Asia/Seoul)
+- 브랜치: sprint1/feat-11-dom-stabilize
+- 마지막 시도: HTTPS(with gh token)
+- 번들 백업: sprint1_feat-11-dom-stabilize_20250922_173413.bundle (SHA256: 7f67391b15b667eee8c62d11f83dfa9cf875e78d0ed43e725c10185fda84cf0f)
+- 가이드: SSH키 등록 또는 gh auth login -w -s "repo,read:org,project" 후 재시도
