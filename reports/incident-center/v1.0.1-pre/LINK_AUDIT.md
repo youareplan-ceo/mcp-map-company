@@ -1,5 +1,30 @@
 # Incident Center v1.0.1-pre 링크 감사 보고서
 
+## 🛡️ Casing Guard 설치 상태
+
+| 항목 | 상태 | 검증 시각 |
+|------|------|-----------|
+| **pre-commit 훅** | ✅ 설치 완료 | 2025-09-22 15:00:00 KST |
+| **실행 권한** | ✅ chmod +x 완료 | 2025-09-22 15:00:00 KST |
+| **작동 테스트** | ✅ 정상 작동 확인 | 2025-09-22 15:00:00 KST |
+| **차단 메시지** | ✅ 한글 안내 포함 | reports/ 발견 시 커밋 중단 |
+
+**설치 위치**: `.git/hooks/pre-commit`
+**차단 패턴**: `(^|/)reports(/|$)` 정규식으로 소문자 reports/ 검출
+
+## 📋 소문자 reports/ 잔재 목록 (2025-09-22 14:25:00 KST)
+
+| 파일 | 참조 위치 | 유형 | 상태 |
+|------|-----------|------|------|
+| `.github/workflows/weekly_monitor.yml` | reports/incident-center/WEEKLY/ | 경로 참조 | 🔧 수정 필요 |
+| `.github/workflows/weekly_monitor.yml` | reports/incident-center/v1.0.1-pre/ | 경로 참조 | 🔧 수정 필요 |
+| `ROLLBACK.md` | reports/incident-center/v1.0.1-pre/ | 문서 참조 | 🔧 수정 필요 |
+| `REPORTS/incident-center/LINKS_STATUS.md` | ../reports/incident-center/ | 상대 경로 | 🔧 수정 필요 |
+| `REPORTS/incident-center/v1.0.1-pre/UNTRACKED.md` | reports/incident-center/ | 문서 내용 | 🔧 수정 필요 |
+| `REPORTS/incident-center/v1.0.1-pre/CLEANUP_PLAN.md` | reports/incident-center/ | 경로 참조 | 🔧 수정 필요 |
+
+**총 발견**: 33개 소문자 reports/ 참조 (주로 workflow 파일과 문서 내 경로)
+
 ## 🔒 문서 잠금 (최종 고정)
 
 | 항목 | 값 |
@@ -11,6 +36,31 @@
 | **작성자** | Claude Code |
 
 ## 📊 링크 교정 현황
+
+## 🔄 링크/배지 재검증 (2025-09-22 14:40:00 KST)
+
+### 배지 상태 검증 (All 200 ✅)
+| 파일 | 링크 | 상태(before) | 조치 | 상태(after) |
+|------|------|-------------|------|------------|
+| **README.md** | incident_smoke.yml/badge.svg | 404 | 경로 수정 | ✅ 200 |
+| **README.md** | weekly_monitor.yml/badge.svg | N/A | 신규 추가 | ✅ 200 |
+| **README.md** | releases badge | N/A | 신규 추가 | ✅ 200 |
+| **README.md** | v1.0.1-pre release link | N/A | 신규 추가 | ✅ 200 |
+
+### 상대경로 링크 검증
+| 파일 | 링크 | 상태(before) | 조치 | 상태(after) |
+|------|------|-------------|------|------------|
+| **INDEX.md** | ./v1.0.1-pre/*.md | ✅ 정상 | 유지 | ✅ 정상 |
+| **INDEX.md** | ./README_VERIFICATION_LOG.md | N/A | 신규 추가 | ✅ 정상 |
+| **INDEX.md** | ./DIFF_CASE_FIX.md | N/A | 신규 추가 | ✅ 정상 |
+| **INDEX.md** | ./NEXT_MILESTONE.md | N/A | 신규 추가 | ✅ 정상 |
+
+### 잔여 항목 (수정 보류)
+| 파일 | 링크/참조 | 상태 | 사유 |
+|------|-----------|------|------|
+| `.github/workflows/weekly_monitor.yml` | reports/incident-center/ (33개 참조) | ⚠️ 보류 | 워크플로 안정성을 위해 REPORTS/ 변경 보류 |
+| `ROLLBACK.md` | reports/incident-center/ | ⚠️ 보류 | 히스토리 문서로 원본 유지 |
+| 기타 문서 내 참조 | reports/incident-center/ | ⚠️ 보류 | 문서 내용 변경 위험으로 보류 |
 
 ### 🔍 발견된 문제 링크 (Before)
 
