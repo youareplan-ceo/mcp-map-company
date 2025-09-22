@@ -596,3 +596,24 @@ ci-stability-benchmark:
 .PHONY: anomaly-backtest anomaly-backtest-tune test-anomaly-system test-anomaly-rca
 .PHONY: test-anomaly-policy test-anomaly-performance test-anomaly-dashboard
 .PHONY: anomaly-health-check anomaly-demo
+incident-smoke-api: ## 인시던트 센터 API 스모크 테스트 실행
+	@echo "$(PURPLE)🚨 인시던트 센터 API 스모크 테스트 실행 중...$(NC)"
+	@echo "$(CYAN)💡 테스트 대상: /health, /summary, /list (CSV)$(NC)"
+	@./scripts/incident_post_release_smoke.sh || { \
+		echo "$(RED)❌ API 스모크 테스트 실패$(NC)"; \
+		echo "$(YELLOW)💡 문제 해결:$(NC)"; \
+		echo "   1. API 서버 상태: make incident-health"; \
+		echo "   2. 상세 로그: ./scripts/incident_post_release_smoke.sh --verbose"; \
+		echo "   3. 롤백 검토: make incident-rollback-dry"; \
+		exit 1; \
+	}
+	@echo "$(GREEN)✅ API 스모크 테스트 통과$(NC)"
+
+incident-smoke-ui: ## 인시던트 센터 대시보드 UI 스모크 테스트 실행
+	@echo "$(PURPLE)🌐 인시던트 센터 대시보드 UI 스모크 테스트 실행 중...$(NC)"
+	@echo "$(CYAN)💡 테스트 대상: 파일 접근성, 카드/차트 DOM, 한국어 지원$(NC)"
+	@./scripts/dashboard_smoke_incidents.sh || { \
+		echo "$(RED)❌ UI 스모크 테스트 실패$(NC)"; \
+		echo "$(YELLOW)💡 문제 해결:$(NC)"; \
+		echo "   1. 파일 상태: ls -la web/admin_dashboard.html"; \
+		echo "   2. 상세 로그: ./scripts/dashboard_smoke_incidents.sh --verbose"; \
