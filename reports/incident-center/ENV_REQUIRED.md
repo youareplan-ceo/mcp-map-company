@@ -1,81 +1,108 @@
-# Incident Center 환경 변수 요구사항
+# Incident Center 환경 변수 요구사항 (통합)
 
-| 항목 | 값 |
-|------|------|
-| **실행 커밋** | `hotfix/incident-center-v1.0.1-pre` |
-| **실행 브랜치** | hotfix/incident-center-v1.0.1-pre |
-| **실행 시각** | 2024-09-22 12:57:00 (Asia/Seoul) |
-| **경로** | /Users/youareplan/Desktop/mcp-map-company |
+## 실행 정보
+- **실행 커밋**: f040140 (hotfix/incident-center-v1.0.1-pre-fixed)
+- **실행 시각**: 2025-09-22 12:58 (Asia/Seoul)
+- **경로**: /Users/youareplan/Desktop/mcp-map-company
 
-## 🔑 필수 환경 변수 목록
+## API 스모크 테스트 필수 변수
 
-### CI/CD 파이프라인 환경 변수
+### 기본 환경 변수
+- `API_BASE_URL`: 인시던트 센터 API 베이스 URL
+  - 기본값: `http://localhost:8000/api/v1/incidents`
+  - 운영 환경: `https://your-app.onrender.com/api/v1/incidents`
 
-| 변수명 | 용도 | 필수 여부 | 기본값/더미값 |
-|--------|------|-----------|---------------|
-| `PYTHON_VERSION` | Python 버전 지정 | 선택 | `3.9` |
-| `NODE_VERSION` | Node.js 버전 지정 | 선택 | `18` |
-| `CI` | CI 환경 플래그 | 자동 | `true` |
-| `GITHUB_TOKEN` | GitHub API 액세스 | 자동 | GitHub Actions 제공 |
+### 선택적 환경 변수
+- `TIMEOUT`: API 요청 타임아웃 (초, 기본값: 30)
+- `DEBUG`: 상세 로그 출력 (기본값: false)
+- `TEST_ENV`: 테스트 환경 지정 (local/staging/production)
 
-### 스모크 테스트 환경 변수
+## .env 파일 예시
 
-| 변수명 | 용도 | 필수 여부 | 기본값/더미값 |
-|--------|------|-----------|---------------|
-| `API_BASE_URL` | API 서버 베이스 URL | 선택 | `http://localhost:8088` |
-| `WEB_BASE_URL` | 웹 서버 베이스 URL | 선택 | `http://localhost:8000` |
-| `SMOKE_TIMEOUT` | 스모크 테스트 타임아웃 | 선택 | `30` |
-| `LOG_LEVEL` | 로그 레벨 | 선택 | `INFO` |
-
-### 보안 관련 환경 변수 (CI에서 미요구)
-
-| 변수명 | 용도 | CI에서 요구 | 비고 |
-|--------|------|-------------|------|
-| `RENDER_API_KEY` | Render 배포 키 | ❌ | 로컬 검증만 수행 |
-| `VERCEL_TOKEN` | Vercel 배포 토큰 | ❌ | 로컬 검증만 수행 |
-| `DATABASE_URL` | 데이터베이스 연결 | ❌ | 더미 DB 사용 |
-| `SECRET_KEY` | 암호화 키 | ❌ | 더미 키 사용 |
-
-## 🛠️ GitHub Actions 워크플로 설정
-
-### 환경 변수 설정 예시
-
-```yaml
-env:
-  # 기본 환경 설정
-  PYTHON_VERSION: "3.9"
-  NODE_VERSION: "18"
-
-  # 스모크 테스트 설정
-  API_BASE_URL: "http://localhost:8088"
-  WEB_BASE_URL: "http://localhost:8000"
-  SMOKE_TIMEOUT: "30"
-  LOG_LEVEL: "INFO"
-
-  # 더미 값 (실제 배포 없음)
-  DATABASE_URL: "sqlite:///dummy.db"
-  SECRET_KEY: "dummy-secret-for-testing"
+### 로컬 개발
+```bash
+# Incident Center Local Development
+API_BASE_URL=http://localhost:8000/api/v1/incidents
+TIMEOUT=30
+DEBUG=true
+TEST_ENV=local
 ```
 
-### 시크릿 미요구 사유
+### Render.com 배포
+```bash
+# Incident Center Production
+API_BASE_URL=https://mcp-map-company.onrender.com/api/v1/incidents
+TIMEOUT=60
+DEBUG=false
+TEST_ENV=production
+```
 
-- **배포 없음**: 로컬 검증만 수행하므로 실제 배포 키 불필요
-- **더미 환경**: 테스트용 더미 값으로 충분
-- **보안 고려**: 민감한 정보를 CI 환경에 노출하지 않음
+## 포트 충돌 확인
 
-## 📋 환경 설정 체크리스트
+### 현재 사용 중인 포트
+실행 시점에서 포트 8000번 사용 현황:
+```bash
+lsof -i :8000
+# 결과: 사용 중인 프로세스 없음
+```
 
-### CI 환경에서 확인 필요
+### 포트 8099 (대시보드)
+실행 시점에서 포트 8099번 사용 현황:
+```bash
+lsof -i :8099
+# 결과: 사용 중인 프로세스 없음
+```
 
-- ✅ Python 3.9+ 설치 확인
-- ✅ 필요한 패키지 설치 (requirements.txt)
-- ✅ 스모크 테스트 스크립트 실행 권한
-- ✅ 더미 환경 변수 설정
-- ❌ 실제 서비스 배포 (금지됨)
+## 서버 시작 명령어
 
-### 로컬 환경에서 확인 필요
+### FastAPI 서버 (인시던트 센터 API)
+```bash
+# 방법 1: uvicorn 직접 실행
+uvicorn mcp.incident_api:app --host 0.0.0.0 --port 8000 --reload
 
-- ✅ MCP API 서버 실행 (포트 8088)
-- ✅ 웹 대시보드 접근 가능
-- ✅ 스모크 테스트 스크립트 존재
-- ✅ Makefile 타깃 정의
+# 방법 2: Makefile 사용 (구현 필요)
+make incident-server-start
+
+# 방법 3: Python 모듈로 실행
+python -m uvicorn mcp.incident_api:app --port 8000
+```
+
+### 대시보드 정적 서버
+```bash
+# 방법 1: Python 내장 서버
+python3 -m http.server 8080 --directory web/
+
+# 방법 2: Node.js 서버 (optional)
+npx http-server web/ -p 8080
+```
+
+## 누락 키 목록 (v1.0.1-pre 기준)
+
+현재 누락되어 API 테스트가 실패하는 항목들:
+1. **API 서버 미실행**: incident center API 서버 없음
+2. **환경 변수 파일**: `.env` 파일 생성 필요
+3. **데이터베이스**: incident 데이터 초기화 필요
+
+## 헬스체크 스크립트 (권장)
+```bash
+#!/bin/bash
+# scripts/incident_health_check.sh
+
+echo "🏥 인시던트 센터 헬스체크..."
+
+# API 서버 확인
+if curl -s "http://localhost:8000/api/v1/incidents/health" > /dev/null; then
+    echo "✅ API 서버 정상"
+else
+    echo "❌ API 서버 비정상 또는 중단"
+fi
+
+# 대시보드 파일 확인
+if [ -f "web/admin_dashboard.html" ]; then
+    echo "✅ 대시보드 파일 존재"
+else
+    echo "❌ 대시보드 파일 없음"
+fi
+
+echo "🏥 헬스체크 완료"
+```

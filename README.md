@@ -6889,3 +6889,41 @@ jobs:
 
 이 CI 안정성 시뮬레이션 시스템을 통해 개발팀은 CI/CD 파이프라인의 성능을 사전에 예측하고, 최적화 전략을 수립하여 전체적인 개발 생산성을 향상시킬 수 있습니다.
 
+## 🚦 운영 점검(Incident Center) 현황
+
+### 📋 사후 검증 시스템
+인시던트 센터 v1.0.0 사후 검증 및 v1.0.1-pre 핫픽스 스캐폴드가 구축되어 있습니다.
+
+**주요 구성요소:**
+- 🧪 **스모크 테스트**: API 및 UI 자동 검증
+- 📊 **비교 분석**: 버전 간 호환성 체크
+- 🔧 **핫픽스 스캐폴드**: 신속한 버그 수정 지원
+- 📋 **상세 리포트**: 포괄적인 검증 결과
+
+### 📁 관련 문서 및 스크립트
+- **메인 리포트**: [`REPORTS/incident-center/REPORT.md`](./REPORTS/incident-center/REPORT.md)
+- **API 스모크 테스트**: `scripts/incident_post_release_smoke.sh`
+- **UI 스모크 테스트**: `scripts/dashboard_smoke_incidents.sh`
+- **비교 분석**: [`REPORTS/incident-center/v1.0.1-pre/COMPARE.md`](./REPORTS/incident-center/v1.0.1-pre/COMPARE.md)
+- **환경 가이드**: [`REPORTS/incident-center/ENV_REQUIRED.md`](./REPORTS/incident-center/ENV_REQUIRED.md)
+
+### 🚀 빠른 사용법
+```bash
+# UI 스모크 테스트 (서버 불필요)
+./scripts/dashboard_smoke_incidents.sh
+
+# API 스모크 테스트 (서버 필요)
+./scripts/incident_post_release_smoke.sh --json
+
+# Makefile 타깃 사용
+make incident-smoke-api  # API 테스트
+make incident-smoke-ui   # UI 테스트
+```
+
+### 📊 현재 상태
+- **호환성**: 67% (스크립트 100%, Makefile 60%, UI 40%)
+- **마지막 검증**: 2025-09-22 12:58 (Asia/Seoul)
+- **핫픽스 브랜치**: `hotfix/incident-center-v1.0.1-pre-fixed`
+
+더 자세한 정보는 [인시던트 센터 리포트](./REPORTS/incident-center/REPORT.md)를 참조하세요.
+
