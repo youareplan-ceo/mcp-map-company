@@ -1,0 +1,22 @@
+site_name: MCP Map Company
+site_description: "YouArePlan MCP — Documentation Portal"
+site_url: https://youareplan-ceo.github.io/mcp-map-company/
+
+repo_name: youareplan-ceo/mcp-map-company
+repo_url: https://github.com/youareplan-ceo/mcp-map-company
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - search.suggest
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - API Reference: api.md
+  - Development: development.md
+
+plugins:
+  - search
