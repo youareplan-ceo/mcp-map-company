@@ -28,3 +28,16 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgGWLKztR8aoxjk7eg0VQvEBggudI9Uu3GiJcIPi09H
   1) GitHub 웹에서 SSH 공개키 수동 등록(Settings → SSH and GPG keys)
   2) 'git remote -v' 확인 후 재시도: git push origin main
   3) 또는 'gh auth login' 다시 수행 후 재시도
+# Post-Push Manual SSH Key Guide
+- 시각: 2025-09-22 16:23:19 KST (Asia/Seoul)
+- 공개키(복사하여 GitHub → Settings → SSH and GPG keys → New SSH key):
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgGWLKztR8aoxjk7eg0VQvEBggudI9Uu3GiJcIPi09H youareplan-ceo@mcp-map-company
+```
+
+## Push Result
+- 시각: 2025-09-22 16:23:19 KST (Asia/Seoul)
+- 결과: ❌ 실패
+- 조치:
+  1) 웹에서 SSH 공개키 수동 등록 후 재시도
+  2) 또는 'gh auth login' 재실행 후 'git push origin main'

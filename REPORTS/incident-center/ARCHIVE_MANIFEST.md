@@ -117,3 +117,8 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 | 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
 |------|-------------|------------|-----------|
 | v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | a18fe8fd0a3a41761ef226597fcab46c517ff14e7939a02afda6d4a540bde9d2 | 2025-09-22 16:22:20 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push-failed 2025-09-22 16:23:19 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | db62b4354b77a1ad8b0cb0ccbf9f847f227e1ef64d01fb2610438577b33145ca | 2025-09-22 16:23:19 KST (Asia/Seoul) |
