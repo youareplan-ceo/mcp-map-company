@@ -138,3 +138,6 @@ Sprint-2, Sprint-3 진행 시 메모 형식을 다음과 같이 확장:
 **담당**: Claude Code
 **연결**: weekly_monitor.yml, v1.0.2-planning/ISSUES_PLAN.md
 **상태**: 📋 모니터링 연동 가이드 완료
+## 📝 주간 점검 기록 (자동 추가)
+- 시각: 2025-09-22 16:09:32 KST (Asia/Seoul) / 브랜치: main
+- 결과: [LINKS](REPORTS/incident-center/WEEKLY/LINKS_STATUS_2025-09-22.md) · [BADGES](REPORTS/incident-center/WEEKLY/BADGES_STATUS_2025-09-22.md) · [INTEGRITY](REPORTS/incident-center/WEEKLY/INTEGRITY_2025-09-22.md)

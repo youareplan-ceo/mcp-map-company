@@ -1,15 +1,27 @@
-# 배지 상태 체크 보고서
+# 배지 상태 주간 보고서
 
-**검증 일시**: 2025-09-22 16:01:00 KST (Asia/Seoul)
-**대상**: README 배지 및 GitHub 상태 배지
+**검사 일시**: 2025-09-22 07:09:45 UTC
+**워크플로**: weekly_monitor.yml
+**상태**: 자동 검사 완료
 
-## ⏳ 대기 중
+## 🏷️ 배지 상태 검사
 
-weekly_monitor 워크플로 수동 실행 결과 대기 중입니다.
+### GitHub Actions 배지
+```
+HTTP/2 200 
+```
 
-GitHub Actions > weekly_monitor.yml > Run workflow 실행 후
-이 파일의 내용을 실제 배지 상태 결과로 교체해 주세요.
+### Workflow 배지 (incident_smoke.yml)
+```
+HTTP/2 200 
+```
+
+## 📊 요약
+
+- **Actions 페이지**: 200
+- **Workflow 배지**: 200
+- **검사 시각**: 2025-09-22 07:09:46 UTC
 
 ---
 
-**생성**: Claude Code - weekly_monitor 대기 파일
+**자동 생성**: GitHub Actions weekly_monitor.yml
