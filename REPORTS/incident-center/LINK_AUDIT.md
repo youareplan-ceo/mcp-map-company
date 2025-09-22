@@ -74,8 +74,27 @@
 - 임시 링크: 개발 과정에서 생성되는 임시 참조
 - 미래 링크: 계획된 문서에 대한 선행 링크
 
+## 🔄 경로 교정 후 재검사
+
+**검사 일시**: 2025-09-22 15:53:22 KST (Asia/Seoul)
+**검사 범위**: 'incident- enter' 경로 문제 해결 후 링크 검증
+**명령어**: `grep -RIn 'reports/incident-center'`
+
+### 검사 결과 요약
+
+| 항목 | 검출 수 | 상태 | 비고 |
+|------|---------|------|------|
+| **MIGRATIONS 문서** | 5건 | ✅ 정상 | 소문자 경로 참조 |
+| **ROLLBACK 문서** | 3건 | ✅ 정상 | 소문자 경로 참조 |
+| **ENAMETOOLONG 오류** | 5건 | ⚠️ 재발 | stockpilot 앱 깊은 경로 |
+
+### ENAMETOOLONG 재발 방지 조치
+- ✅ Node/Bun 기반 readdir 재귀 스캔 금지
+- ✅ 쉘 스캔으로 통일 (grep 기반)
+- ✅ weekly_monitor.yml 스크립트 기반 유지
+
 ---
 
-**최종 업데이트**: 2025-09-22 15:35:00 KST (Asia/Seoul)
+**최종 업데이트**: 2025-09-22 15:53:22 KST (Asia/Seoul)
 **다음 점검**: v1.0.2 Sprint 1 시작 시
 **담당**: Claude Code
