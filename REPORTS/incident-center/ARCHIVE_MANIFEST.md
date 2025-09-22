@@ -83,3 +83,78 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 - 릴리스 자산 교체
 
 **결론**: ✅ Incident Center post-merge 체크섬 확정 완료
+## 🔄 Change Log (postqa 2025-09-22 16:09:17 KST)
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| INDEX.md | (auto) | 6c97693768dff4098741be1db47fa9e9da9e3e7fe51ad1260a0b256463a8f536 | 2025-09-22 16:09:17 KST |
+| v1.0.2-planning/RAW_anchors_check.txt | (신규) | 8fd3508c5c9e20ded6aac88c12f6ba6c1302eaf8e3b643ecfcb1daac82a88ae5 | 2025-09-22 16:09:17 KST |
+
+## 🔄 Change Log (weekly_monitor 2025-09-22 16:09:32 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| WEEKLY/LINKS_STATUS_2025-09-22.md | (auto) | 15e6088d13800c0fb79ef08d5e32b53e3c0660d26a5b9347a01c39d323e3b06d | 2025-09-22 16:09:32 KST (Asia/Seoul) |
+| WEEKLY/BADGES_STATUS_2025-09-22.md | (auto) | 3aefe7878b6e5c98824fce37547f9676173458cbdf5fd57fcca55533d35548ee | 2025-09-22 16:09:32 KST (Asia/Seoul) |
+| WEEKLY/INTEGRITY_2025-09-22.md | (auto) | 49182b05ffd583fbe904281c11c28346822ab03e2d21ece235d7c61f9c6d3478 | 2025-09-22 16:09:32 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push-fallback 2025-09-22 16:15:33 KST)
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/mcp-map-company_main_20250922_161533.bundle | (신규) | 6a0ffefd850071ad8bcfa38d106ef2f6806cd17aee3d40138a898e1fde9f5ba3 | 2025-09-22 16:15:33 KST |
+
+## 🔄 Change Log (push-fallback 2025-09-22 16:18:10 KST)
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/main_backup_20250922_161810.bundle | (신규) | 9b6930a6267e10d405bd945a841fb83e0b0c190b7b0f7b0f61b8552ded4b5513 | 2025-09-22 16:18:10 KST |
+
+## 🔄 Change Log (projects 2025-09-22 16:22:19 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| PROJECTS.md | (auto) | d928b1378e5e67116386368c2d518ba7a87fe3e674c663b6bc157428c127c752 | 2025-09-22 16:22:19 KST (Asia/Seoul) |
+| PROJECT_BOARD_STATUS.md | (auto) | 3944182368fa5f39e8348106d8df73c04298aa5b1f51e97144be8270226c4cf6 | 2025-09-22 16:22:19 KST (Asia/Seoul) |
+| INDEX.md | (auto) | 97ed982b6fde781847f197000e9a9ae6b704c0580e297e59f0c9f7fea3f8ab8b | 2025-09-22 16:22:19 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push-failed 2025-09-22 16:22:20 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | a18fe8fd0a3a41761ef226597fcab46c517ff14e7939a02afda6d4a540bde9d2 | 2025-09-22 16:22:20 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push-failed 2025-09-22 16:23:19 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | db62b4354b77a1ad8b0cb0ccbf9f847f227e1ef64d01fb2610438577b33145ca | 2025-09-22 16:23:19 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push-fallback 2025-09-22 16:28:35 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | fee5846da1bba54b531c4d173fdac8948607fb74326c99321600c97aceef147d | 2025-09-22 16:28:35 KST (Asia/Seoul) |
+| v1.0.2-planning/main_backup_20250922_162845.bundle | (신규) | 7d2d7d6724131c77dbfd77c05e354116287a9967027bff8a3e021ab09eba542e | 2025-09-22 16:28:35 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push 2025-09-22 16:29:33 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | 6767ac9d85ba1bade993fbb20ab24d1c5070e8b1abdb78f7228b56ec006b8b56 | 2025-09-22 16:29:33 KST (Asia/Seoul) |
+| v1.0.2-planning/SPRINT1_DAY1_KICKOFF.md | (신규) | b6549fb61f34013619f0cbfa49db4fcf66a6ca879ebb159a4a22e398f82bc2ca | 2025-09-22 16:29:33 KST (Asia/Seoul) |
+| INDEX.md | (auto) | c2f5b67d9af9c3c199b97a01790cce1fc5bc84a04219ca939596f797bd0d16a3 | 2025-09-22 16:29:33 KST (Asia/Seoul) |
+
+## 🔄 Change Log (project-board-docs 2025-09-22 16:31:00 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| PROJECTS.md | d928b1378e5e67116386368c2d518ba7a87fe3e674c663b6bc157428c127c752 | a635e598a28d114902bce7a337bec1eada57fc1578f2e32248802cc7ee66bf9d | 2025-09-22 16:31:00 KST (Asia/Seoul) |
+| PROJECT_BOARD_STATUS.md | 3944182368fa5f39e8348106d8df73c04298aa5b1f51e97144be8270226c4cf6 | 3968dbb30044bea3fbf7e3402db0989218094daf5de59cb4c09ef32efa86c27f | 2025-09-22 16:31:00 KST (Asia/Seoul) |
+| INDEX.md | c2f5b67d9af9c3c199b97a01790cce1fc5bc84a04219ca939596f797bd0d16a3 | c2f5b67d9af9c3c199b97a01790cce1fc5bc84a04219ca939596f797bd0d16a3 | 2025-09-22 16:31:00 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push-update 2025-09-22 16:35:33 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| PROJECT_BOARD_STATUS.md | (auto) | 52f29bf5adfe6ef4945f7d71b3dfb282d1d775d166dd57c552c25e6c45619b6a | 2025-09-22 16:35:33 KST (Asia/Seoul) |
+
+## 🔄 Change Log (push-pending 2025-09-22 16:35:34 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | d92eb9f5246689ed9bd3ee13ba190c3eff767bfc47fcc2c4a7f2775db3ef6aec | 2025-09-22 16:35:34 KST (Asia/Seoul) |
+
+## 🔄 Change Log (code3 ssh retry 2025-09-22 19:13:35 KST (Asia/Seoul))
+| 파일 | SHA256 | 시각 |
+|------|--------|------|
+| PROJECT_BOARD_STATUS.md | 051360805acbaf018ea308f3d6ce121c3cc0289cae0b999a89a8e0bd1f1c4a66 | 2025-09-22 19:13:35 KST (Asia/Seoul) |
+| INDEX.md                | 779962abc101ebfb3a30def10f0411cab7f84290b70493d95c84fa75816051c6 | 2025-09-22 19:13:35 KST (Asia/Seoul) |

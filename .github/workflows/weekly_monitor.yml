@@ -270,3 +270,6 @@ jobs:
           git add REPORTS/incident-center/WEEKLY/ || true
           git diff --staged --quiet || git commit -m "chore: add weekly monitoring reports $(date +%Y-%m-%d) [automated]"
         continue-on-error: true
+        # NOTE: Sprint-1 진행 메모 규칙 적용
+        # WEEKLY/* 파일 하단에 'Sprint-1 진행 메모: #11~#16 이슈 상태' 단락을 편집 반영
+        # 메모 형식: "## 🚀 Sprint-1 진행 메모\n- #11 DOM/선택자: [상태]\n- #12 CI 매트릭스: [상태]\n- #14 Link Audit: [상태]"
