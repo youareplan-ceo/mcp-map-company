@@ -57,3 +57,9 @@ To request it, run: gh auth refresh -s read:project
 - 브랜치: sprint1/fix-broken-links-from-15
 - KPI: 404=0, 미존재=153, 앵커누락=24, 합계=177
 - 조치: Manifest/Index 갱신 및 Batch-2 계획서 생성
+
+## #14 Batch-2 준비(code2)
+- 시각: 2025-09-22 18:18:31 KST (Asia/Seoul)
+- 브랜치: sprint1/feat-14-batch2-prep
+- 산출: BATCH2_BUCKETS(10개 단위), ISSUE_DRAFTS, META
+- 정책: NO-DEPLOY(문서 전용) — 제품 코드/배포/시크릿 불변

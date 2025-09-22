@@ -74,3 +74,10 @@
 **최종 업데이트**: 2025-09-22 18:10:03 KST (Asia/Seoul)
 **커밋**: feat(sprint1-#14): complete Batch-1 broken links auto-fix
 **상태**: ✅ Sprint-1 #14 Batch-1 완료, 문서화 완료
+<!-- SPRINT1-14-BATCH2:BEGIN -->
+## 🧩 Sprint-1 #14 Batch-2 준비(수동 교정)
+- 생성시각: 2025-09-22 18:18:31 KST (Asia/Seoul)
+- 버킷 경로: [BATCH2/](v1.0.2-planning/BATCH2)
+- 메타: [BATCH2_META.md](v1.0.2-planning/BATCH2/BATCH2_META.md)
+- 예시: [B2_BUCKET_01.md](v1.0.2-planning/BATCH2/B2_BUCKET_01.md), [ISSUE_DRAFT_B2_01.md](v1.0.2-planning/BATCH2/ISSUE_DRAFT_B2_01.md)
+<!-- SPRINT1-14-BATCH2:END -->
