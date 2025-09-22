@@ -2,29 +2,78 @@ name: DB ETL (Nightly)
 
 on:
   schedule:
-    - cron: "0 18 * * *"   # 매일 03:00 KST (18:00 UTC)
+    - cron: "0 18 * * *"   # 매일 03:00 KST (UTC 18:00)
   workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
 
 jobs:
   etl:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+
       - name: Install deps
         run: pip install -r requirements.txt
-      - name: DB Init
-        run: make db-init
-      - name: DB Ingest
-        run: make db-ingest
-      - name: DB Health
-        run: make db-health
-      - name: Generate ETL summary
-        run: make etl-summary
+
+      - name: Prep logs dir
+        run: mkdir -p data/etl && echo "run_id=${{ github.run_id }}" > data/etl/run.info
+
+      - name: ETL all (retry x3)
+        id: etlrun
+        run: |
+          set -euo pipefail
+          attempts=0
+          until make etl-all 2>&1 | tee data/etl/etl.log; do
+            attempts=$((attempts+1))
+            if [ $attempts -ge 3 ]; then
+              echo "ETL failed after ${attempts} attempts"; exit 1
+            fi
+            echo "Retrying in 10s... (#${attempts})"; sleep 10
+          done
+          echo "status=ok" >> $GITHUB_OUTPUT
+
       - name: Upload ETL summary
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: etl-summary
           path: data/etl/last_run.json
+          if-no-files-found: warn
+
+      - name: Upload ETL logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etl-logs
+          path: |
+            data/etl/etl.log
+            data/etl/run.info
+          if-no-files-found: warn
+
+      - name: Open failure issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `ETL 실패 알림 — run #${{ github.run_number }}`;
+            const body = [
+              `**상태**: 실패`,
+              `**워크플로**: ${context.workflow}`,
+              `**런 링크**: https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              `**브랜치**: ${context.ref}`,
+              ``,
+              `첨부: Artifacts(etl-summary, etl-logs)`,
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title, body, labels: ['etl','failure']
+            });
