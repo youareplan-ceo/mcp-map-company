@@ -30,3 +30,13 @@ api-tag:
 
 api-release:
 	@echo "Trigger workflow_dispatch (UI에서 실행 권장)"
+
+.PHONY: db-init db-ingest db-health
+db-init:
+\tpython -c "import duckdb, pathlib; p=pathlib.Path('data/mcp.duckdb'); p.parent.mkdir(exist_ok=True); duckdb.connect(str(p)).close()"
+
+db-ingest:
+\tpython db/scripts/ingest_holdings.py
+
+db-health:
+\tpython -c "import duckdb; con=duckdb.connect('data/mcp.duckdb'); print(con.execute('PRAGMA database_list').fetchall()); con.close()"
