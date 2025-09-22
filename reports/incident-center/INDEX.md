@@ -1,13 +1,14 @@
 # Incident Center 리포트 인덱스
 
-## 메타데이터
+## 🔒 문서 잠금 (최종 고정)
 
 | 항목 | 값 |
 |------|---|
-| **생성 시각** | 2025-09-22 13:20:44 KST (Asia/Seoul) |
+| **잠금 시각** | 2025-09-22 13:31:05 KST (Asia/Seoul) |
 | **브랜치** | hotfix/incident-center-v1.0.1-pre |
-| **커밋** | 2b761c0 fix(incident-center): clean worktree; make targets 100%; stabilize UI smoke; docs updated (no deploy) |
+| **커밋** | dff1409 chore(incident-center): unify REPORTS path; add CI smoke workflow; update PR/ENV docs (no deploy) |
 | **경로** | /Users/youareplan/Desktop/mcp-map-company/REPORTS/incident-center/ |
+| **작성자** | Claude Code + 김실장 검수 |
 
 ## v1.0.1-pre 핵심 산출물
 

@@ -1,13 +1,14 @@
 # Incident Center v1.0.1-pre 완료 상태 보고서
 
-## 📊 상태 스냅샷 (최종 고정)
+## 🔒 문서 잠금 (최종 고정)
 
 | 항목 | 값 |
 |------|---|
-| **실행 시각** | 2025-09-22 13:31:05 KST (Asia/Seoul) |
+| **잠금 시각** | 2025-09-22 13:31:05 KST (Asia/Seoul) |
 | **브랜치** | hotfix/incident-center-v1.0.1-pre |
 | **최신 커밋** | dff1409 chore(incident-center): unify REPORTS path; add CI smoke workflow; update PR/ENV docs (no deploy) |
 | **리포트 루트 경로** | /Users/youareplan/Desktop/mcp-map-company/REPORTS/incident-center/ |
+| **작성자** | Claude Code + 김실장 검수 |
 
 ## 🎯 전체 작업 현황 (6/6 완료)
 
