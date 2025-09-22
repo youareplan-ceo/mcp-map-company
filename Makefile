@@ -35,3 +35,16 @@ db-ingest:
 
 db-health:
 \tpython db/scripts/db_health.py
+
+.PHONY: ghcr-login api-tag api-release
+ghcr-login:
+	@echo "Logging in to GHCR..."
+	echo $GHCR_TOKEN | docker login ghcr.io -u youareplan-ceo --password-stdin
+
+api-tag:
+	@if [ -z "$V" ]; then echo "Usage: make api-tag V=v0.1.0"; exit 1; fi
+	git tag $V
+	git push origin $V
+
+api-release:
+	@echo "Trigger workflow_dispatch (UI에서 실행 권장)"
