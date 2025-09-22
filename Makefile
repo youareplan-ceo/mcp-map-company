@@ -17,3 +17,21 @@ deploy:
 .PHONY: dash-run
 dash-run:
 \tstreamlit run dashboard/app.py --server.port 8098
+
+.PHONY: db-init db-ingest db-health
+db-init:
+\tpython - <<'PY'
+import duckdb, pathlib
+root = pathlib.Path('.').resolve()
+db = root / 'data' / 'mcp.duckdb'
+db.parent.mkdir(parents=True, exist_ok=True)
+con = duckdb.connect(str(db))
+con.close()
+print(f"✅ Created {db}")
+PY
+
+db-ingest:
+\tpython db/scripts/ingest_holdings.py
+
+db-health:
+\tpython db/scripts/db_health.py
