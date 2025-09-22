@@ -1,0 +1,85 @@
+name: REPORTS Casing Guard
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+  workflow_dispatch:
+    # 수동 실행 허용
+
+jobs:
+  casing-guard:
+    runs-on: ubuntu-latest
+    name: "소문자 reports/ 경로 차단"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 전체 히스토리 필요
+
+      - name: Run REPORTS Casing Guard
+        id: casing_check
+        run: |
+          chmod +x scripts/check_reports_casing.sh
+          if ./scripts/check_reports_casing.sh; then
+            echo "check_result=success" >> $GITHUB_OUTPUT
+            echo "🎉 REPORTS 케이스 규칙 준수 확인!"
+          else
+            echo "check_result=failure" >> $GITHUB_OUTPUT
+            echo "❌ 소문자 reports/ 경로 발견 - PR 차단!"
+            exit 1
+          fi
+        continue-on-error: false
+
+      - name: Comment on PR (실패 시)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## 🛡️ REPORTS Casing Guard 실패
+
+            ❌ **소문자 \`reports/\` 경로가 발견되었습니다!**
+
+            ### 📋 해결 방법
+            1. \`reports/\` → \`REPORTS/\` 경로로 변경
+            2. \`git mv reports REPORTS_tmp && git mv REPORTS_tmp REPORTS\`
+            3. 문서에서 경로 참조를 \`REPORTS/\`로 수정
+
+            ### 📖 자세한 가이드
+            - [마이그레이션 가이드](./MIGRATIONS/2025-09-22-reports-to-REPORTS.md)
+            - [개발 규칙](./README.md#개발-규칙)
+
+            ### 🔍 검사 스크립트
+            로컬에서 \`./scripts/check_reports_casing.sh\` 실행하여 문제를 확인할 수 있습니다.
+
+            ---
+            🤖 자동 생성: REPORTS Casing Guard CI`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Comment on PR (성공 시)
+        if: success() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## ✅ REPORTS Casing Guard 통과
+
+            🎉 **모든 경로가 올바른 \`REPORTS/\` 케이스를 사용하고 있습니다!**
+
+            경로 규칙 준수를 확인했습니다. 소문자 \`reports/\` 경로가 발견되지 않았습니다.
+
+            ---
+            🤖 자동 생성: REPORTS Casing Guard CI`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

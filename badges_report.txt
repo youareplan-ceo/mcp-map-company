@@ -1,0 +1,4 @@
+=== GitHub Actions 배지 상태 ===
+HTTP/2 200 
+=== weekly_monitor.yml 워크플로 배지 ===
+HTTP/2 200 

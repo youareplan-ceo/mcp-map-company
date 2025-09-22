@@ -1,7 +1,7 @@
 (function () {
   // 우선순위: window.API_BASE(페이지 상수) > localStorage > 로컬 기본(개발)
   const saved = localStorage.getItem('API_BASE');
-  const fallback = 'http://127.0.0.1:8099';
+  const fallback = 'http://127.0.0.1:8088';
   window.API_BASE = window.API_BASE || saved || fallback;
 
   window.setApiBase = function (url) {
