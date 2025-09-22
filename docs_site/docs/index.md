@@ -4,46 +4,29 @@ Welcome to the MCP Map Company documentation portal.
 
 ## Overview
 
-MCP Map Company is a comprehensive platform that provides:
+MCP Map Company is a comprehensive platform providing:
 
-- **API Services**: RESTful APIs for data access and management
-- **Dashboard**: Real-time monitoring and analytics
-- **Database**: Robust data storage and ETL pipelines
-- **CI/CD**: Automated testing and deployment workflows
+- **API Services**: RESTful APIs for data access
+- **Dashboard**: Real-time monitoring with Streamlit
+- **Database**: DuckDB analytics engine
+- **CI/CD**: Automated GitHub Actions workflows
 
-## Quick Links
+## Quick Start
 
-- [Getting Started](getting-started/installation.md) - Set up your development environment
-- [API Reference](api/endpoints.md) - Explore available endpoints
-- [Architecture](architecture/overview.md) - Understand system design
-- [Development](development/setup.md) - Contribute to the project
+1. **Installation**: `pip install -r requirements.txt`
+2. **Database**: `make db-init && make db-ingest`
+3. **Dashboard**: `make dash-run` (port 8098)
+4. **API**: `python -m api.main` (port 8000)
 
 ## Key Features
 
-### 🚀 **Modern Stack**
-- Python FastAPI backend
-- Streamlit dashboard frontend
-- DuckDB for analytics
-- GitHub Actions CI/CD
+- **Modern Stack**: FastAPI + Streamlit + DuckDB
+- **Analytics**: Real-time metrics and monitoring
+- **Testing**: Comprehensive test coverage
+- **Deployment**: Docker + GitHub Actions
 
-### 📊 **Analytics & Monitoring**
-- Real-time metrics dashboards
-- Automated reporting
-- Health monitoring
-- Performance tracking
+## Links
 
-### 🔧 **Developer Experience**
-- Comprehensive testing suite
-- Automated deployment
-- Docker containerization
-- Detailed documentation
-
-## Getting Help
-
-- **Issues**: [GitHub Issues](https://github.com/youareplan-ceo/mcp-map-company/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/youareplan-ceo/mcp-map-company/discussions)
-- **Documentation**: [MkDocs Site](https://youareplan-ceo.github.io/mcp-map-company/)
-
----
-
-*Last updated: {{ git_revision_date_localized }}*
+- [GitHub Repository](https://github.com/youareplan-ceo/mcp-map-company)
+- [API Documentation](http://localhost:8000/docs)
+- [Dashboard](http://localhost:8098)
