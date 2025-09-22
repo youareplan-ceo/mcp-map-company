@@ -59,3 +59,9 @@
 - 결과: ❌ 실패
 - 원격: https://github.com/youareplan-ceo/mcp-map-company.git
 - 보드: 현재 문서화 완료(웹 UI 수동 생성 가이드 유지)
+
+## code3 SSH push retry (INDEX 복구 후)
+- 시각: 2025-09-22 19:13:35 KST (Asia/Seoul)
+- 브랜치: sprint1/feat-16-postmortem-runbook
+- SSH 키 새로 생성/등록 필요 여부: NO
+- push 결과: FAIL
