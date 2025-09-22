@@ -1,8 +1,13 @@
 # Incident Center v1.0.1-pre 완료 상태 보고서
 
-**완료 시각**: 2025-09-22 13:22:00 (Asia/Seoul)
-**브랜치**: hotfix/incident-center-v1.0.1-pre
-**최종 커밋**: ae038f7 feat: 인시던트 센터 v1.0.1-pre 스모크 스크립트 및 Makefile 타깃 복원
+## 📊 상태 스냅샷 (최종 고정)
+
+| 항목 | 값 |
+|------|---|
+| **실행 시각** | 2025-09-22 13:31:05 KST (Asia/Seoul) |
+| **브랜치** | hotfix/incident-center-v1.0.1-pre |
+| **최신 커밋** | dff1409 chore(incident-center): unify REPORTS path; add CI smoke workflow; update PR/ENV docs (no deploy) |
+| **리포트 루트 경로** | /Users/youareplan/Desktop/mcp-map-company/REPORTS/incident-center/ |
 
 ## 🎯 전체 작업 현황 (6/6 완료)
 
@@ -22,10 +27,14 @@
 - **self-check 통과**: 두 스크립트 모두 --help 옵션 정상 작동
 
 ### ✅ 4. 스모크 재검증 실행 (최종)
-- **RAW_LOGS_dryrun3.txt**: 드라이런 완료 (✅ 모든 스크립트 정상, 16,668 + 10,793 bytes)
-- **RAW_LOGS_full3.txt**: API 서버 미실행으로 예상된 실패 (HTTP 000)
-- **CI 워크플로**: .github/workflows/incident_smoke.yml 추가
-- **결론**: 로컬 환경 제약으로 인한 예상된 결과, CI 준비 완료
+
+| 실행 | 결과 | 로그 파일 | 상태 |
+|------|------|-----------|------|
+| **dryrun4** | ✅ 통과 | RAW_LOGS_dryrun4.txt | 스크립트 정상 (16,668 + 10,793 bytes) |
+| **full4** | ❌ 예상된 실패 | RAW_LOGS_full4.txt | API 서버 미실행 (HTTP 000) |
+| **CI 워크플로** | ✅ 준비완료 | .github/workflows/incident_smoke.yml | 트리거/아티팩트/코멘트 포함 |
+
+**최근 2회 대비 요약**: 드라이런 지속 통과, full 테스트는 로컬 환경 제약으로 동일한 예상 실패 유지
 
 ### ✅ 5. 문서 갱신
 - **SUMMARY.md**: 병합 전략 및 최신 테스트 결과 반영
