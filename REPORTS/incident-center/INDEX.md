@@ -64,3 +64,5 @@
 - 🏷️ [GitHub Labels 표준화](../../.github/LABELS.md)
 - 📋 [v1.0.2 Planning](./v1.0.2-planning/)
 > 🔒 갱신: 2025-09-22 16:09:32 KST (Asia/Seoul) (main)
+
+- 프로젝트 보드: [PROJECTS.md](PROJECTS.md)
