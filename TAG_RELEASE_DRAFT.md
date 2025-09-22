@@ -85,11 +85,17 @@ git push origin incident-center-v1.0.1-pre-merged
 **✅ v1.0.1-pre 완료** - 코드 품질 향상, 문서 표준화, CI 자동화 구축 (배포 없음)
 ```
 
-## 자산 첨부 목록
+## 자산 첨부 목록 (검증 완료)
 
-병합 후 릴리스 생성 시 다음 파일들을 첨부:
-1. `REPORTS/incident-center/v1.0.1-pre/RAW_LOGS_dryrun4.txt`
-2. `REPORTS/incident-center/v1.0.1-pre/RAW_LOGS_full4.txt`
-3. `REPORTS/incident-center/v1.0.1-pre/COMPLETE_STATUS.md`
-4. `REPORTS/incident-center/INDEX.md`
-5. `REPORTS/incident-center/ENV_REQUIRED.md`
+병합 후 릴리스 생성 시 다음 5종 파일들을 첨부:
+
+| 순번 | 파일 경로 | 크기 | 설명 |
+|------|-----------|------|------|
+| 1 | `REPORTS/incident-center/v1.0.1-pre/RAW_LOGS_dryrun4.txt` | 482 bytes | 드라이런 테스트 로그 |
+| 2 | `REPORTS/incident-center/v1.0.1-pre/RAW_LOGS_full4.txt` | 1,634 bytes | 전체 테스트 로그 |
+| 3 | `REPORTS/incident-center/v1.0.1-pre/COMPLETE_STATUS.md` | 5,032 bytes | 종합 완료 보고서 |
+| 4 | `REPORTS/incident-center/INDEX.md` | 1,652 bytes | 리포트 인덱스 |
+| 5 | `REPORTS/incident-center/ENV_REQUIRED.md` | 2,965 bytes | 환경 요구사항 |
+
+**총 크기**: 11,765 bytes (11.5 KB)
+**실행 명령**: 병합 후 운영자가 실행
