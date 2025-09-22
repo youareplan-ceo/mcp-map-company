@@ -6896,22 +6896,23 @@ jobs:
 
 ## 🚦 운영 점검(Incident Center) 현황
 
-### 📋 v1.0.1-pre 최종 완료 시스템
-인시던트 센터 v1.0.1-pre 충돌 해결, 스모크 테스트 복원 및 main 병합 준비가 완료되었습니다.
+### 📋 v1.0.1-pre 병합 완료 및 운영 준비 시스템
+인시던트 센터 v1.0.1-pre 병합, 태그/릴리스 생성 및 사후 안정화가 모두 완료되었습니다.
 
-**주요 성과:**
-- ✅ **충돌 해결**: main에서 삭제된 핵심 스크립트 완전 복원
-- ✅ **스모크 테스트**: 드라이런 100% 통과, CI 아티팩트 정상 업로드
-- ✅ **문서 체계**: 10개 분석 리포트 및 환경 요구사항 완성
-- ✅ **GitHub 통합**: PR #3 생성, 라벨 지정, 병합 조건 확정
+**최종 완료 성과:**
+- ✅ **main 병합**: PR #3 병합 완료 (2025-09-22 13:34:33 KST)
+- ✅ **태그/릴리스**: incident-center-v1.0.1-pre-merged 생성
+- ✅ **사후 검증**: 아카이브 체크섬, 모니터링 가이드, 정리 정책 확정
+- ✅ **운영 준비**: 모든 문서 잠금, 무결성 보장
 
 ### 📁 관련 문서 및 스크립트
-- **최종 요약**: [`REPORTS/incident-center/v1.0.1-pre/SUMMARY.md`](./REPORTS/incident-center/v1.0.1-pre/SUMMARY.md)
+- **아카이브 매니페스트**: [`REPORTS/incident-center/v1.0.1-pre/ARCHIVE_MANIFEST.md`](./REPORTS/incident-center/v1.0.1-pre/ARCHIVE_MANIFEST.md)
+- **운영 모니터링**: [`REPORTS/incident-center/MONITORING_GUIDE.md`](./REPORTS/incident-center/MONITORING_GUIDE.md)
 - **완료 보고서**: [`REPORTS/incident-center/v1.0.1-pre/COMPLETE_STATUS.md`](./REPORTS/incident-center/v1.0.1-pre/COMPLETE_STATUS.md)
 - **환경 요구사항**: [`ENV_REQUIRED.md`](./ENV_REQUIRED.md)
 - **API 스모크 테스트**: `scripts/incident_post_release_smoke.sh` (10,793 bytes)
 - **UI 스모크 테스트**: `scripts/dashboard_smoke_incidents.sh` (16,372 bytes)
-- **릴리스 노트**: [`RELEASES/incident-center/v1.0.1-pre.md`](./RELEASES/incident-center/v1.0.1-pre.md)
+- **릴리스**: [v1.0.1-pre-merged](https://github.com/youareplan-ceo/mcp-map-company/releases/tag/incident-center-v1.0.1-pre-merged)
 
 ### 🚀 빠른 사용법
 ```bash
@@ -6930,19 +6931,20 @@ make incident-smoke-all-dry-run
 
 **✅ CI 환경:** 시크릿 불필요, 더미 환경변수로 완전한 검증 가능
 
-### 📊 최종 상태 (v1.0.1-pre)
-- **충돌 해결**: ✅ 100% 완료 (2개 스크립트 복원)
-- **스모크 테스트**: ✅ 드라이런 100% 통과
-- **CI 통합**: ✅ GitHub Actions 정상 동작
-- **문서화**: ✅ 10개 리포트 완성
-- **배포 준비**: ✅ main 병합 대기 (배포 없음)
+### 📊 최종 상태 (v1.0.1-pre 완료)
+- **병합 완료**: ✅ main 브랜치 병합 (01f0255)
+- **태그/릴리스**: ✅ incident-center-v1.0.1-pre-merged
+- **아카이브**: ✅ SHA256 체크섬 확정
+- **운영 준비**: ✅ 모니터링 가이드 및 정리 정책
+- **문서 잠금**: ✅ 모든 핵심 문서 무결성 보장
 
 ### 🔗 GitHub 리소스
-- **활성 PR**: [#3 incident-center v1.0.1-pre](https://github.com/youareplan-ceo/mcp-map-company/pull/3)
+- **병합된 PR**: [#3 incident-center v1.0.1-pre](https://github.com/youareplan-ceo/mcp-map-company/pull/3) (MERGED)
+- **릴리스**: [incident-center-v1.0.1-pre-merged](https://github.com/youareplan-ceo/mcp-map-company/releases/tag/incident-center-v1.0.1-pre-merged)
 - **후속 이슈**:
   - [#4 API 서버 독립적 테스트 환경](https://github.com/youareplan-ceo/mcp-map-company/issues/4)
   - [#5 UI DOM 구조 완전 복원](https://github.com/youareplan-ceo/mcp-map-company/issues/5)
   - [#6 CI/CD 파이프라인 스모크 테스트 확장](https://github.com/youareplan-ceo/mcp-map-company/issues/6)
 
-**결론**: v1.0.1-pre는 완전히 준비되어 main 브랜치 병합을 대기 중입니다.
+**결론**: v1.0.1-pre 완전 완료 - 병합, 태그, 사후 안정화 모든 단계 성공
 
