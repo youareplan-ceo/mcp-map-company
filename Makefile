@@ -698,3 +698,10 @@ incident-links: ## 인시던트 센터 링크 상태 점검 (로컬 파일 기�
 # .PHONY 선언 (인시던트 센터 관련)
 .PHONY: incident-smoke-api incident-smoke-ui incident-smoke-all incident-smoke-all-dry-run incident-rollback-dry incident-audit incident-links
 
+
+## qa-all: link audit + integrity + anchors
+qa-all:
+	@$(MAKE) -s incident-links
+	@$(MAKE) -s incident-audit
+	@python3 scripts/check_md_anchors.py > REPORTS/incident-center/v1.0.2-planning/RAW_anchors_check.txt || true
+	@echo "QA OK"

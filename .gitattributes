@@ -1,0 +1,3 @@
+* text=auto eol=lf
+*.md text=auto working-tree-encoding=UTF-8
+REPORTS/** merge=union
