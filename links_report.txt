@@ -1,0 +1,7 @@
+=== README.md 링크 검사 ===
+markdown-link-check 미설치, 수동 점검 수행
+=== REPORTS 디렉토리 링크 검사 (curl 기반) ===
+GitHub 링크 상태 검사:
+- Actions 페이지: HTTP 200
+- Weekly Monitor 배지: HTTP 200
+- 릴리스 페이지: HTTP 200
