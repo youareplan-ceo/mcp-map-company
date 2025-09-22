@@ -1,0 +1,116 @@
+name: ✨ Feature Request
+description: 새로운 기능이나 개선사항을 제안합니다
+title: "[Feature] "
+labels: ["enhancement"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        새로운 기능 제안해 주셔서 감사합니다. 자세한 정보를 제공해 주시면 더 나은 검토가 가능합니다.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 🎯 해결하고자 하는 문제
+      description: 현재 어떤 문제나 불편함이 있나요?
+      placeholder: "현재 상황에서 불편한 점이나 개선이 필요한 부분을 설명해 주세요"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 제안하는 해결책
+      description: 어떤 기능이나 개선사항을 원하시나요?
+      placeholder: "구체적인 해결책이나 기능에 대해 설명해 주세요"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 🎯 관련 컴포넌트
+      description: 어떤 영역과 관련된 제안인가요?
+      options:
+        - incident-center
+        - CI/CD 자동화
+        - 스모크 테스트
+        - 모니터링 시스템
+        - 사용자 인터페이스
+        - 문서화
+        - 성능 최적화
+        - 보안
+        - 기타
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 📊 우선순위
+      description: 이 기능의 우선순위는?
+      options:
+        - High (매우 중요)
+        - Medium (중요)
+        - Low (여유가 있을 때)
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 대안 고려사항
+      description: 다른 대안이나 해결 방법을 고려해 보셨나요?
+      placeholder: "다른 방법이나 기존에 시도해본 접근법이 있다면 설명해 주세요"
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: ✅ 완료 조건 (Acceptance Criteria)
+      description: 이 기능이 완료되었다고 판단할 수 있는 조건들
+      placeholder: |
+        - [ ] 기능 A가 정상 동작
+        - [ ] 테스트 케이스 통과
+        - [ ] 문서 업데이트 완료
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 📈 예상 영향도
+      description: 이 기능이 시스템이나 사용자에게 미칠 영향
+      placeholder: "성능, 사용성, 보안, 유지보수성 등에 미칠 영향을 설명해 주세요"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: 🎯 목표 마일스톤
+      description: 언제까지 완료되기를 희망하나요?
+      options:
+        - Sprint-1 (2025-09-30)
+        - Sprint-2 (2025-10-15)
+        - v1.0.2 (2025-10-31)
+        - 차기 버전
+        - 미정
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✅ 체크리스트
+      description: 다음 사항을 확인해 주세요
+      options:
+        - label: 유사한 기능 요청이 없음을 확인했습니다
+          required: true
+        - label: 제안하는 기능이 프로젝트 범위에 적합합니다
+          required: true
+        - label: 적절한 라벨과 컴포넌트를 선택했습니다
+          required: true

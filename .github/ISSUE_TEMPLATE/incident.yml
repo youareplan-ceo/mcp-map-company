@@ -1,0 +1,178 @@
+name: 🚨 Incident Report
+description: 시스템 장애나 인시던트를 보고합니다
+title: "[Incident] "
+labels: ["incident-center", "bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **긴급 상황인 경우 먼저 담당자에게 직접 연락하세요**
+
+        인시던트 보고해 주셔서 감사합니다. 신속한 대응을 위해 정확한 정보를 제공해 주세요.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 🚨 심각도 레벨
+      description: 인시던트의 심각도를 선택해 주세요
+      options:
+        - "P0 - Critical (전체 시스템 중단)"
+        - "P1 - High (주요 기능 중단)"
+        - "P2 - Medium (일부 기능 영향)"
+        - "P3 - Low (경미한 문제)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 📋 인시던트 요약
+      description: 발생한 문제에 대한 간단한 요약
+      placeholder: "한 줄로 인시던트를 요약해 주세요"
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 💥 영향 범위
+      description: 어떤 시스템이나 사용자에게 영향을 미치고 있나요?
+      placeholder: |
+        - 영향받는 시스템/컴포넌트
+        - 영향받는 사용자 수 또는 범위
+        - 비즈니스에 미치는 영향
+    validations:
+      required: true
+
+  - type: textarea
+    id: timeline
+    attributes:
+      label: ⏰ 발견 시점 및 경과
+      description: 언제 문제를 발견했으며, 어떻게 진행되었나요?
+      placeholder: |
+        - 최초 발견 시각: 2025-09-22 15:30 KST
+        - 알림 수신 경로: 모니터링 대시보드/사용자 신고
+        - 현재 상황: 진행 중/해결됨/조사 중
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 🎯 영향받는 컴포넌트
+      description: 어떤 컴포넌트에서 문제가 발생했나요?
+      options:
+        - incident-center (전체)
+        - 스모크 테스트 시스템
+        - 모니터링 대시보드
+        - CI/CD 파이프라인
+        - API 서버
+        - 웹 인터페이스
+        - 데이터베이스
+        - 네트워크/인프라
+        - 외부 서비스 연동
+        - 기타
+    validations:
+      required: true
+
+  - type: textarea
+    id: symptoms
+    attributes:
+      label: 🔍 증상 및 오류 메시지
+      description: 구체적인 증상과 오류 메시지를 기재해 주세요
+      placeholder: |
+        - 사용자가 보고한 증상
+        - 시스템에서 관찰된 증상
+        - 오류 메시지 또는 로그
+        - 스크린샷 (가능한 경우)
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 🖥️ 환경 정보
+      description: 문제가 발생한 환경에 대한 정보
+      placeholder: |
+        - 운영 환경: Production/Staging/Development
+        - 브라우저/클라이언트 정보
+        - 네트워크 환경
+        - 기타 관련 환경 정보
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_taken
+    attributes:
+      label: 🛠️ 수행한 조치
+      description: 지금까지 수행한 조치나 시도한 해결 방법
+      placeholder: |
+        - 이미 시도한 해결 방법
+        - 임시 조치 (Workaround)
+        - 현재 진행 중인 조치
+    validations:
+      required: false
+
+  - type: textarea
+    id: monitoring_data
+    attributes:
+      label: 📊 모니터링 데이터
+      description: 관련 모니터링 데이터나 메트릭
+      placeholder: |
+        - 관련 모니터링 대시보드 링크
+        - 성능 메트릭 변화
+        - 알람 기록
+        - 로그 파일 위치
+    validations:
+      required: false
+
+  - type: dropdown
+    id: status
+    attributes:
+      label: 📈 현재 상태
+      description: 인시던트의 현재 상태
+      options:
+        - "🔴 Active (진행 중)"
+        - "🟡 Investigating (조사 중)"
+        - "🟢 Resolved (해결됨)"
+        - "🔵 Monitoring (모니터링 중)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: communication
+    attributes:
+      label: 📢 커뮤니케이션
+      description: 관련 이해관계자에게 공지된 내용
+      placeholder: |
+        - 알림 대상: 팀원/고객/관리자
+        - 공지 채널: Slack/이메일/공지사항
+        - 다음 업데이트 예정 시각
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: immediate_actions
+    attributes:
+      label: ⚡ 즉시 조치 체크리스트
+      description: 인시던트 대응을 위한 즉시 조치 사항
+      options:
+        - label: 관련 팀원에게 즉시 알림
+        - label: 영향 범위 파악 완료
+        - label: 임시 조치(Workaround) 검토
+        - label: 모니터링 강화 설정
+        - label: 커뮤니케이션 계획 수립
+
+  - type: checkboxes
+    id: post_incident
+    attributes:
+      label: 📋 사후 조치 계획
+      description: 인시던트 해결 후 수행할 작업들
+      options:
+        - label: 근본 원인 분석 (RCA) 수행
+        - label: 인시던트 포스트모템 작성
+        - label: 재발 방지 조치 수립
+        - label: 프로세스 개선 사항 도출
+        - label: 모니터링/알림 시스템 개선

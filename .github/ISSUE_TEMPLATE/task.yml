@@ -1,0 +1,166 @@
+name: 📋 Task
+description: 일반적인 작업이나 개발 태스크를 생성합니다
+title: "[Task] "
+labels: ["task"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        새로운 작업 요청해 주셔서 감사합니다. 작업의 범위와 목표를 명확히 정의해 주세요.
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: 🎯 작업 목표
+      description: 이 작업을 통해 달성하고자 하는 목표
+      placeholder: "이 작업의 목적과 예상되는 결과를 설명해 주세요"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 작업 설명
+      description: 수행해야 할 작업에 대한 상세 설명
+      placeholder: "구체적으로 어떤 작업을 수행해야 하는지 설명해 주세요"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 🏷️ 작업 카테고리
+      description: 작업의 성격을 선택해 주세요
+      options:
+        - 개발 (Development)
+        - 테스트 (Testing)
+        - 문서화 (Documentation)
+        - 설정/구성 (Configuration)
+        - 리팩토링 (Refactoring)
+        - 조사/분석 (Research)
+        - CI/CD 개선
+        - 성능 최적화
+        - 보안 강화
+        - 기타
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 🎯 관련 컴포넌트
+      description: 어떤 컴포넌트와 관련된 작업인가요?
+      options:
+        - incident-center
+        - CI/CD 파이프라인
+        - 스모크 테스트
+        - 모니터링 시스템
+        - 웹 인터페이스
+        - 문서
+        - 인프라
+        - 전체 시스템
+        - 기타
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: 📏 작업 범위
+      description: 이 작업에 포함되는 것과 포함되지 않는 것
+      placeholder: |
+        포함되는 것:
+        - 항목 1
+        - 항목 2
+
+        포함되지 않는 것:
+        - 제외 항목 1
+        - 제외 항목 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: ✅ 완료 조건 (Definition of Done)
+      description: 작업이 완료되었다고 판단할 수 있는 구체적인 조건들
+      placeholder: |
+        - [ ] 기능이 정상적으로 동작한다
+        - [ ] 모든 테스트가 통과한다
+        - [ ] 코드 리뷰가 완료되었다
+        - [ ] 문서가 업데이트되었다
+        - [ ] 배포가 성공했다
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: 🧩 복잡도
+      description: 작업의 예상 복잡도
+      options:
+        - Low (1-2일)
+        - Medium (3-5일)
+        - High (1주 이상)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 📊 우선순위
+      description: 작업의 우선순위
+      options:
+        - P0 (긴급)
+        - P1 (높음)
+        - P2 (보통)
+        - P3 (낮음)
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 🔗 의존성
+      description: 이 작업을 시작하기 전에 완료되어야 하는 다른 작업들
+      placeholder: "선행 작업이나 의존성이 있다면 설명해 주세요"
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 📝 추가 참고사항
+      description: 작업 수행 시 고려해야 할 추가 정보
+      placeholder: "참고 링크, 관련 문서, 주의사항 등을 기재해 주세요"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: 🎯 목표 마일스톤
+      description: 이 작업이 완료되어야 하는 마일스톤
+      options:
+        - Sprint-1 (2025-09-30)
+        - Sprint-2 (2025-10-15)
+        - v1.0.2 (2025-10-31)
+        - 차기 버전
+        - 미정
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✅ 체크리스트
+      description: 다음 사항을 확인해 주세요
+      options:
+        - label: 작업 범위가 명확하게 정의되었습니다
+          required: true
+        - label: 완료 조건이 구체적으로 작성되었습니다
+          required: true
+        - label: 적절한 라벨과 컴포넌트를 선택했습니다
+          required: true

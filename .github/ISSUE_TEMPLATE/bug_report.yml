@@ -1,0 +1,114 @@
+name: 🐛 Bug Report
+description: 버그나 오류를 신고합니다
+title: "[Bug] "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        버그 리포트를 작성해 주셔서 감사합니다. 가능한 한 자세한 정보를 제공해 주세요.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 🐛 버그 설명
+      description: 발생한 버그에 대한 명확하고 간결한 설명
+      placeholder: 어떤 일이 일어났나요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 🔄 재현 단계
+      description: 버그를 재현하는 단계를 설명해 주세요
+      placeholder: |
+        1. '...'로 이동
+        2. '...'를 클릭
+        3. '...'까지 스크롤
+        4. 오류 확인
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ 예상된 동작
+      description: 어떤 일이 일어날 것으로 예상했나요?
+      placeholder: 예상된 결과를 설명해 주세요
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ 실제 동작
+      description: 실제로 어떤 일이 일어났나요?
+      placeholder: 실제 결과를 설명해 주세요
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 🎯 영향받는 컴포넌트
+      description: 어떤 컴포넌트에서 버그가 발생했나요?
+      options:
+        - incident-center
+        - CI/CD 파이프라인
+        - 스모크 테스트
+        - 모니터링 시스템
+        - 문서
+        - 기타
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 🚨 심각도
+      description: 이 버그의 심각도는?
+      options:
+        - Critical (시스템 중단)
+        - High (주요 기능 영향)
+        - Medium (일부 기능 영향)
+        - Low (경미한 문제)
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 🖥️ 환경 정보
+      description: 운영 체제, 브라우저, 버전 등
+      placeholder: |
+        - OS: macOS 14.x
+        - Browser: Chrome 118.x
+        - Node.js: v18.x
+        - 기타 관련 정보
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📋 로그/스크린샷
+      description: 관련 로그나 스크린샷을 첨부해 주세요
+      placeholder: 오류 메시지, 콘솔 로그, 스크린샷 등
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✅ 체크리스트
+      description: 다음 사항을 확인해 주세요
+      options:
+        - label: 이미 존재하는 이슈가 아님을 확인했습니다
+          required: true
+        - label: 버그를 재현할 수 있습니다
+          required: true
+        - label: 적절한 라벨을 선택했습니다
+          required: true
