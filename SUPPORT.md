@@ -216,8 +216,16 @@ We continuously improve our support processes based on:
 - Reducing repeat issues through improved documentation
 - Growing community knowledge and self-sufficiency
 
+## ⚠️ 권한 이슈 기록
+
+**일시**: 2025-09-22 15:55:00 KST
+**이슈**: GitHub CLI 프로젝트 생성 권한 부족
+**에러**: `error: your authentication token is missing required scopes [project read:project]`
+**해결 방법**: 웹 UI에서 수동 생성 또는 `gh auth refresh -s project,read:project` 실행
+**상태**: 수동 생성 가이드 문서화 완료 (PROJECT_BOARD_STATUS.md)
+
 ---
 
-**Last Updated**: 2025-09-22 15:32:00 KST (Asia/Seoul)
+**Last Updated**: 2025-09-22 15:55:00 KST (Asia/Seoul)
 **Contact**: Create GitHub Issues with `support` label for all support requests
 **Policy**: 🚫 NO-DEPLOY - Support scope limited to documentation and automation

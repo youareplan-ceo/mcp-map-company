@@ -8,22 +8,23 @@
 
 ## 📋 Sprint 구조
 
-### Sprint 1: Foundation & Automation
-**기간**: 2025-09-23 ~ 2025-10-15 (23일)
-**주제**: CI/CD 파이프라인 & 링크가드 엄격 모드
+### Sprint 1: Foundation & Automation 🔒
+**기간**: 2025-09-23 09:00 KST ~ 2025-10-15 18:00 KST (23일) — **LOCKED**
+**주제**: DOM/선택자 안정화, CI 매트릭스 확장, Link Audit 엄격 모드
 
 | 항목 | 값 |
 |------|-----|
-| **핵심 목표** | CI/CD 완전 자동화 구축 |
-| **부목표** | 링크 감사 시스템 엄격 모드 적용 |
-| **예상 산출물** | GitHub Actions 워크플로, 자동 배포 시스템 |
-| **위험도** | 높음 (새로운 자동화 시스템) |
+| **핵심 목표** | DOM/선택자 안정화 및 CI 매트릭스 확장 |
+| **부목표** | Link Audit 엄격 모드 적용 |
+| **예상 산출물** | Python 3.11~3.13 CI 매트릭스, macOS+Ubuntu 지원 |
+| **위험도** | 중간 (기존 시스템 확장) |
 
-#### Definition of Done (DoD)
-- [ ] GitHub Actions multi-stage 배포 파이프라인 구현
-- [ ] 자동 롤백 시스템 < 10분 복구 시간
-- [ ] 링크 감사 엄격 모드 404 오류 0건
-- [ ] 품질 게이트: 테스트 커버리지 > 80%
+#### Definition of Done (DoD) — **LOCKED**
+- [ ] DOM/선택자 안정화 완료 (CSS 선택자 표준화)
+- [ ] CI 매트릭스 확장: Python 3.11, 3.12, 3.13 지원
+- [ ] 플랫폼 지원: macOS + Ubuntu 환경 테스트 통과
+- [ ] Link Audit 엄격 모드: 404 오류 0건 달성
+- [ ] **weekly_monitor 2회 통과**: 링크 HTTP 200 + 체크섬 OK
 - [ ] 보안 스캔 취약점 0건
 
 #### 주요 위험 요소
