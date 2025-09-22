@@ -43,6 +43,7 @@ show_help() {
     echo "옵션:"
     echo "  --json          JSON 형태로 결과 출력"
     echo "  --verbose       상세한 디버그 정보 출력"
+    echo "  --optional      선택적 모드 (DOM 요소 누락 시 경고만)"
     echo "  --help          이 도움말 표시"
     echo ""
     echo "예시:"
@@ -90,6 +91,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --verbose)
             VERBOSE=true
+            shift
+            ;;
+        --optional)
+            OPTIONAL_MODE=true
             shift
             ;;
         --help)
@@ -184,9 +189,16 @@ test_incident_cards() {
         add_test_result "incident_cards" "pass" "모든 인시던트 통계 카드 확인" "{\"found_cards\":$(printf '%s\n' "${found_cards[@]}" | jq -R . | jq -s .),\"count\":${#found_cards[@]}}"
         return 0
     else
-        log_error "누락된 인시던트 카드 ID: ${missing_cards[*]}"
-        add_test_result "incident_cards" "fail" "인시던트 카드 ID 누락" "{\"missing_cards\":$(printf '%s\n' "${missing_cards[@]}" | jq -R . | jq -s .),\"found_cards\":$(printf '%s\n' "${found_cards[@]}" | jq -R . | jq -s .)}"
-        return 1
+        if [[ "$OPTIONAL_MODE" == "true" ]]; then
+            log_warning "일부 인시던트 카드 ID 누락 (선택적 모드): ${missing_cards[*]}"
+            log_info "발견된 카드: ${#found_cards[@]}개 / 필요: ${#required_card_ids[@]}개"
+            add_test_result "incident_cards" "warning" "인시던트 카드 일부 누락 (허용됨)" "{\"missing_cards\":$(printf '%s\n' "${missing_cards[@]}" | jq -R . | jq -s .),\"found_cards\":$(printf '%s\n' "${found_cards[@]}" | jq -R . | jq -s .),\"optional_mode\":true}"
+            return 0
+        else
+            log_error "누락된 인시던트 카드 ID: ${missing_cards[*]}"
+            add_test_result "incident_cards" "fail" "인시던트 카드 ID 누락" "{\"missing_cards\":$(printf '%s\n' "${missing_cards[@]}" | jq -R . | jq -s .),\"found_cards\":$(printf '%s\n' "${found_cards[@]}" | jq -R . | jq -s .)}"
+            return 1
+        fi
     fi
 }
 
@@ -216,9 +228,16 @@ test_incident_charts() {
         add_test_result "incident_charts" "pass" "모든 인시던트 차트 확인" "{\"found_charts\":$(printf '%s\n' "${found_charts[@]}" | jq -R . | jq -s .),\"count\":${#found_charts[@]}}"
         return 0
     else
-        log_error "누락된 인시던트 차트 ID: ${missing_charts[*]}"
-        add_test_result "incident_charts" "fail" "인시던트 차트 ID 누락" "{\"missing_charts\":$(printf '%s\n' "${missing_charts[@]}" | jq -R . | jq -s .),\"found_charts\":$(printf '%s\n' "${found_charts[@]}" | jq -R . | jq -s .)}"
-        return 1
+        if [[ "$OPTIONAL_MODE" == "true" ]]; then
+            log_warning "일부 인시던트 차트 ID 누락 (선택적 모드): ${missing_charts[*]}"
+            log_info "발견된 차트: ${#found_charts[@]}개 / 필요: ${#required_chart_ids[@]}개"
+            add_test_result "incident_charts" "warning" "인시던트 차트 일부 누락 (허용됨)" "{\"missing_charts\":$(printf '%s\n' "${missing_charts[@]}" | jq -R . | jq -s .),\"found_charts\":$(printf '%s\n' "${found_charts[@]}" | jq -R . | jq -s .),\"optional_mode\":true}"
+            return 0
+        else
+            log_error "누락된 인시던트 차트 ID: ${missing_charts[*]}"
+            add_test_result "incident_charts" "fail" "인시던트 차트 ID 누락" "{\"missing_charts\":$(printf '%s\n' "${missing_charts[@]}" | jq -R . | jq -s .),\"found_charts\":$(printf '%s\n' "${found_charts[@]}" | jq -R . | jq -s .)}"
+            return 1
+        fi
     fi
 }
 
@@ -336,6 +355,12 @@ main() {
         echo -e "${CYAN}📅 시작 시간: $(date)${NC}"
         echo -e "${CYAN}📄 대시보드 파일: $DASHBOARD_FILE${NC}"
         echo ""
+
+        # 자체 점검 로깅
+        log_verbose "🔧 스크립트 버전: v1.0.1-enhanced"
+        log_verbose "📍 실행 경로: $(pwd)"
+        log_verbose "⚙️ 선택적 모드: $OPTIONAL_MODE"
+        log_verbose "🔄 재시도 설정: ${RETRY_COUNT}회, ${RETRY_DELAY}초 간격"
     fi
 
     local test_results=()
