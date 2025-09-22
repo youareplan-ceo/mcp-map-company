@@ -4,10 +4,10 @@
 
 | 항목 | 값 |
 |------|---|
-| **확정 시각** | 2025-09-22 13:51:50 KST (Asia/Seoul) |
-| **커밋 (main)** | 01f0255a8d11d66c7e5489e9e05146cd5706e841 |
+| **확정 시각** | 2025-09-22 14:45:00 KST (Asia/Seoul) |
+| **커밋 (main)** | d4a8a36 docs(incident-center): finalize post-merge archive |
 | **태그** | incident-center-v1.0.1-pre-merged |
-| **릴리스** | https://github.com/youareplan-ceo/mcp-map-company/releases/tag/incident-center-v1.0.1-pre-merged |
+| **릴리스** | https://github.com/youareplan-ceo/mcp-map-company/releases/tag/untagged-6456a5a0c1ee8f0a9d18 |
 | **작성자** | Claude Code + 김실장 검수 |
 
 ## 🔐 핵심 자산 체크섬 (SHA256)
