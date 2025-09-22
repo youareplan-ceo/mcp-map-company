@@ -1,0 +1,22 @@
+=== 인시던트 센터 API 스모크 테스트 실행 ===
+jq: error: syntax error, unexpected LITERAL, expecting '}' at <top-level>, line 2, column 1:
+    000,"response_body":"HTTPSTATUS:000"}}]
+    ^^^
+jq: error: May need parentheses around object key expression at <top-level>, line 1, column 113:
+    .tests += [{"name":"health_endpoint","status":"fail","message":"헬스체크 엔드포인트 실패","details":{"http_code":000
+                                                                                                                    ^^^^^^^^^^^^^^^
+jq: 2 compile errors
+jq: error: syntax error, unexpected LITERAL, expecting '}' at <top-level>, line 2, column 1:
+    000,"response_body":"HTTPSTATUS:000"}}]
+    ^^^
+jq: error: May need parentheses around object key expression at <top-level>, line 1, column 115:
+    .tests += [{"name":"summary_endpoint","status":"fail","message":"요약 엔드포인트 접근 실패","details":{"http_code":000
+                                                                                                                      ^^^^^^^^^^^^^^^
+jq: 2 compile errors
+jq: error: syntax error, unexpected LITERAL, expecting '}' at <top-level>, line 2, column 1:
+    000,"response_body":"HTTPSTATUS:000"}}]
+    ^^^
+jq: error: May need parentheses around object key expression at <top-level>, line 1, column 96:
+    .tests += [{"name":"csv_export","status":"fail","message":"CSV 내보내기 실패","details":{"http_code":000
+                                                                                                   ^^^^^^^^^^^^^^^
+jq: 2 compile errors
