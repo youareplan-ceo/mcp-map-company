@@ -76,3 +76,10 @@ To request it, run: gh auth refresh -s read:project
 - 브랜치: sprint1/feat-14-batch2-prep (base: sprint1/fix-broken-links-from-15)
 - 산출: BATCH2 buckets/drafts/meta/map + 계획서
 - 정책: NO-DEPLOY (문서 전용)
+
+## #14 Batch-2 배송(code2)
+- 시각: 2025-09-22 18:44:42 KST (Asia/Seoul)
+- 브랜치: sprint1/feat-14-batch2-prep (base: sprint1/fix-broken-links-from-15)
+- GitHub 이슈 생성: 0개
+- 산출: 계획서/버킷/이슈초안/이슈맵/요약/INDEX/매니페스트
+- 정책: NO-DEPLOY (문서 전용)
