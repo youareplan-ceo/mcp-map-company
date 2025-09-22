@@ -68,3 +68,5 @@
 - 프로젝트 보드: [PROJECTS.md](PROJECTS.md)
 
 - Sprint-1: [DAY-1 Kickoff](v1.0.2-planning/SPRINT1_DAY1_KICKOFF.md)
+
+- Sprint-1 산출물: [SELECTORS_REGISTRY](v1.0.2-planning/SELECTORS_REGISTRY.md)

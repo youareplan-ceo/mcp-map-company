@@ -152,3 +152,12 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 | 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
 |------|-------------|------------|-----------|
 | v1.0.2-planning/POST_PUSH_TROUBLESHOOT.md | (auto) | d92eb9f5246689ed9bd3ee13ba190c3eff767bfc47fcc2c4a7f2775db3ef6aec | 2025-09-22 16:35:34 KST (Asia/Seoul) |
+
+## 🔄 Change Log (Sprint-1 #11 init 2025-09-22 16:38:00 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/SELECTORS_REGISTRY.md | (신규) | a2864b5f350f45f6d2ceb2360e13c4fffcc216f6b0e92fb955629ee5a383a10f | 2025-09-22 16:38:00 KST (Asia/Seoul) |
+| INDEX.md | (auto) | 19cfebf4da26bc8d4a303781b3c85e4e4f75a07b7d71baebad4797758b83018c | 2025-09-22 16:38:00 KST (Asia/Seoul) |
+| RAW_incident_links_s11.txt | (신규) | dbc08b593246c285c38ab9b09cb0f59b29c08d39ec6107cda09d4192e1e0c129 | 2025-09-22 16:38:00 KST (Asia/Seoul) |
+| RAW_incident_audit_s11.txt | (신규) | 346030f5612b479f2646805eb248864665f1896dc6df25897619ccecd82582d9 | 2025-09-22 16:38:00 KST (Asia/Seoul) |
+| RAW_anchors_check_s11.txt | (신규) | 8e09be28028510f9dc4a17f18a11d94b4f7c6f0947428a2d6f318edc8b6eb165 | 2025-09-22 16:38:00 KST (Asia/Seoul) |
