@@ -1,8 +1,14 @@
 # Incident Center v1.0.1-pre 완료 상태 보고서
 
-**완료 시각**: 2025-09-22 13:22:00 (Asia/Seoul)
-**브랜치**: hotfix/incident-center-v1.0.1-pre
-**최종 커밋**: ae038f7 feat: 인시던트 센터 v1.0.1-pre 스모크 스크립트 및 Makefile 타깃 복원
+**완료 시각**: 2025-09-22 13:50:43 (Asia/Seoul)
+**브랜치**: main (merged from hotfix/incident-center-v1.0.1-pre)
+**최종 커밋**: f040140 feat(incident-center): add v1.0.1-pre hotfix scaffold
+**태그**: incident-center-v1.0.1-pre-merged
+**릴리스**: Draft (no-deploy)
+
+## 🔒 문서 잠금 상태
+**잠금 시각**: 2025-09-22 13:51:00 (Asia/Seoul)
+**상태**: LOCKED - 병합/태그/릴리스 드래프트 적용 완료
 
 ## 🎯 전체 작업 현황 (6/6 완료)
 
