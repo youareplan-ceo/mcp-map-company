@@ -39,4 +39,4 @@ db-ingest:
 \tpython db/scripts/ingest_holdings.py
 
 db-health:
-\tpython -c "import duckdb; con=duckdb.connect('data/mcp.duckdb'); print(con.execute('PRAGMA database_list').fetchall()); con.close()"
+\tpython -c "import duckdb; con=duckdb.connect('data/mcp.duckdb'); print('Holdings rows:', con.execute('SELECT COUNT(*) FROM holdings').fetchone()[0]); con.close(); print('✅ DB health OK')"
