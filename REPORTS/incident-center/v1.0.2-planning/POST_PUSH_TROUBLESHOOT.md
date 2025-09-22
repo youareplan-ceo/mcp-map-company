@@ -41,3 +41,14 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgGWLKztR8aoxjk7eg0VQvEBggudI9Uu3GiJcIPi09H
 - 조치:
   1) 웹에서 SSH 공개키 수동 등록 후 재시도
   2) 또는 'gh auth login' 재실행 후 'git push origin main'
+
+## Push Result
+- 시각: 2025-09-22 16:28:35 KST (Asia/Seoul)
+- 결과: ❌ 실패(SSH/HTTPS)
+- 임시 조치: 번들 백업 생성 → REPORTS/incident-center/v1.0.2-planning/main_backup_20250922_162845.bundle
+
+### 복구 가이드
+1) SSH 경로 복원: `git remote set-url origin git@github.com:youareplan-ceo/mcp-map-company.git`
+   - known_hosts 등록 완료 상태
+   - 필요 시 GitHub에 SSH 공개키 등록 후 재시도
+2) 또는 gh auth login(브라우저 로그인) 후 HTTPS로 재시도
