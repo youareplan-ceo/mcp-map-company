@@ -61,3 +61,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgGWLKztR8aoxjk7eg0VQvEBggudI9Uu3GiJcIPi09H
   1) GitHub → Settings → SSH and GPG keys → 위 공개키 수동 등록
   2) 'git remote -v' 확인 후 재시도: git push origin main
   3) 또는 'gh auth login' 재실행
+
+## Push Result
+- 시각: 2025-09-22 16:35:34 KST (Asia/Seoul)
+- 결과: ❌ 실패(SSH/HTTPS) — 원격 권한/인증 확인 필요
+- 조치: 1) GitHub에 SSH 공개키 수동 등록  2) gh auth login 재실행  3) 재푸시: git push origin main
