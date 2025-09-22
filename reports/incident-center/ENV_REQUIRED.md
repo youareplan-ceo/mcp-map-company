@@ -1,10 +1,23 @@
 # Incident Center 환경 변수 요구사항 (통합)
 
+## 🔒 문서 잠금 (최종 고정)
+
+| 항목 | 값 |
+|------|---|
+| **잠금 시각** | 2025-09-22 14:40:00 KST (Asia/Seoul) |
+| **브랜치** | main (병합 완료) |
+| **최신 커밋** | d4a8a36 docs(incident-center): finalize post-merge archive |
+| **태그** | incident-center-v1.0.1-pre-merged |
+| **릴리스** | https://github.com/youareplan-ceo/mcp-map-company/releases/tag/untagged-6456a5a0c1ee8f0a9d18 |
+| **경로** | /Users/youareplan/Desktop/mcp-map-company |
+| **작성자** | Claude Code + 김실장 검수 |
+| **상태** | 🔒 LOCKED - 병합/태그/릴리스 완료 |
+
 ## 실행 정보
-- **실행 커밋**: f040140 (main - merged from hotfix/incident-center-v1.0.1-pre)
+- **실행 커밋**: d4a8a36 (main - merged from hotfix/incident-center-v1.0.1-pre)
 - **태그**: incident-center-v1.0.1-pre-merged
 - **릴리스**: Draft (no-deploy)
-- **최종 업데이트**: 2025-09-22 13:51:00 (Asia/Seoul)
+- **최종 업데이트**: 2025-09-22 14:40:00 (Asia/Seoul)
 - **복원 상태**: 스크립트 및 Makefile 타깃 복원 완료, CI 워크플로 통합, 문서 표준화 완료
 - **경로**: /Users/youareplan/Desktop/mcp-map-company
 - **상태**: 🔒 LOCKED - 병합/태그/릴리스 드래프트 완료

@@ -1,16 +1,16 @@
 # Incident Center 리포트 인덱스
 
-## 메타데이터
+## 🔒 문서 잠금 (최종 고정)
 
 | 항목 | 값 |
 |------|---|
-| **생성 시각** | 2025-09-22 13:20:44 KST (Asia/Seoul) |
-| **채그리스 시각** | 2025-09-22 13:51:00 KST (Asia/Seoul) |
-| **브랜치** | main (merged from hotfix/incident-center-v1.0.1-pre) |
-| **커밋** | f040140 feat(incident-center): add v1.0.1-pre hotfix scaffold |
+| **잠금 시각** | 2025-09-22 14:40:00 KST (Asia/Seoul) |
+| **브랜치** | main (병합 완료) |
+| **최신 커밋** | d4a8a36 docs(incident-center): finalize post-merge archive |
 | **태그** | incident-center-v1.0.1-pre-merged |
-| **릴리스** | Draft (no-deploy) |
+| **릴리스** | https://github.com/youareplan-ceo/mcp-map-company/releases/tag/untagged-6456a5a0c1ee8f0a9d18 |
 | **경로** | /Users/youareplan/Desktop/mcp-map-company/reports/incident-center/ |
+| **작성자** | Claude Code + 김실장 검수 |
 | **상태** | 🔒 LOCKED - 병합/태그/릴리스 완료 |
 
 ## v1.0.1-pre 핵심 산출물

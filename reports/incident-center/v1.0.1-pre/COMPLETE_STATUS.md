@@ -1,13 +1,22 @@
 # Incident Center v1.0.1-pre 완료 상태 보고서
 
-**완료 시각**: 2025-09-22 13:50:43 (Asia/Seoul)
+## 🔒 문서 잠금 (최종 고정)
+
+| 항목 | 값 |
+|------|---|
+| **잠금 시각** | 2025-09-22 14:40:00 KST (Asia/Seoul) |
+| **브랜치** | main (병합 완료) |
+| **최신 커밋** | d4a8a36 docs(incident-center): finalize post-merge archive |
+| **태그** | incident-center-v1.0.1-pre-merged |
+| **릴리스** | https://github.com/youareplan-ceo/mcp-map-company/releases/tag/untagged-6456a5a0c1ee8f0a9d18 |
+| **작성자** | Claude Code + 김실장 검수 |
+| **상태** | 🔒 LOCKED - 병합/태그/릴리스 완료 |
+
+**완료 시각**: 2025-09-22 14:40:00 (Asia/Seoul)
 **브랜치**: main (merged from hotfix/incident-center-v1.0.1-pre)
-**최종 커밋**: f040140 feat(incident-center): add v1.0.1-pre hotfix scaffold
+**최종 커밋**: d4a8a36 docs(incident-center): finalize post-merge archive
 **태그**: incident-center-v1.0.1-pre-merged
 **릴리스**: Draft (no-deploy)
-
-## 🔒 문서 잠금 상태
-**잠금 시각**: 2025-09-22 13:51:00 (Asia/Seoul)
 **상태**: LOCKED - 병합/태그/릴리스 드래프트 적용 완료
 
 ## 🎯 전체 작업 현황 (6/6 완료)

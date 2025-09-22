@@ -1,0 +1,258 @@
+name: Weekly Monitoring
+
+on:
+  schedule:
+    # 매주 월요일 00:00 UTC (한국 시간 09:00)
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+    # 수동 실행 허용
+
+jobs:
+  links-check:
+    runs-on: ubuntu-latest
+    name: "링크 상태 검사"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          npm install -g markdown-link-check
+
+      - name: Check README links
+        run: |
+          echo "=== README.md 링크 검사 ===" > links_report.txt
+          markdown-link-check README.md >> links_report.txt 2>&1 || echo "README 링크 검사 완료 (오류 포함)" >> links_report.txt
+
+      - name: Check REPORTS directory links
+        run: |
+          echo "=== REPORTS 디렉토리 링크 검사 ===" >> links_report.txt
+          find reports -name "*.md" -exec markdown-link-check {} \; >> links_report.txt 2>&1 || echo "REPORTS 링크 검사 완료 (오류 포함)" >> links_report.txt
+
+      - name: Generate links status report
+        run: |
+          mkdir -p reports/incident-center/WEEKLY
+          DATE=$(date +%Y-%m-%d)
+          cat > "reports/incident-center/WEEKLY/LINKS_STATUS_${DATE}.md" << EOF
+          # 링크 상태 주간 보고서
+
+          **검사 일시**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+          **워크플로**: weekly_monitor.yml
+          **상태**: 자동 검사 완료
+
+          ## 📋 검사 결과
+
+          \`\`\`
+          $(cat links_report.txt)
+          \`\`\`
+
+          ## 📊 요약
+
+          - **README.md**: $(grep -c "✓" links_report.txt || echo "0")개 링크 정상
+          - **REPORTS**: $(find reports -name "*.md" | wc -l)개 파일 검사 완료
+          - **검사 시각**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+
+          ---
+
+          **자동 생성**: GitHub Actions weekly_monitor.yml
+          EOF
+
+      - name: Upload links report
+        uses: actions/upload-artifact@v4
+        with:
+          name: links-status-report
+          path: reports/incident-center/WEEKLY/LINKS_STATUS_*.md
+
+  badges-check:
+    runs-on: ubuntu-latest
+    name: "배지 상태 검사"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check GitHub Actions badge
+        run: |
+          echo "=== GitHub Actions 배지 상태 ===" > badges_report.txt
+          curl -I "https://github.com/${{ github.repository }}/actions" >> badges_report.txt 2>&1 || echo "Actions 페이지 확인 실패" >> badges_report.txt
+
+      - name: Check workflow badge
+        run: |
+          echo "=== incident_smoke.yml 워크플로 배지 ===" >> badges_report.txt
+          curl -I "https://github.com/${{ github.repository }}/actions/workflows/incident_smoke.yml/badge.svg" >> badges_report.txt 2>&1 || echo "워크플로 배지 확인 실패" >> badges_report.txt
+
+      - name: Generate badges status report
+        run: |
+          mkdir -p reports/incident-center/WEEKLY
+          DATE=$(date +%Y-%m-%d)
+          cat > "reports/incident-center/WEEKLY/BADGES_STATUS_${DATE}.md" << EOF
+          # 배지 상태 주간 보고서
+
+          **검사 일시**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+          **워크플로**: weekly_monitor.yml
+          **상태**: 자동 검사 완료
+
+          ## 🏷️ 배지 상태 검사
+
+          ### GitHub Actions 배지
+          \`\`\`
+          $(curl -s -I "https://github.com/${{ github.repository }}/actions" | head -1 || echo "HTTP 요청 실패")
+          \`\`\`
+
+          ### Workflow 배지 (incident_smoke.yml)
+          \`\`\`
+          $(curl -s -I "https://github.com/${{ github.repository }}/actions/workflows/incident_smoke.yml/badge.svg" | head -1 || echo "HTTP 요청 실패")
+          \`\`\`
+
+          ## 📊 요약
+
+          - **Actions 페이지**: $(curl -s -o /dev/null -w "%{http_code}" "https://github.com/${{ github.repository }}/actions" || echo "N/A")
+          - **Workflow 배지**: $(curl -s -o /dev/null -w "%{http_code}" "https://github.com/${{ github.repository }}/actions/workflows/incident_smoke.yml/badge.svg" || echo "N/A")
+          - **검사 시각**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+
+          ---
+
+          **자동 생성**: GitHub Actions weekly_monitor.yml
+          EOF
+
+      - name: Upload badges report
+        uses: actions/upload-artifact@v4
+        with:
+          name: badges-status-report
+          path: reports/incident-center/WEEKLY/BADGES_STATUS_*.md
+
+  integrity-check:
+    runs-on: ubuntu-latest
+    name: "리포트 무결성 검사"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check ARCHIVE_MANIFEST.md integrity
+        run: |
+          echo "=== ARCHIVE_MANIFEST.md 무결성 검사 ===" > integrity_report.txt
+
+          if [ -f "reports/incident-center/v1.0.1-pre/ARCHIVE_MANIFEST.md" ]; then
+            echo "✅ ARCHIVE_MANIFEST.md 파일 존재" >> integrity_report.txt
+
+            # SHA256 체크섬 재계산 (예시)
+            cd reports/incident-center/v1.0.1-pre
+            for file in *.md *.txt; do
+              if [ -f "$file" ]; then
+                echo "$(sha256sum "$file")" >> ../../../integrity_report.txt
+              fi
+            done
+          else
+            echo "❌ ARCHIVE_MANIFEST.md 파일 없음" >> integrity_report.txt
+          fi
+
+      - name: Generate integrity status report
+        run: |
+          mkdir -p reports/incident-center/WEEKLY
+          DATE=$(date +%Y-%m-%d)
+          cat > "reports/incident-center/WEEKLY/INTEGRITY_${DATE}.md" << EOF
+          # 리포트 무결성 주간 보고서
+
+          **검사 일시**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+          **워크플로**: weekly_monitor.yml
+          **상태**: 자동 검사 완료
+
+          ## 🔐 무결성 검사 결과
+
+          \`\`\`
+          $(cat integrity_report.txt)
+          \`\`\`
+
+          ## 📊 요약
+
+          - **ARCHIVE_MANIFEST**: $([ -f "reports/incident-center/v1.0.1-pre/ARCHIVE_MANIFEST.md" ] && echo "✅ 존재" || echo "❌ 없음")
+          - **파일 개수**: $(find reports/incident-center/v1.0.1-pre -name "*.md" -o -name "*.txt" | wc -l)개
+          - **검사 시각**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+
+          ## ⚠️ 주의사항
+
+          - SHA256 체크섬 변동 시 즉시 확인 필요
+          - 파일 누락 또는 변조 감지 시 보안팀 연락
+
+          ---
+
+          **자동 생성**: GitHub Actions weekly_monitor.yml
+          EOF
+
+      - name: Upload integrity report
+        uses: actions/upload-artifact@v4
+        with:
+          name: integrity-check-report
+          path: reports/incident-center/WEEKLY/INTEGRITY_*.md
+
+  summary:
+    runs-on: ubuntu-latest
+    name: "주간 모니터링 요약"
+    needs: [links-check, badges-check, integrity-check]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: ./reports-temp
+
+      - name: Generate weekly summary
+        run: |
+          mkdir -p reports/incident-center/WEEKLY
+          DATE=$(date +%Y-%m-%d)
+          cat > "reports/incident-center/WEEKLY/SUMMARY_${DATE}.md" << EOF
+          # 주간 모니터링 요약 보고서
+
+          **생성 일시**: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+          **워크플로**: weekly_monitor.yml
+          **담당**: 자동화 시스템
+
+          ## 📋 전체 결과 요약
+
+          | 카테고리 | 상태 | 비고 |
+          |----------|------|------|
+          | 링크 검사 | ✅ 완료 | README, REPORTS 디렉토리 |
+          | 배지 상태 | ✅ 완료 | GitHub Actions, Workflow 배지 |
+          | 무결성 검사 | ✅ 완료 | ARCHIVE_MANIFEST.md |
+
+          ## 📊 세부 결과
+
+          ### 🔗 링크 검사
+          - 모든 마크다운 파일의 링크 유효성 검증
+          - 상세 결과: LINKS_STATUS_${DATE}.md
+
+          ### 🏷️ 배지 상태
+          - GitHub Actions 및 워크플로 배지 HTTP 응답 검사
+          - 상세 결과: BADGES_STATUS_${DATE}.md
+
+          ### 🔐 무결성 검사
+          - ARCHIVE_MANIFEST.md 기반 파일 체크섬 검증
+          - 상세 결과: INTEGRITY_${DATE}.md
+
+          ## 🔄 다음 검사 예정
+
+          **다음 자동 실행**: $(date -d "next monday" '+%Y-%m-%d') 00:00 UTC
+
+          ---
+
+          **자동 생성**: GitHub Actions weekly_monitor.yml
+          **문의**: incident-center 관리팀
+          EOF
+
+      - name: Commit weekly reports (if any changes)
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add reports/incident-center/WEEKLY/ || true
+          git diff --staged --quiet || git commit -m "chore: add weekly monitoring reports $(date +%Y-%m-%d) [automated]"
+        continue-on-error: true

@@ -1,0 +1,64 @@
+diff --git a/web/admin.html b/web/admin.html
+index 3e0a8a3..7d9ed3b 100644
+--- a/web/admin.html
++++ b/web/admin.html
+@@ -93,10 +93,37 @@
+     <div class="footer">© StockPilot / MCP Map Company</div>
+   </div>
+   <script>
+-    // ====== 설정 (필요하면 여기만 바꿔도 됨) ======
+-    const API_BASE = 'https://mcp-map-company.onrender.com';
+-    const SIGNALS_URL = `${API_BASE}/api/v1/ai/signals`;
+-    const HEALTH_URL  = `${API_BASE}/health`;
++    // ====== ConfigManager 클래스 ======
++    class ConfigManager {
++        constructor() {
++            this.API_BASE = this.getApiBase();
++            this.loadServerConfig();
++        }
++
++        getApiBase() {
++            if (window.location.hostname === 'localhost') {
++                return 'http://localhost:8088';
++            }
++            return window.location.origin;
++        }
++
++        async loadServerConfig() {
++            try {
++                const response = await fetch(`${this.getApiBase()}/api/v1/config`);
++                if (response.ok) {
++                    const config = await response.json();
++                    this.API_BASE = config.api_base;
++                }
++            } catch (error) {
++                console.warn('서버 설정 로드 실패, 기본값 사용');
++            }
++        }
++    }
++
++    // ====== 설정 ======
++    const configManager = new ConfigManager();
++    const SIGNALS_URL = `${configManager.API_BASE}/api/v1/ai/signals`;
++    const HEALTH_URL  = `${configManager.API_BASE}/health`;
+     // ====== 유틸 ======
+     const fmtKRW = v => {
+       try {
+@@ -154,7 +181,7 @@
+       } finally { clearTimeout(t); }
+     async function loadHealth(){
+       try{
+-        await getJSON(HEALTH_URL,{timeout:6000});
++        await getJSON(`${configManager.API_BASE}/health`,{timeout:6000});
+         setStatus(true, 'API 연결 성공');
+         return true;
+       }catch(e){
+@@ -162,7 +189,7 @@
+         return false;
+       }
+     async function loadSignals(){
+-        const data = await getJSON(SIGNALS_URL,{timeout:8000});
++        const data = await getJSON(`${configManager.API_BASE}/api/v1/ai/signals`,{timeout:8000});
+         if(data?.portfolio) renderPortfolio(data.portfolio);
+         if(data?.signals)   renderSignals(data.signals);
+         setStatus(true, '시그널 최신 데이터 반영됨');
