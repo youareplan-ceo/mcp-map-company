@@ -175,3 +175,20 @@ shasum -a 256 v1.0.2-planning/POST_MERGE_AUDIT.md  # f7053d72171c2026e1ffca7c558
 | PROJECTS.md | fc18daf18fdc19727ac843396d04a5c33e787d2d2ef20cf7142a981a00429f76 | 4df9ca8295b939725b3174250e7630cdbbb20f03207646b028b299756a682110 | 2025-09-22 16:56:30 KST (Asia/Seoul) |
 | PROJECT_BOARD_STATUS.md | 77eef8d9d875b8aa8a8f0213293678e274926301eb132f7e20339a1587055922 | bdbcb1fcf824a562787ccf91f93fface6de470101cbdfda4a8b1f600e99838ce | 2025-09-22 16:56:30 KST (Asia/Seoul) |
 | INDEX.md | 19cfebf4da26bc8d4a303781b3c85e4e4f75a07b7d71baebad4797758b83018c | ddd4d0ea837dfc44893c044765cab515f7850a8197fe1ff7d0c2a235b2b19600 | 2025-09-22 16:56:30 KST (Asia/Seoul) |
+## 🔄 Change Log (Sprint-1 #14 scope 2025-09-22 16:52:30 KST (Asia/Seoul))
+| LINK_AUDIT_SCOPE_POLICY.md | (auto) | 129989e832dfc020945f51a347c8bf061eb94b26d0a663d69698f6acce57b294 | 2025-09-22 16:52:30 KST (Asia/Seoul) |
+| LINK_AUDIT_SCOPE_SUMMARY.md | (auto) | b9c91f97dbdd38645423d1af05f0175841e50c1e2275102c6742d83226090f8f | 2025-09-22 16:52:30 KST (Asia/Seoul) |
+| RAW_links_s14_scope.txt | (auto) | 3c6127d754daaf9b90c719c02a90f5afaad6d3e6a01cf70fad46336ea2046643 | 2025-09-22 16:52:30 KST (Asia/Seoul) |
+| RAW_audit_s14_scope.txt | (auto) | daf06222df7cf98d0b60f14056aadf07b4b96734517f14648a306576b5009d2a | 2025-09-22 16:52:30 KST (Asia/Seoul) |
+| RAW_anchors_s14_scope.txt | (auto) | 845b6202fc522a42fefdc9c0c8486911975d60dfd2e93c76fd063fb17af92de3 | 2025-09-22 16:52:30 KST (Asia/Seoul) |
+| LINK_AUDIT.md | (auto) | a740ac4efdf06addbbec620b4ad3176c66a59903103455d8a95a489ab03a1603 | 2025-09-22 16:52:30 KST (Asia/Seoul) |
+
+## 🔄 Change Log (Sprint-1 #11 proposed 2025-09-22 16:51:00 KST (Asia/Seoul))
+| 파일 | 이전 SHA256 | 신규 SHA256 | 변경 시각 |
+|------|-------------|------------|-----------|
+| v1.0.2-planning/SELECTORS_REGISTRY.md | a2864b5f350f45f6d2ceb2360e13c4fffcc216f6b0e92fb955629ee5a383a10f | ecdd418d5c480ed433a35ef3eac918f1df981b31f6bc724a3e066cb32b13e128 | 2025-09-22 16:51:00 KST (Asia/Seoul) |
+| v1.0.2-planning/DECISIONS.md | (신규) | 91fe755f9230bec656fbd7c4c24ac31e8b8426d53d82c15713d91d76b00af712 | 2025-09-22 16:51:00 KST (Asia/Seoul) |
+| v1.0.2-planning/RAW_incident_links_s11_proposed.txt | (신규) | dbc08b593246c285c38ab9b09cb0f59b29c08d39ec6107cda09d4192e1e0c129 | 2025-09-22 16:51:00 KST (Asia/Seoul) |
+| v1.0.2-planning/RAW_incident_audit_s11_proposed.txt | (신규) | 7f973f27e33b0f8243c16c879556126c0b3804c69f8fab0501d6d97ea3768bf1 | 2025-09-22 16:51:00 KST (Asia/Seoul) |
+| v1.0.2-planning/RAW_anchors_check_s11_proposed.txt | (신규) | 2292491f1dc1791b24b27d713c4f3b18285c75052f23bee9fdc0e343d1087aa8 | 2025-09-22 16:51:00 KST (Asia/Seoul) |
+| INDEX.md | 19cfebf4da26bc8d4a303781b3c85e4e4f75a07b7d71baebad4797758b83018c | d16164dae58b0ba6657656425ae423beb66416abd4e83fe658bf03ca4e632d1a | 2025-09-22 16:51:00 KST (Asia/Seoul) |

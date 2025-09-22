@@ -69,4 +69,7 @@
 
 - Sprint-1: [DAY-1 Kickoff](v1.0.2-planning/SPRINT1_DAY1_KICKOFF.md)
 
-- Sprint-1 산출물: [SELECTORS_REGISTRY](v1.0.2-planning/SELECTORS_REGISTRY.md)
+- Sprint-1: [SELECTORS_REGISTRY](v1.0.2-planning/SELECTORS_REGISTRY.md)
+- Sprint-1: [DECISIONS](v1.0.2-planning/DECISIONS.md)
+
+- Sprint-1: [LINK_AUDIT 정책(엄격)](v1.0.2-planning/LINK_AUDIT_POLICY.md)
