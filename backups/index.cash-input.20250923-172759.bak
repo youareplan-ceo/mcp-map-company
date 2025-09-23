@@ -1346,11 +1346,11 @@
             <div class="drawer-body">
                 <div class="cash-input-group">
                     <label class="cash-label">현금 (₩)</label>
-                    <input type="text" id="cash-krw" inputmode="numeric" pattern="\d*" class="cash-input" placeholder="원화 현금" step="10000">
+                    <input type="number" id="cash-krw" class="cash-input" placeholder="원화 현금" step="10000">
                 </div>
                 <div class="cash-input-group">
                     <label class="cash-label">현금 ($)</label>
-                    <input type="text" id="cash-usd" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" class="cash-input" placeholder="달러 현금" step="100">
+                    <input type="number" id="cash-usd" class="cash-input" placeholder="달러 현금" step="100">
                 </div>
             </div>
             <div class="drawer-footer">
@@ -1427,7 +1427,6 @@
         function initializeApp() {
             loadStoredData(); // localStorage에서 데이터 로드
             loadPortfolioData(); // 포트폴리오 데이터 로드
-            loadPortfolioFromAPI(); // API에서 포트폴리오 데이터 로드
             initializeTradeHistory(); // 거래 내역 초기화
             initializeRecommendations(); // 추천 목록 초기화
             initializeSettings(); // 설정 초기화
@@ -1464,35 +1463,6 @@
 
                 lastCheckTime = data.lastCheck;
                 updateNextCheckTime();
-            }
-        }
-
-        // API에서 포트폴리오 데이터 초기 로드
-        async function loadPortfolioFromAPI() {
-            try {
-                if (window.StockPilotAPI) {
-                    const data = await window.StockPilotAPI.apiGet();
-
-                    // 보유종목 업데이트
-                    if (data.holdings) {
-                        portfolioHoldings = data.holdings;
-                        console.log('API에서 보유종목 로드됨:', data.holdings);
-                    }
-
-                    // 현금 정보 업데이트
-                    if (data.cash) {
-                        if (data.cash.krw !== undefined) cashKRW = data.cash.krw;
-                        if (data.cash.usd !== undefined) cashUSD = data.cash.usd;
-                        console.log('API에서 현금 정보 로드됨:', data.cash);
-                    }
-
-                    // 화면 업데이트
-                    updatePortfolioDisplay();
-                    fetchStockPrices();
-                }
-            } catch (error) {
-                console.error('Failed to load portfolio from API:', error);
-                // Fallback to localStorage is handled by existing code
             }
         }
 
@@ -2122,9 +2092,18 @@
 
         // 포트폴리오 데이터 로드
         function loadPortfolioData() {
-            portfolioHoldings = readHoldingsCompat();
+            const storedHoldings = localStorage.getItem('portfolioHoldings');
             const storedCashKRW = localStorage.getItem('cashKRW');
             const storedCashUSD = localStorage.getItem('cashUSD');
+
+            if (storedHoldings) {
+                try {
+                    portfolioHoldings = JSON.parse(storedHoldings);
+                } catch (e) {
+                    console.warn('포트폴리오 데이터 파싱 오류:', e);
+                    portfolioHoldings = [];
+                }
+            }
 
             if (storedCashKRW) {
                 cashKRW = parseFloat(storedCashKRW) || 0;
@@ -2309,48 +2288,17 @@
         }
 
         // 보유종목 드로어 로드
-        async function loadHoldingsDrawer() {
+        function loadHoldingsDrawer() {
             const tbody = document.getElementById('holdings-table-body');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">데이터 로딩 중...</td></tr>';
+            tbody.innerHTML = '';
 
-            try {
-                if (window.StockPilotAPI) {
-                    const data = await window.StockPilotAPI.apiGet();
-                    const holdings = data.holdings || [];
+            portfolioHoldings.forEach((holding, index) => {
+                addHoldingRowToTable(holding, index);
+            });
 
-                    tbody.innerHTML = '';
-                    holdings.forEach((holding, index) => {
-                        addHoldingRowToTable(holding, index);
-                    });
-
-                    // 빈 행 추가
-                    if (holdings.length === 0) {
-                        addHoldingRowToTable();
-                    }
-                } else {
-                    // Fallback to localStorage
-                    tbody.innerHTML = '';
-                    const holdings = readHoldingsCompat();
-                    holdings.forEach((holding, index) => {
-                        addHoldingRowToTable(holding, index);
-                    });
-
-                    if (holdings.length === 0) {
-                        addHoldingRowToTable();
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to load holdings from API:', error);
-                // Fallback to localStorage
-                tbody.innerHTML = '';
-                const holdings = readHoldingsCompat();
-                holdings.forEach((holding, index) => {
-                    addHoldingRowToTable(holding, index);
-                });
-
-                if (holdings.length === 0) {
-                    addHoldingRowToTable();
-                }
+            // 빈 행 추가
+            if (portfolioHoldings.length === 0) {
+                addHoldingRowToTable();
             }
         }
 
@@ -2384,7 +2332,7 @@
         }
 
         // 보유종목 저장
-        async function saveHoldings() {
+        function saveHoldings() {
             const rows = document.querySelectorAll('#holdings-table-body tr');
             const newHoldings = [];
 
@@ -2404,72 +2352,28 @@
             });
 
             portfolioHoldings = newHoldings;
+            localStorage.setItem('portfolioHoldings', JSON.stringify(portfolioHoldings));
+            console.log('보유종목 저장됨:', portfolioHoldings);
 
-            try {
-                if (window.StockPilotAPI) {
-                    // Save to API
-                    const cash = { krw: cashKRW || 0, usd: cashUSD || 0 };
-                    await window.StockPilotAPI.apiPut({ holdings: newHoldings, cash });
-                    console.log('보유종목 API 저장됨:', newHoldings);
-                } else {
-                    // Fallback to localStorage
-                    writeHoldingsCompat(newHoldings);
-                    console.log('보유종목 localStorage 저장됨:', newHoldings);
-                }
+            // 서버 동기화
+            syncToServer();
 
-                // 서버 동기화 (기존 함수)
-                syncToServer();
+            // 화면 업데이트
+            updatePortfolioDisplay();
+            fetchStockPrices(); // 시세 업데이트
 
-                // 화면 업데이트
-                updatePortfolioDisplay();
-                fetchStockPrices(); // 시세 업데이트
-
-                closeDrawer('holdings');
-                alert('보유종목이 저장되었습니다.');
-            } catch (error) {
-                console.error('Failed to save holdings to API:', error);
-                // Fallback to localStorage
-                writeHoldingsCompat(newHoldings);
-                console.log('보유종목 fallback 저장됨:', portfolioHoldings);
-
-                // Continue with existing flow
-                syncToServer();
-                updatePortfolioDisplay();
-                fetchStockPrices();
-
-                closeDrawer('holdings');
-                alert('보유종목이 저장되었습니다 (로컬 저장).');
-            }
+            closeDrawer('holdings');
+            alert('보유종목이 저장되었습니다.');
         }
 
         // 현금 드로어 로드
-        async function loadCashDrawer() {
-            try {
-                if (window.StockPilotAPI) {
-                    const data = await window.StockPilotAPI.apiGet();
-                    const cash = data.cash || {};
-
-                    document.getElementById('cash-krw').value = cash.krw || '';
-                    document.getElementById('cash-usd').value = cash.usd || '';
-
-                    // Update global variables for compatibility
-                    if (cash.krw !== undefined) cashKRW = cash.krw;
-                    if (cash.usd !== undefined) cashUSD = cash.usd;
-                } else {
-                    // Fallback to existing variables
-                    document.getElementById('cash-krw').value = cashKRW || '';
-                    document.getElementById('cash-usd').value = cashUSD || '';
-                }
-            } catch (error) {
-                console.error('Failed to load cash from API:', error);
-                // Fallback to existing variables
-                document.getElementById('cash-krw').value = cashKRW || '';
-                document.getElementById('cash-usd').value = cashUSD || '';
-            }
+        function loadCashDrawer() {
+            document.getElementById('cash-krw').value = cashKRW || '';
+            document.getElementById('cash-usd').value = cashUSD || '';
         }
 
         // 현금 저장
-        async function saveCash() {
+        function saveCash() {
             const newCashKRW = parseFloat(document.getElementById('cash-krw').value) || 0;
             const newCashUSD = parseFloat(document.getElementById('cash-usd').value) || 0;
 
@@ -2481,42 +2385,18 @@
             cashKRW = newCashKRW;
             cashUSD = newCashUSD;
 
-            try {
-                if (window.StockPilotAPI) {
-                    // Save to API
-                    const holdings = portfolioHoldings || [];
-                    const cash = { krw: cashKRW, usd: cashUSD };
-                    await window.StockPilotAPI.apiPut({ holdings, cash });
-                    console.log('현금 API 저장됨:', { cashKRW, cashUSD });
-                } else {
-                    // Fallback to localStorage
-                    localStorage.setItem('cashKrw', cashKRW.toString());
-                    localStorage.setItem('cashUsd', cashUSD.toString());
-                    console.log('현금 localStorage 저장됨:', { cashKRW, cashUSD });
-                }
+            localStorage.setItem('cashKrw', cashKRW.toString());
+            localStorage.setItem('cashUsd', cashUSD.toString());
+            console.log('현금 저장됨:', { cashKRW, cashUSD });
 
-                // 서버 동기화
-                syncToServer();
+            // 서버 동기화
+            syncToServer();
 
-                // 화면 업데이트
-                updatePortfolioDisplay();
+            // 화면 업데이트
+            updatePortfolioDisplay();
 
-                closeDrawer('cash');
-                alert('현금 정보가 저장되었습니다.');
-            } catch (error) {
-                console.error('Failed to save cash to API:', error);
-                // Fallback to localStorage
-                localStorage.setItem('cashKrw', cashKRW.toString());
-                localStorage.setItem('cashUsd', cashUSD.toString());
-                console.log('현금 fallback 저장됨:', { cashKRW, cashUSD });
-
-                // Continue with existing flow
-                syncToServer();
-                updatePortfolioDisplay();
-
-                closeDrawer('cash');
-                alert('현금 정보가 저장되었습니다 (로컬 저장).');
-            }
+            closeDrawer('cash');
+            alert('현금 정보가 저장되었습니다.');
         }
 
         // 신호 드로어 로드
@@ -2701,346 +2581,3 @@
 })();
 </script>
 <!-- ===== /Cash auto-format ===== -->
-<script>
-(function(){
-  function forceCashInputsAsText(){
-    var krw = document.getElementById('cash-krw');
-    var usd = document.getElementById('cash-usd');
-    if(krw){
-      krw.setAttribute('type','text');
-      krw.setAttribute('inputmode','numeric');   // 모바일 숫자 키패드
-      krw.setAttribute('pattern','\\d*');
-    }
-    if(usd){
-      usd.setAttribute('type','text');
-      usd.setAttribute('inputmode','decimal');
-      usd.setAttribute('pattern','[0-9]*[.,]?[0-9]*');
-    }
-  }
-  // 드로어가 열릴 때도 다시 한 번 보정
-  document.addEventListener('DOMContentLoaded', forceCashInputsAsText);
-  document.addEventListener('click', function(){
-    // 카드 클릭으로 드로어 열렸을 때 DOM이 갱신돼도 보정되도록 재호출
-    setTimeout(forceCashInputsAsText, 50);
-  }, true);
-})();
-</script>
-<!-- ===== holdings localStorage key compatibility fix ===== -->
-<script>
-(function(){
-  // 후보 키 모두 읽고, 표준 키로 저장/미러링
-  const PF_KEYS = ["portfolioHoldings", "portfolio", "holdings", "portfolio_data"];
-
-  function readHoldingsCompat(){
-    for (const k of PF_KEYS){
-      try{
-        const raw = localStorage.getItem(k);
-        if(!raw) continue;
-        const j = JSON.parse(raw);
-        const arr = Array.isArray(j) ? j
-                  : (j && Array.isArray(j.holdings) ? j.holdings : null);
-        if (arr && arr.length) return arr;
-      }catch(e){}
-    }
-    return [];
-  }
-  function writeHoldingsCompat(arr){
-    try{
-      localStorage.setItem("portfolioHoldings", JSON.stringify(arr));      // 표준
-      localStorage.setItem("portfolio", JSON.stringify({ holdings: arr })); // 호환
-      localStorage.setItem("holdings", JSON.stringify(arr));               // 호환
-    }catch(e){}
-  }
-
-  // 기존 드로어 요소 기준(id는 우리가 만든 것과 동일)
-  const tbodySel = '#holdings-table tbody';
-  function rowTpl(o={}){ return '<tr>'
-    +'<td><input class="sym" value="'+(o.symbol||'')+'" style="width:90px;text-transform:uppercase"></td>'
-    +'<td><input class="qty" type="number" step="1" value="'+(o.qty??'')+'" style="width:90px"></td>'
-    +'<td><input class="cost" type="number" step="0.0001" value="'+(o.cost??'')+'" style="width:120px"></td>'
-    +'<td><button class="del">×</button></td></tr>'; }
-
-  // 드로어 열릴 때 항상 최신 값 로드
-  function loadHoldingsDrawer(){
-    const tb = document.querySelector(tbodySel);
-    if(!tb) return;
-    const data = readHoldingsCompat();
-    tb.innerHTML = (data && data.length) ? data.map(rowTpl).join('') : rowTpl();
-  }
-
-  // 기존 open 로직과 무관하게: 드로어가 열리면 감지해서 채움
-  const holdDrawer = document.getElementById('drawer-holdings');
-  if (holdDrawer){
-    const obs = new MutationObserver(()=>{
-      if (getComputedStyle(holdDrawer).right === '0px'){ // 열린 상태
-        loadHoldingsDrawer();
-      }
-    });
-    obs.observe(holdDrawer, { attributes:true, attributeFilter:['class','style'] });
-  }
-
-  // 저장 버튼 캡처: 우리가 먼저 정규 저장 → 이후 기존 핸들러가 있으면 그대로 진행
-  document.addEventListener('click', (e)=>{
-    if (e.target && e.target.id === 'holdings-save'){
-      try{
-        const rows = [...document.querySelectorAll(tbodySel+' tr')];
-        const out = [];
-        rows.forEach(tr=>{
-          const s = tr.querySelector('.sym')?.value?.trim().toUpperCase();
-          const q = parseFloat(tr.querySelector('.qty')?.value||'0');
-          const c = parseFloat(tr.querySelector('.cost')?.value||'0');
-          if (s && q>0 && c>0) out.push({symbol:s, qty:q, cost:c});
-        });
-        writeHoldingsCompat(out);
-        // 홈 카드 즉시 갱신 시도
-        if (window.refreshOverview) window.refreshOverview();
-        else if (window.refreshHomeData) window.refreshHomeData();
-        console.debug('[PF] holdings saved:', out.length);
-      }catch(err){ console.warn('holdings-save compat failed', err); }
-    }
-  }, true);
-})();
-</script>
-<!-- ===== /holdings key fix ===== -->
-<!-- ===== Cash & Holdings Enhancements (inject) ===== -->
-<script>
-(function(){
-  // ---------- Number format helpers ----------
-  function nfKRW(n){ try { return new Intl.NumberFormat('ko-KR',{maximumFractionDigits:0}).format(n); } catch(e){ return String(n); } }
-  function nfUSD(n){ try { return new Intl.NumberFormat('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}).format(n); } catch(e){ return String(n); } }
-  function sanitizeKRW(s){ const v=String(s||'').replace(/[^\d]/g,''); return v ? parseInt(v,10) : 0; }
-  function sanitizeUSD(s){
-    let v=String(s||'').replace(/[^\d.]/g,'');           // 숫자/점만 허용
-    const parts=v.split('.'); if(parts.length>2){ v=parts.shift()+'.'+parts.join(''); }
-    return v ? parseFloat(v) : 0;
-  }
-
-  // ---------- Cash drawer wiring ----------
-  function hookCashDrawer(){
-    const krw=document.getElementById('cash-krw');
-    const usd=document.getElementById('cash-usd');
-    if(!krw || !usd) return;
-
-    // 초기 표시: localStorage 값 로드 후 보기 좋게 포맷
-    const sKRW = localStorage.getItem('cashKRW');
-    const sUSD = localStorage.getItem('cashUSD');
-    if(sKRW){ const n=sanitizeKRW(sKRW); krw.value = n ? nfKRW(n) : ''; }
-    if(sUSD){ const n=sanitizeUSD(sUSD); usd.value = n ? nfUSD(n) : ''; }
-
-    krw.addEventListener('blur', ()=>{ krw.value = nfKRW(sanitizeKRW(krw.value)); });
-    usd.addEventListener('blur', ()=>{ usd.value = nfUSD(sanitizeUSD(usd.value)); });
-
-    // 저장 버튼이 별도로 없을 수도 있어서, cash drawer가 닫힐 때 저장하도록 closeDrawer를 래핑
-    const _close = window.closeDrawer;
-    if(typeof _close === 'function'){
-      window.closeDrawer = function(kind){
-        if(kind==='cash'){
-          const k = sanitizeKRW(krw.value);
-          const u = sanitizeUSD(usd.value);
-          // 표준 키: cashKRW / cashUSD (대문자 조합)
-          localStorage.setItem('cashKRW', String(k));
-          localStorage.setItem('cashUSD', String(u));
-          // 화면 갱신 함수가 있으면 호출
-          if (typeof window.refreshOverview === 'function') window.refreshOverview();
-          else if (typeof window.refreshHomeData === 'function') window.refreshHomeData();
-        }
-        return _close.apply(this, arguments);
-      }
-    } else {
-      // closeDrawer가 없다면, 창 이탈 시라도 저장
-      window.addEventListener('beforeunload', ()=>{
-        const k = sanitizeKRW(krw.value);
-        const u = sanitizeUSD(usd.value);
-        localStorage.setItem('cashKRW', String(k));
-        localStorage.setItem('cashUSD', String(u));
-      });
-    }
-  }
-
-  // ---------- Holdings key compatibility ----------
-  const PF_KEYS = ["portfolioHoldings", "portfolio", "holdings", "portfolio_data"];
-  function readHoldingsCompat(){
-    for (const k of PF_KEYS){
-      try{
-        const raw = localStorage.getItem(k);
-        if(!raw) continue;
-        const j = JSON.parse(raw);
-        const arr = Array.isArray(j) ? j : (j && Array.isArray(j.holdings) ? j.holdings : null);
-        if (arr && arr.length) return arr;
-      }catch(e){}
-    }
-    return [];
-  }
-  function writeHoldingsCompat(arr){
-    try{
-      localStorage.setItem('portfolioHoldings', JSON.stringify(arr));         // 표준
-      localStorage.setItem('portfolio', JSON.stringify({ holdings: arr }));   // 호환
-      localStorage.setItem('holdings', JSON.stringify(arr));                  // 호환
-    }catch(e){}
-  }
-  function hookHoldingsDrawer(){
-    const drawer = document.getElementById('drawer-holdings');
-    const tbodySel = '#holdings-table tbody';
-    function rowTpl(o={}){ return '<tr>'
-      +'<td><input class="sym" value="'+(o.symbol||'')+'" style="width:90px;text-transform:uppercase"></td>'
-      +'<td><input class="qty" type="number" step="1" value="'+(o.qty??'')+'" style="width:90px"></td>'
-      +'<td><input class="cost" type="number" step="0.0001" value="'+(o.cost??'')+'" style="width:120px"></td>'
-      +'<td><button class="del">×</button></td></tr>'; }
-
-    function loadIntoTable(){
-      const tb = document.querySelector(tbodySel);
-      if(!tb) return;
-      const data = readHoldingsCompat();
-      tb.innerHTML = (data && data.length) ? data.map(rowTpl).join('') : rowTpl();
-    }
-
-    // 드로어 열림 감지 → 항상 최신값 로드
-    if(drawer){
-      const obs = new MutationObserver(()=>{
-        if (getComputedStyle(drawer).right === '0px'){ // open 상태
-          loadIntoTable();
-        }
-      });
-      obs.observe(drawer,{attributes:true, attributeFilter:['class','style']});
-    }
-
-    // 저장 버튼 가로채기(있으면): id='holdings-save' 기준
-    document.addEventListener('click', (e)=>{
-      if(e.target && e.target.id === 'holdings-save'){
-        try{
-          const rows=[...document.querySelectorAll(tbodySel+' tr')];
-          const out=[];
-          rows.forEach(tr=>{
-            const s = tr.querySelector('.sym')?.value?.trim().toUpperCase();
-            const q = parseFloat(tr.querySelector('.qty')?.value||'0');
-            const c = parseFloat(tr.querySelector('.cost')?.value||'0');
-            if(s && q>0 && c>0) out.push({symbol:s, qty:q, cost:c});
-          });
-          writeHoldingsCompat(out);
-          if (typeof window.refreshOverview === 'function') window.refreshOverview();
-          else if (typeof window.refreshHomeData === 'function') window.refreshHomeData();
-        }catch(err){ console.warn('holdings-save compat failed', err); }
-      }
-    }, true);
-  }
-
-  // ---------- Init ----------
-  document.addEventListener('DOMContentLoaded', function(){
-    hookCashDrawer();
-    hookHoldingsDrawer();
-  });
-})();
-</script>
-<!-- ===== /Enhancements ===== -->
-<script>
-(function(){
-  function nfUSD(n){ try { return new Intl.NumberFormat('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}).format(n);}catch(e){return String(n)}}
-  function sanitizeUSD(s){ if(s==null) return 0; let v=String(s).replace(/[, ]/g,'').replace(/[^0-9.]/g,''); const p=v.split('.'); if(p.length>2){ v=p.shift()+'.'+p.join(''); } return v?parseFloat(v):0; }
-  function sanitizeInt(s){ const v=String(s||'').replace(/[^\d]/g,''); return v?parseInt(v,10):0; }
-
-  function forceTypes(){
-    document.querySelectorAll('#cash-krw,#cash-usd,input.cost').forEach(el=>el.setAttribute('type','text'));
-    document.getElementById('cash-krw')?.setAttribute('inputmode','numeric');
-    document.getElementById('cash-usd')?.setAttribute('inputmode','decimal');
-    document.querySelectorAll('input.cost').forEach(el=>el.setAttribute('inputmode','decimal'));
-  }
-
-  function hookCash(){
-    const krw=document.getElementById('cash-krw');
-    const usd=document.getElementById('cash-usd');
-    if(!krw||!usd) return;
-
-    const sKRW=localStorage.getItem('cashKRW'); if(sKRW){ const n=sanitizeInt(sKRW); krw.value=n? n.toLocaleString('ko-KR'):''; }
-    const sUSD=localStorage.getItem('cashUSD'); if(sUSD){ const n=sanitizeUSD(sUSD); usd.value=n? nfUSD(n):''; }
-
-    krw.addEventListener('blur', ()=>{ const n=sanitizeInt(krw.value); krw.value=n? n.toLocaleString('ko-KR'):''; });
-    usd.addEventListener('blur', ()=>{ const n=sanitizeUSD(usd.value); usd.value=n? nfUSD(n):''; });
-
-    const oldClose = window.closeDrawer;
-    window.closeDrawer = function(kind){
-      if(kind==='cash'){
-        const k=sanitizeInt(krw.value), u=sanitizeUSD(usd.value);
-        localStorage.setItem('cashKRW', String(k));
-        localStorage.setItem('cashUSD', String(u));
-        if(typeof window.refreshOverview==='function') window.refreshOverview();
-        else if(typeof window.refreshHomeData==='function') window.refreshHomeData();
-      }
-      return typeof oldClose==='function' ? oldClose.apply(this, arguments) : undefined;
-    };
-  }
-
-  function readHoldingsCompat(){
-    const keys=['portfolioHoldings','portfolio','holdings','portfolio_data'];
-    for(const k of keys){
-      try{
-        const raw=localStorage.getItem(k); if(!raw) continue;
-        const j=JSON.parse(raw);
-        const arr=Array.isArray(j)? j : (j&&Array.isArray(j.holdings)? j.holdings:null);
-        if(arr && arr.length) return arr;
-      }catch(e){}
-    }
-    return [];
-  }
-  function writeHoldingsCompat(arr){
-    localStorage.setItem('portfolioHoldings', JSON.stringify(arr));       // 표준
-    localStorage.setItem('portfolio', JSON.stringify({holdings:arr}));    // 호환
-    localStorage.setItem('holdings', JSON.stringify(arr));                // 호환
-  }
-
-  function hookHoldings(){
-    const drawer=document.getElementById('drawer-holdings');
-    const tbodySel='#holdings-table tbody';
-
-    function rowTpl(o){ o=o||{}; return '<tr>'
-      +'<td><input class="sym" value="'+(o.symbol||'')+'" style="width:90px;text-transform:uppercase"></td>'
-      +'<td><input class="qty" type="number" step="1" value="'+(o.qty??'')+'" style="width:90px"></td>'
-      +'<td><input class="cost" type="text" inputmode="decimal" value="'+(o.cost??'')+'" style="width:120px"></td>'
-      +'<td><button class="del">×</button></td></tr>'; }
-
-    function attachCostFormat(tb){
-      tb.querySelectorAll('input.cost').forEach(inp=>{
-        inp.addEventListener('focus', ()=>{ const n=sanitizeUSD(inp.value); inp.value=n? String(n):''; });
-        inp.addEventListener('blur',  ()=>{ const n=sanitizeUSD(inp.value); inp.value=n? nfUSD(n):''; });
-      });
-    }
-
-    function load(){
-      const tb=document.querySelector(tbodySel); if(!tb) return;
-      const data=readHoldingsCompat();
-      tb.innerHTML=(data&&data.length)? data.map(rowTpl).join('') : rowTpl();
-      attachCostFormat(tb);
-    }
-
-    if(drawer){
-      const obs=new MutationObserver(()=>{ if(getComputedStyle(drawer).right==='0px'){ forceTypes(); load(); } });
-      obs.observe(drawer,{attributes:true, attributeFilter:['class','style']});
-    }
-
-    document.addEventListener('click',(e)=>{
-      const btn=e.target?.closest('button'); if(!btn) return;
-      if(btn.id==='holdings-save' || /저장/.test(btn.textContent||'')){
-        const rows=[...document.querySelectorAll(tbodySel+' tr')];
-        const out=[];
-        rows.forEach(tr=>{
-          const s=tr.querySelector('.sym')?.value?.trim().toUpperCase();
-          const q=parseFloat((tr.querySelector('.qty')?.value||'').toString().replace(/,/g,''))||0;
-          const c=sanitizeUSD(tr.querySelector('.cost')?.value||'');
-          if(s && q>0 && c>0) out.push({symbol:s, qty:q, cost:c});
-        });
-        writeHoldingsCompat(out);
-        if(typeof window.refreshOverview==='function') window.refreshOverview();
-        else if(typeof window.refreshHomeData==='function') window.refreshHomeData();
-      }
-    }, true);
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    forceTypes();
-    hookCash();
-    hookHoldings();
-  });
-})();
-</script>
-<script src="api_portfolio.js?v=1"></script>
-<script src="sp_inject_v1.js"></script>
-<script src="sp_inject_holdings_v2.js?v=2"></script>

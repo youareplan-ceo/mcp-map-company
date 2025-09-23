@@ -1,0 +1,23 @@
+{
+  "demo": {
+    "userId": "demo",
+    "holdings": [
+      {
+        "symbol": "AAPL",
+        "shares": 10.0,
+        "avg_cost": 150.0,
+        "current_price": null
+      },
+      {
+        "symbol": "MSFT",
+        "shares": 5.0,
+        "avg_cost": 250.0,
+        "current_price": null
+      }
+    ],
+    "cash": {
+      "krw": 100000.0,
+      "usd": 500.0
+    }
+  }
+}
