@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StockPilot</title>
+  <link rel="stylesheet" href="assets/portfolio.css" />
+  <script src="assets/config.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>StockPilot</h1>
+    <div class="actions">
+      <button onclick="const u=prompt('API 베이스 URL 입력 (예: https://your-api.onrender.com)'); if(u) setApiBase(u)">API 연결</button>
+      <span style="margin-left:10px;font-size:.9em;color:#666">API: <code id="apiBase"></code></span>
+    </div>
+  </header>
+
+  <main id="cards" style="padding:20px">
+    <a class="card" href="portfolio.html" style="display:block;text-decoration:none;color:inherit">
+      <div class="card-head">
+        <h3>📊 포트폴리오 손익/추천</h3>
+        <span class="badge">열기</span>
+      </div>
+      <div>보유 종목 손익·추천 카드 뷰</div>
+    </a>
+  </main>
+
+  <footer class="footnote">
+    <small>초기 테스트 모드: API 주소는 브라우저 localStorage에 저장됩니다.</small>
+  </footer>
+
+  <script>
+    document.getElementById('apiBase').textContent = (window.API_BASE || '');
+  </script>
+</body>
+</html>

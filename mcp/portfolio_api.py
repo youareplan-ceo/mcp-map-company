@@ -1,12 +1,26 @@
 from fastapi import APIRouter, Query
 from typing import Dict, Any, List, Optional
+from pydantic import BaseModel
 import os
 import math
 import datetime as dt
+import uuid
 
 from mcp.db import get_conn
 
 router = APIRouter(tags=["portfolio"])
+
+# ─────────────────────────────────────────
+# Pydantic 모델 for UI compatibility
+class PortfolioHolding(BaseModel):
+    symbol: str
+    qty: float
+    cost: float
+
+class PortfolioData(BaseModel):
+    holdings: List[PortfolioHolding]
+    cashKRW: float = 0.0
+    cashUSD: float = 0.0
 
 # ─────────────────────────────────────────
 # 테이블 생성
@@ -17,6 +31,22 @@ def ensure_portfolio_table():
         symbol TEXT,
         buy_price DOUBLE,
         quantity DOUBLE
+    )
+    """)
+    con.close()
+
+def ensure_portfolio_saves_table():
+    """UI 저장용 별도 테이블 - 전체 포트폴리오 스냅샷"""
+    con = get_conn()
+    con.execute("""
+    CREATE TABLE IF NOT EXISTS portfolio_saves (
+        created_at TIMESTAMP DEFAULT now(),
+        ticker TEXT,
+        qty DOUBLE,
+        cost DOUBLE,
+        cash_krw DOUBLE,
+        cash_usd DOUBLE,
+        run_id TEXT
     )
     """)
     con.close()
@@ -58,6 +88,44 @@ def list_portfolio():
     con.close()
     items = [dict(zip(["symbol","buy_price","quantity"], r)) for r in rows]
     return {"ok": True, "items": items}
+
+# ─────────────────────────────────────────
+# NEW: UI 호환 엔드포인트
+@router.post("/portfolio")
+def save_portfolio(portfolio_data: PortfolioData):
+    """고객 UI가 기대하는 형식으로 포트폴리오 저장"""
+    ensure_portfolio_saves_table()
+
+    run_id = str(uuid.uuid4())
+    con = get_conn()
+
+    try:
+        # 각 holdings를 개별 행으로 저장
+        for holding in portfolio_data.holdings:
+            con.execute("""
+                INSERT INTO portfolio_saves
+                (ticker, qty, cost, cash_krw, cash_usd, run_id)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                holding.symbol.upper().strip(),
+                holding.qty,
+                holding.cost,
+                portfolio_data.cashKRW,
+                portfolio_data.cashUSD,
+                run_id
+            ))
+
+        con.close()
+        return {
+            "ok": True,
+            "message": "Portfolio saved successfully",
+            "run_id": run_id,
+            "holdings_count": len(portfolio_data.holdings)
+        }
+
+    except Exception as e:
+        con.close()
+        return {"ok": False, "error": str(e)}
 
 # ─────────────────────────────────────────
 # 유틸
