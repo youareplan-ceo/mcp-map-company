@@ -1427,7 +1427,6 @@
         function initializeApp() {
             loadStoredData(); // localStorage에서 데이터 로드
             loadPortfolioData(); // 포트폴리오 데이터 로드
-            loadPortfolioFromAPI(); // API에서 포트폴리오 데이터 로드
             initializeTradeHistory(); // 거래 내역 초기화
             initializeRecommendations(); // 추천 목록 초기화
             initializeSettings(); // 설정 초기화
@@ -1464,35 +1463,6 @@
 
                 lastCheckTime = data.lastCheck;
                 updateNextCheckTime();
-            }
-        }
-
-        // API에서 포트폴리오 데이터 초기 로드
-        async function loadPortfolioFromAPI() {
-            try {
-                if (window.StockPilotAPI) {
-                    const data = await window.StockPilotAPI.apiGet();
-
-                    // 보유종목 업데이트
-                    if (data.holdings) {
-                        portfolioHoldings = data.holdings;
-                        console.log('API에서 보유종목 로드됨:', data.holdings);
-                    }
-
-                    // 현금 정보 업데이트
-                    if (data.cash) {
-                        if (data.cash.krw !== undefined) cashKRW = data.cash.krw;
-                        if (data.cash.usd !== undefined) cashUSD = data.cash.usd;
-                        console.log('API에서 현금 정보 로드됨:', data.cash);
-                    }
-
-                    // 화면 업데이트
-                    updatePortfolioDisplay();
-                    fetchStockPrices();
-                }
-            } catch (error) {
-                console.error('Failed to load portfolio from API:', error);
-                // Fallback to localStorage is handled by existing code
             }
         }
 
@@ -2309,48 +2279,18 @@
         }
 
         // 보유종목 드로어 로드
-        async function loadHoldingsDrawer() {
+        function loadHoldingsDrawer() {
             const tbody = document.getElementById('holdings-table-body');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">데이터 로딩 중...</td></tr>';
+            tbody.innerHTML = '';
 
-            try {
-                if (window.StockPilotAPI) {
-                    const data = await window.StockPilotAPI.apiGet();
-                    const holdings = data.holdings || [];
+            const holdings = readHoldingsCompat();
+            holdings.forEach((holding, index) => {
+                addHoldingRowToTable(holding, index);
+            });
 
-                    tbody.innerHTML = '';
-                    holdings.forEach((holding, index) => {
-                        addHoldingRowToTable(holding, index);
-                    });
-
-                    // 빈 행 추가
-                    if (holdings.length === 0) {
-                        addHoldingRowToTable();
-                    }
-                } else {
-                    // Fallback to localStorage
-                    tbody.innerHTML = '';
-                    const holdings = readHoldingsCompat();
-                    holdings.forEach((holding, index) => {
-                        addHoldingRowToTable(holding, index);
-                    });
-
-                    if (holdings.length === 0) {
-                        addHoldingRowToTable();
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to load holdings from API:', error);
-                // Fallback to localStorage
-                tbody.innerHTML = '';
-                const holdings = readHoldingsCompat();
-                holdings.forEach((holding, index) => {
-                    addHoldingRowToTable(holding, index);
-                });
-
-                if (holdings.length === 0) {
-                    addHoldingRowToTable();
-                }
+            // 빈 행 추가
+            if (holdings.length === 0) {
+                addHoldingRowToTable();
             }
         }
 
@@ -2384,7 +2324,7 @@
         }
 
         // 보유종목 저장
-        async function saveHoldings() {
+        function saveHoldings() {
             const rows = document.querySelectorAll('#holdings-table-body tr');
             const newHoldings = [];
 
@@ -2404,72 +2344,28 @@
             });
 
             portfolioHoldings = newHoldings;
+            writeHoldingsCompat(newHoldings);
+            console.log('보유종목 저장됨:', portfolioHoldings);
 
-            try {
-                if (window.StockPilotAPI) {
-                    // Save to API
-                    const cash = { krw: cashKRW || 0, usd: cashUSD || 0 };
-                    await window.StockPilotAPI.apiPut({ holdings: newHoldings, cash });
-                    console.log('보유종목 API 저장됨:', newHoldings);
-                } else {
-                    // Fallback to localStorage
-                    writeHoldingsCompat(newHoldings);
-                    console.log('보유종목 localStorage 저장됨:', newHoldings);
-                }
+            // 서버 동기화
+            syncToServer();
 
-                // 서버 동기화 (기존 함수)
-                syncToServer();
+            // 화면 업데이트
+            updatePortfolioDisplay();
+            fetchStockPrices(); // 시세 업데이트
 
-                // 화면 업데이트
-                updatePortfolioDisplay();
-                fetchStockPrices(); // 시세 업데이트
-
-                closeDrawer('holdings');
-                alert('보유종목이 저장되었습니다.');
-            } catch (error) {
-                console.error('Failed to save holdings to API:', error);
-                // Fallback to localStorage
-                writeHoldingsCompat(newHoldings);
-                console.log('보유종목 fallback 저장됨:', portfolioHoldings);
-
-                // Continue with existing flow
-                syncToServer();
-                updatePortfolioDisplay();
-                fetchStockPrices();
-
-                closeDrawer('holdings');
-                alert('보유종목이 저장되었습니다 (로컬 저장).');
-            }
+            closeDrawer('holdings');
+            alert('보유종목이 저장되었습니다.');
         }
 
         // 현금 드로어 로드
-        async function loadCashDrawer() {
-            try {
-                if (window.StockPilotAPI) {
-                    const data = await window.StockPilotAPI.apiGet();
-                    const cash = data.cash || {};
-
-                    document.getElementById('cash-krw').value = cash.krw || '';
-                    document.getElementById('cash-usd').value = cash.usd || '';
-
-                    // Update global variables for compatibility
-                    if (cash.krw !== undefined) cashKRW = cash.krw;
-                    if (cash.usd !== undefined) cashUSD = cash.usd;
-                } else {
-                    // Fallback to existing variables
-                    document.getElementById('cash-krw').value = cashKRW || '';
-                    document.getElementById('cash-usd').value = cashUSD || '';
-                }
-            } catch (error) {
-                console.error('Failed to load cash from API:', error);
-                // Fallback to existing variables
-                document.getElementById('cash-krw').value = cashKRW || '';
-                document.getElementById('cash-usd').value = cashUSD || '';
-            }
+        function loadCashDrawer() {
+            document.getElementById('cash-krw').value = cashKRW || '';
+            document.getElementById('cash-usd').value = cashUSD || '';
         }
 
         // 현금 저장
-        async function saveCash() {
+        function saveCash() {
             const newCashKRW = parseFloat(document.getElementById('cash-krw').value) || 0;
             const newCashUSD = parseFloat(document.getElementById('cash-usd').value) || 0;
 
@@ -2481,42 +2377,18 @@
             cashKRW = newCashKRW;
             cashUSD = newCashUSD;
 
-            try {
-                if (window.StockPilotAPI) {
-                    // Save to API
-                    const holdings = portfolioHoldings || [];
-                    const cash = { krw: cashKRW, usd: cashUSD };
-                    await window.StockPilotAPI.apiPut({ holdings, cash });
-                    console.log('현금 API 저장됨:', { cashKRW, cashUSD });
-                } else {
-                    // Fallback to localStorage
-                    localStorage.setItem('cashKrw', cashKRW.toString());
-                    localStorage.setItem('cashUsd', cashUSD.toString());
-                    console.log('현금 localStorage 저장됨:', { cashKRW, cashUSD });
-                }
+            localStorage.setItem('cashKrw', cashKRW.toString());
+            localStorage.setItem('cashUsd', cashUSD.toString());
+            console.log('현금 저장됨:', { cashKRW, cashUSD });
 
-                // 서버 동기화
-                syncToServer();
+            // 서버 동기화
+            syncToServer();
 
-                // 화면 업데이트
-                updatePortfolioDisplay();
+            // 화면 업데이트
+            updatePortfolioDisplay();
 
-                closeDrawer('cash');
-                alert('현금 정보가 저장되었습니다.');
-            } catch (error) {
-                console.error('Failed to save cash to API:', error);
-                // Fallback to localStorage
-                localStorage.setItem('cashKrw', cashKRW.toString());
-                localStorage.setItem('cashUsd', cashUSD.toString());
-                console.log('현금 fallback 저장됨:', { cashKRW, cashUSD });
-
-                // Continue with existing flow
-                syncToServer();
-                updatePortfolioDisplay();
-
-                closeDrawer('cash');
-                alert('현금 정보가 저장되었습니다 (로컬 저장).');
-            }
+            closeDrawer('cash');
+            alert('현금 정보가 저장되었습니다.');
         }
 
         // 신호 드로어 로드
@@ -3041,6 +2913,3 @@
   });
 })();
 </script>
-<script src="api_portfolio.js?v=1"></script>
-<script src="sp_inject_v1.js"></script>
-<script src="sp_inject_holdings_v2.js?v=2"></script>

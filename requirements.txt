@@ -9,3 +9,4 @@ pytest
 mkdocs
 mkdocs-material
 pyyaml
+aiofiles

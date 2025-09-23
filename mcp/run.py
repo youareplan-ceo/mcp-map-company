@@ -1,8 +1,24 @@
 import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 
+# Import portfolio router
+from .portfolio import router as portfolio_router
+
 app = FastAPI(title="StockPilot API", version="0.2.0")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include portfolio routes
+app.include_router(portfolio_router)
 
 # 헬스체크
 @app.get("/api/v1/health")
@@ -46,6 +62,9 @@ def root():
         "version": "0.2.0",
         "health": "/api/v1/health",
         "portfolio": {
+            "get": "/api/v1/portfolio?userId={userId}",
+            "update": "/api/v1/portfolio",
+            "health": "/api/v1/portfolio/health",
             "pnl": "/api/v1/portfolio/pnl",
             "reco": "/api/v1/portfolio/reco"
         }
